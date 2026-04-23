@@ -18,8 +18,19 @@ jobs:
             -o app.ipa \
             "https://api.github.com/repos/${{ github.repository }}/releases/assets/${{ github.event.release.assets[0].id }}"
 
+      - name: Setup API Key
+        env:
+          API_KEY_CONTENT: ${{ secrets.API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+        run: |
+          mkdir -p ~/private_keys
+          echo "$API_KEY_CONTENT" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
+
       - name: Upload to App Store Connect
+        env:
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.API_ISSUER_ID }}
         run: |
           xcrun altool --upload-app -f app.ipa -t ios \
-            -u "${{ secrets.APPLE_ID }}" \
-            -p "${{ secrets.APP_PASSWORD }}"
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
