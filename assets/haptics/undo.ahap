@@ -1,0 +1,32 @@
+{
+  "Version": 1.0,
+  "Metadata": {
+    "Project": "MemTool",
+    "Pattern": "undo",
+    "Created": "2026-05-01",
+    "Description": "A soft tap that gently retreats — short continuous taper. Reversal feels like 'pulling back', not 'pressing'."
+  },
+  "Pattern": [
+    {
+      "Event": {
+        "Time": 0.0,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.45 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.25 }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Time": 0.02,
+        "EventType": "HapticContinuous",
+        "EventDuration": 0.16,
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.25 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.10 }
+        ]
+      }
+    }
+  ]
+}

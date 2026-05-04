@@ -1,0 +1,7 @@
+{
+  "name": "speech-to-text",
+  "version": "0.0.1",
+  "description": "Local Expo module that bridges Apple's on-device Speech framework (SFSpeechRecognizer with requiresOnDeviceRecognition) to MemTool.",
+  "main": "index.ts",
+  "private": true
+}

@@ -1,0 +1,18 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+ScaledBorderAndShadow: yes
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Name,DejaVu Sans,46,&H00E6D84D,&H00E6D84D,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,2,2,60,60,260,1
+Style: Line,DejaVu Sans,72,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,5,3,2,80,80,160,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:12.00,0:00:19.70,Name,,0,0,0,,MEMORA
+Dialogue: 0,0:00:12.20,0:00:14.40,Line,,0,0,0,,Out of chaos...
+Dialogue: 0,0:00:14.50,0:00:17.00,Line,,0,0,0,,one calm thought.
+Dialogue: 0,0:00:17.10,0:00:19.60,Line,,0,0,0,,From Oc2cO. With heart.

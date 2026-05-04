@@ -1,0 +1,7 @@
+{
+  "name": "voice-processing-live-activity",
+  "version": "0.0.1",
+  "description": "Local Expo module that drives an iOS Live Activity / Dynamic Island while a voice memory is being processed.",
+  "main": "index.ts",
+  "private": true
+}

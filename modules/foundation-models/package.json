@@ -1,0 +1,7 @@
+{
+  "name": "foundation-models",
+  "version": "0.0.1",
+  "description": "Local Expo module that exposes Apple's on-device FoundationModels framework (iOS 26+) to MemTool.",
+  "main": "index.ts",
+  "private": true
+}

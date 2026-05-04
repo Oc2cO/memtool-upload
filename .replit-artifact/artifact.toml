@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "MemTool"
+version = "1.0.0"
+id = "artifacts/memtool"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 25984
+
+[services.development]
+run = "pnpm --filter @workspace/memtool run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/memtool", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/memtool", "run", "serve" ]
+
+[services.env]
+PORT = "25984"
+BASE_PATH = "/"

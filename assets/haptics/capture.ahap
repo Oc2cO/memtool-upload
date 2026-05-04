@@ -1,0 +1,31 @@
+{
+  "Version": 1.0,
+  "Metadata": {
+    "Project": "MemTool",
+    "Pattern": "capture",
+    "Created": "2026-05-01",
+    "Description": "Soft-then-firm double tap. The 'caught it' confirmation when a memory is saved."
+  },
+  "Pattern": [
+    {
+      "Event": {
+        "Time": 0.0,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.45 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.30 }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Time": 0.085,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.85 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.55 }
+        ]
+      }
+    }
+  ]
+}

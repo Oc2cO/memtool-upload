@@ -1,0 +1,31 @@
+{
+  "Version": 1.0,
+  "Metadata": {
+    "Project": "MemTool",
+    "Pattern": "error",
+    "Created": "2026-05-01",
+    "Description": "Two firm thumps with a short pause. Distinct from iOS's default warning buzz so users hear 'this is MemTool saying no', not the system."
+  },
+  "Pattern": [
+    {
+      "Event": {
+        "Time": 0.0,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.85 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.20 }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Time": 0.14,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.85 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.20 }
+        ]
+      }
+    }
+  ]
+}

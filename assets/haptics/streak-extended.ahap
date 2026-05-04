@@ -1,0 +1,41 @@
+{
+  "Version": 1.0,
+  "Metadata": {
+    "Project": "MemTool",
+    "Pattern": "streak-extended",
+    "Created": "2026-05-01",
+    "Description": "Three rising taps — light, medium, heavy — tightly spaced. The crescendo of momentum when a streak day or run is extended."
+  },
+  "Pattern": [
+    {
+      "Event": {
+        "Time": 0.0,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.40 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.55 }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Time": 0.07,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.65 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.65 }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Time": 0.16,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          { "ParameterID": "HapticIntensity", "ParameterValue": 0.95 },
+          { "ParameterID": "HapticSharpness", "ParameterValue": 0.80 }
+        ]
+      }
+    }
+  ]
+}

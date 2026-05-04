@@ -1,0 +1,7 @@
+{
+  "name": "expo-core-haptics",
+  "version": "0.0.1",
+  "description": "Local Expo module that bridges Apple's Core Haptics engine (CHHapticEngine) to JS so MemTool can play hand-authored .ahap patterns natively on iPhone.",
+  "main": "index.ts",
+  "private": true
+}

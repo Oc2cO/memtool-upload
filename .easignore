@@ -1,0 +1,33 @@
+# EAS Build archive exclusions
+# These rules cut the archive size by removing marketing video files
+# and archived brand assets that are not imported by any app code.
+# seg-vo-01..03.mp4 are kept — they are require()'d in app/(app)/about.tsx.
+
+# Archived / temp brand asset directories
+assets/brand/_v1_bunny_archived_2026-05-03/
+assets/brand/_archived_2026-05-02/
+assets/brand/_cut/
+
+# Unused marketing video files
+assets/brand/video-brand-30s.mp4
+assets/brand/video-brand-30s-vo.mp4
+assets/brand/video-brand-intro-01.mp4
+assets/brand/video-brand-intro-02.mp4
+assets/brand/video-brand-intro-03.mp4
+assets/brand/video-brand-intro-04.mp4
+assets/brand/video-teaser-aichat.mp4
+assets/brand/video-teaser-aichat-vo.mp4
+assets/brand/video-teaser-capture.mp4
+assets/brand/video-teaser-capture-vo.mp4
+assets/brand/video-teaser-games.mp4
+assets/brand/video-teaser-games-vo.mp4
+assets/brand/video-teaser-recap.mp4
+assets/brand/video-teaser-recap-vo.mp4
+assets/brand/seg-vo-04.mp4
+
+# Marketing / store assets not needed at build time
+app-store/
+assets/store-screenshots/
+
+# Documentation
+docs/
