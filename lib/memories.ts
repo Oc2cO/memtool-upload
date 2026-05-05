@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authFetch, AuthError, getToken } from "./auth";
 import { apiFetchAnnotations } from "./annotations";
-import { resolveReplitApiBase } from "./config";
+import { resolveAuthApiBase, resolveReplitApiBase } from "./config";
 import {
   CaptureBlockedError,
   CaptureLimitReachedError,
@@ -492,7 +492,7 @@ export async function apiCreateMemory(
 
   let res: Response;
   try {
-    res = await fetch(`${resolveReplitApiBase()}/api/sync/memories`, {
+    res = await fetch(`${resolveAuthApiBase().replace(/\/+$/, "")}/sync/memories`, {
       method: "POST",
       headers: {
         Accept: "application/json",
