@@ -12,29 +12,29 @@
       }
     },
     "preview": {
-      "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_REPLIT_API_BASE_URL": "https://memtool.replit.app",
-        "EXPO_PUBLIC_AUTH_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
-        "EXPO_PUBLIC_SENTRY_DSN": "$EXPO_PUBLIC_SENTRY_DSN"
-      },
-      "ios": {
-        "image": "latest"
-      }
-    },
-    "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_LIVE_ACTIVITIES_REQUIRED": "1",
-        "EXPO_PUBLIC_REPLIT_API_BASE_URL": "https://memtool.replit.app",
-        "EXPO_PUBLIC_AUTH_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
-        "EXPO_PUBLIC_SENTRY_DSN": "$EXPO_PUBLIC_SENTRY_DSN"
-      },
-      "ios": {
-        "credentialsSource": "remote",
-        "image": "latest"
-      }
-    }
+  "distribution": "internal",
+  "env": {
+    "EXPO_PUBLIC_REPLIT_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
+    "EXPO_PUBLIC_AUTH_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
+    "EXPO_PUBLIC_SENTRY_DSN": "$EXPO_PUBLIC_SENTRY_DSN"
+  },
+  "ios": {
+    "image": "latest"
+  }
+},
+"production": {
+  "autoIncrement": true,
+  "env": {
+    "EXPO_LIVE_ACTIVITIES_REQUIRED": "1",
+    "EXPO_PUBLIC_REPLIT_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
+    "EXPO_PUBLIC_AUTH_API_BASE_URL": "https://oc2coos-2.polsia.app/api/memtool",
+    "EXPO_PUBLIC_SENTRY_DSN": "$EXPO_PUBLIC_SENTRY_DSN"
+  },
+  "ios": {
+    "credentialsSource": "remote",
+    "image": "latest"
+  }
+}
   },
   "submit": {
     "production": {
