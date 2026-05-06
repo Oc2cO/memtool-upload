@@ -998,6 +998,7 @@ export default function AiGuideScreen() {
           messages={messages}
           showTyping={sending}
           input={inputNode}
+          composerBottomInset={insets.bottom + 96}
           palette={PALETTE}
           showAvatars={false}
           onScroll={scrollHandler}

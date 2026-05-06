@@ -121,6 +121,7 @@ interface ChatThreadProps {
   showTyping: boolean;
   /** Optional inline input rendered below the thread. */
   input?: React.ReactNode;
+  composerBottomInset?: number;
   /**
    * Optional node rendered just above the composer (e.g. a small
    * "Skip — Mem will learn as we go" link on onboarding). Kept as a
@@ -181,6 +182,7 @@ export function ChatThread({
   messages,
   showTyping,
   input,
+  composerBottomInset = 0,
   aboveInput,
   palette,
   showAvatars = true,
@@ -269,7 +271,14 @@ export function ChatThread({
           testID="chat-composer-surface"
           style={[styles.inputAreaShadow, surfaceAnim]}
         >
-          <View style={styles.inputArea}>
+          <View
+            style={[
+              styles.inputArea,
+              composerBottomInset > 0
+                ? { paddingBottom: spacing.md + composerBottomInset }
+                : null,
+            ]}
+          >
             {scrollY ? (
               <View pointerEvents="none" style={StyleSheet.absoluteFill}>
                 <FrostBackground scrollY={scrollY} />
