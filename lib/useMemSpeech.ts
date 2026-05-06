@@ -160,6 +160,13 @@ function tokenize(text: string): string[] {
   return text.split(/\s+/).filter((w) => w.length > 0);
 }
 
+function normalizeSpeechText(input: string): string {
+  return input
+    .replace(/\bM\.E\.M\.\b/g, "Mehm")
+    .replace(/\bMEM\b/g, "Mehm")
+    .replace(/\bMemTool\b/g, "Mehm Tool");
+}
+
 export function useMemSpeech(
   options: UseMemSpeechOptions,
 ): MemSpeechController {
@@ -405,7 +412,7 @@ export function useMemSpeech(
       if (muted) return;
 
       try {
-        Speech.speak(text, {
+        Speech.speak(normalizeSpeechText(text), {
           // Calm, slightly slowed cadence — research on perceived
           // warmth / soothingness in synthesised speech consistently
           // favours a rate just below 1.0 with a near-neutral pitch.
