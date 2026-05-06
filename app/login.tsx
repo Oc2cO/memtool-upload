@@ -164,13 +164,6 @@ export default function LoginScreen() {
   const haptics = useHaptics();
   const router = useRouter();
 
-  // Hold the redirect for the brief glow-expand hand-off so the auth
-  // screen doesn't snap-cut to the home tab. Once the glow finishes,
-  // the underlying user state is still set so the redirect fires.
-  if (user && !handoff) {
-    if (!hasSeenOnboarding) return <Redirect href="/onboarding" />;
-    return <Redirect href="/(app)/(tabs)" />;
-  }
 
   const runHandoff = (): void => {
     if (handoffTriggeredRef.current) return;
@@ -225,6 +218,15 @@ export default function LoginScreen() {
     opacity: handoffOpacity.value,
     transform: [{ scale: handoffScale.value }],
   }));
+
+
+  // Hold the redirect for the brief glow-expand hand-off so the auth
+  // screen doesn't snap-cut to the home tab. Once the glow finishes,
+  // the underlying user state is still set so the redirect fires.
+  if (user && !handoff) {
+    if (!hasSeenOnboarding) return <Redirect href="/onboarding" />;
+    return <Redirect href="/(app)/(tabs)" />;
+  }
 
   return (
     <SettleOnMount style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top, paddingBottom: insets.bottom }]}>
