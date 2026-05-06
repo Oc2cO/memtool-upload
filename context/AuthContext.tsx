@@ -37,6 +37,27 @@ function avatarKey(email: string): string {
   return `mt_avatar_${email}`;
 }
 
+async function clearLocalUserData(user: User | null): Promise<void> {
+  if (!user?.email) return;
+
+  const email = user.email;
+  const userId = user.id;
+
+  await Promise.allSettled([
+    AsyncStorage.removeItem(displayNameKey(email)),
+    AsyncStorage.removeItem(avatarKey(email)),
+    AsyncStorage.removeItem(`mt_profile_${email}`),
+    AsyncStorage.removeItem(`syncOutbox_${email}`),
+    AsyncStorage.removeItem(`mt_review_asked_${email}`),
+    AsyncStorage.removeItem(`mt_account_first_seen_${email}`),
+    ...(userId ? [AsyncStorage.removeItem(`mt_ai_guide_thread_v1:${userId}`)] : []),
+    AsyncStorage.removeItem("mt_ai_guide_count_v1"),
+    AsyncStorage.removeItem(`memories_${email}`),
+    ...(userId ? [AsyncStorage.removeItem(`memories_${userId}`)] : []),
+    clearAiEngineCache(email),
+  ]);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,6 +160,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    const currentUser = user;
+    await clearLocalUserData(currentUser);
     await apiLogout();
     setUser(null);
   };
@@ -176,31 +199,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const deleteAccount = async () => {
     if (!user?.email) throw new Error("deleteAccount: not signed in");
-    const email = user.email;
-    const userId = user.id;
     // Call the server first so a network failure surfaces before we wipe local state.
     await apiDeleteAccount();
-    // Wipe all local data tied to this account in parallel.
-    // Keys must stay in sync with every module that writes per-user data.
-    await Promise.allSettled([
-      // Identity
-      AsyncStorage.removeItem(displayNameKey(email)),
-      AsyncStorage.removeItem(avatarKey(email)),
-      // Profile cache (lib/profile.ts)
-      AsyncStorage.removeItem(`mt_profile_${email}`),
-      // Sync outbox (lib/syncOutbox.ts)
-      AsyncStorage.removeItem(`syncOutbox_${email}`),
-      // Review-prompt tracking (lib/reviewPrompt.ts)
-      AsyncStorage.removeItem(`mt_review_asked_${email}`),
-      AsyncStorage.removeItem(`mt_account_first_seen_${email}`),
-      // AI guide thread + usage counter (lib/aiGuideThread.ts, lib/aiGuideLimits.ts)
-      ...(userId ? [AsyncStorage.removeItem(`mt_ai_guide_thread_v1:${userId}`)] : []),
-      AsyncStorage.removeItem("mt_ai_guide_count_v1"),
-      // Memory cache (lib/memories.ts)
-      ...(userId ? [AsyncStorage.removeItem(`memories_${userId}`)] : []),
-      // AI engine cache (lib/aiEngineStorage.ts)
-      clearAiEngineCache(email),
-    ]);
+    // Wipe all local data tied to this account.
+    await clearLocalUserData(user);
     // Sign out — clears the auth token and resets user state.
     await apiLogout();
     setUser(null);
