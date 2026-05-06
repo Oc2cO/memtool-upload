@@ -1,7 +1,7 @@
 /**
  * Client-side helpers for the self-service account endpoints:
- * - Forgot password  (POST /api/auth/forgot-password)
- * - Reset password   (POST /api/auth/reset-password)
+ * - Forgot password  (POST/auth/forgot-password)
+ * - Reset password   (POST/api/auth/reset-password)
  * - Update display-name (PATCH /api/auth/display-name)
  * - Delete account   (DELETE /api/auth/account)
  *
@@ -65,7 +65,7 @@ async function authHeaders(): Promise<Record<string, string>> {
 export async function apiForgotPassword(email: string): Promise<void> {
   let res: Response;
   try {
-    res = await fetchWithTimeout(`${apiBase()}/api/auth/forgot-password`, {
+    res = await fetchWithTimeout(`${apiBase()}/auth/forgot-password`, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.trim().toLowerCase() }),
@@ -85,7 +85,7 @@ export async function apiForgotPassword(email: string): Promise<void> {
 export async function apiResetPassword(code: string, newPassword: string): Promise<void> {
   let res: Response;
   try {
-    res = await fetchWithTimeout(`${apiBase()}/api/auth/reset-password`, {
+    res = await fetchWithTimeout(`${apiBase()}/auth/reset-password`, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({ code, new_password: newPassword }),
