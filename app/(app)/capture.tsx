@@ -530,9 +530,8 @@ export default function CaptureScreen() {
     mimeType?: string;
     takenAt: string;
   } | null> => {
-    try {
-      let res: ImagePicker.ImagePickerResult;
-      if (Platform.OS === "web") {
+    const pickSelfieFromLibrary =
+      async (): Promise<ImagePicker.ImagePickerResult | null> => {
         const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!perm.granted) {
           Alert.alert(
@@ -541,19 +540,59 @@ export default function CaptureScreen() {
           );
           return null;
         }
-        res = await ImagePicker.launchImageLibraryAsync({
+        return ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           quality: 0.85,
           exif: true,
         });
+      };
+
+    const normalizeSelfieResult = async (
+      res: ImagePicker.ImagePickerResult | null,
+    ): Promise<{ uri: string; mimeType?: string; takenAt: string } | null> => {
+      if (!res || res.canceled || !res.assets[0]) return null;
+      const asset = res.assets[0];
+      const exif = (asset.exif ?? {}) as Record<string, unknown>;
+      const takenAt =
+        (exif.DateTimeOriginal as string | undefined) ||
+        (exif.DateTime as string | undefined) ||
+        new Date().toISOString();
+      const sanitized = await stripPhotoMetadata(asset.uri);
+      return { uri: sanitized.uri, mimeType: sanitized.mimeType, takenAt };
+    };
+
+    const offerSelfieLibraryFallback = (): Promise<{
+      uri: string;
+      mimeType?: string;
+      takenAt: string;
+    } | null> =>
+      new Promise((resolve) => {
+        Alert.alert(
+          "Camera didn't open",
+          "You can still add today's selfie from your photo library.",
+          [
+            {
+              text: "Pick from library",
+              onPress: () => {
+                void pickSelfieFromLibrary()
+                  .then(normalizeSelfieResult)
+                  .then(resolve)
+                  .catch(() => resolve(null));
+              },
+            },
+            { text: "Cancel", style: "cancel", onPress: () => resolve(null) },
+          ],
+        );
+      });
+
+    try {
+      let res: ImagePicker.ImagePickerResult;
+      if (Platform.OS === "web") {
+        return await normalizeSelfieResult(await pickSelfieFromLibrary());
       } else {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
         if (!perm.granted) {
-          Alert.alert(
-            "Memora needs the camera",
-            "I can't take today's selfie without camera access. Turn it on in Settings whenever you're ready.",
-          );
-          return null;
+          return await offerSelfieLibraryFallback();
         }
         res = await ImagePicker.launchCameraAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -562,16 +601,10 @@ export default function CaptureScreen() {
           exif: true,
         });
       }
-      if (res.canceled || !res.assets[0]) return null;
-      const asset = res.assets[0];
-      const exif = (asset.exif ?? {}) as Record<string, unknown>;
-      const takenAt =
-        (exif.DateTimeOriginal as string | undefined) ||
-        (exif.DateTime as string | undefined) ||
-        new Date().toISOString();
-      return { uri: asset.uri, mimeType: asset.mimeType, takenAt };
+      return await normalizeSelfieResult(res);
     } catch (err) {
       if (__DEV__) console.warn("[capture] acquireSelfieAsset failed", err);
+      if (Platform.OS !== "web") return await offerSelfieLibraryFallback();
       return null;
     }
   }, []);
