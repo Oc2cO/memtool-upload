@@ -25,8 +25,8 @@
         "NSSpeechRecognitionUsageDescription": "MemTool uses Apple's on-device Speech framework to turn your 'Speak a memory' recordings into editable text. Audio stays on your device and is never uploaded.",
         "NSCalendarsUsageDescription": "MemTool can read recent calendar events to add gentle context to your Daily Recap (e.g. 'You had 3 meetings today'). Events stay on-device.",
         "NSCalendarsFullAccessUsageDescription": "MemTool can read recent calendar events to add gentle context to your Daily Recap (e.g. 'You had 3 meetings today'). Events stay on-device.",
-        "NSCameraUsageDescription": "Memora here — let me see the moment so I can keep it with your memory. Photos are attached only to the memory you're saving.",
-        "NSPhotoLibraryUsageDescription": "Memora here — pick a photo from your library and I'll keep it next to the memory you're capturing."
+        "NSCameraUsageDescription": "MemTool uses the camera so you can attach a photo to a memory. Attached photos are uploaded to your MemTool account for backup and display.",
+        "NSPhotoLibraryUsageDescription": "MemTool lets you choose photos from your library to attach to memories. Selected photos are uploaded to your MemTool account for backup and display."
       },
       "privacyManifests": {
         "NSPrivacyTracking": false,
