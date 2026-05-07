@@ -29,7 +29,7 @@ const INTRO_SOURCE = require("@/assets/videos/intro.mp4");
 export default function IntroVideoScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const closedRef = useRef(false);
