@@ -106,8 +106,7 @@ export interface UseMemSpeechOptions {
   muted: boolean;
   /**
    * Wpm-style fallback rate for the spoken (or "no-boundary-events")
-   * path. Defaults to 3.2 words/sec — the comfortable speaking rate
-   * `expo-speech`'s default voice averages.
+   * path. Defaults to 3.2 words/sec — a comfortable speaking pace.
    */
   fallbackWordsPerSecond?: number;
   /**
@@ -116,12 +115,8 @@ export interface UseMemSpeechOptions {
    */
   mutedWordsPerSecond?: number;
   /**
-   * Optional voice identifier from `Speech.getAvailableVoicesAsync()`
-   * (Task #292). When set, expo-speech uses this voice instead of the
-   * device default. Falls back gracefully: an unknown id is silently
-   * dropped by the OS layer, which then picks the system default —
-   * so a voice that was uninstalled between launches still produces
-   * audio rather than throwing.
+   * Non-null launch-approved native TTS voice id. Null never falls back
+   * to system/default TTS; it uses the silent reveal path instead.
    */
   voice?: string | null;
 }
@@ -279,6 +274,9 @@ export function useMemSpeech(
       const reduceMotion = reduceMotionRef.current;
       const degraded = !getBreathingEnabled();
       const visemeStream = textToVisemeStream(text);
+      const approvedVoiceId =
+        typeof voice === "string" && voice.trim().length > 0 ? voice.trim() : null;
+      const speechAudioEnabled = !muted && approvedVoiceId !== null;
       const run: SpeechRunState = {
         words,
         visemeStream,
@@ -293,7 +291,7 @@ export function useMemSpeech(
         fullyRevealedAt: null,
         onWordIndex: callbacks?.onWordIndex,
         onDone: callbacks?.onDone,
-        muted,
+        muted: !speechAudioEnabled,
         reduceMotion,
         degraded,
       };
@@ -319,7 +317,7 @@ export function useMemSpeech(
       // the timing source. The muted path uses a visibly faster
       // wps so silence doesn't slow the UX.
       const tickMs = FALLBACK_TICK_MS;
-      const activeWps = muted ? mutedWordsPerSecond : fallbackWordsPerSecond;
+      const activeWps = run.muted ? mutedWordsPerSecond : fallbackWordsPerSecond;
       const wordsPerMs = activeWps / 1000;
       run.fallbackTimer = setInterval(() => {
         if (run.cancelled) return;
@@ -364,7 +362,7 @@ export function useMemSpeech(
       // is anchored by the most recent `onBoundary` event via
       // `run.visemeWordIdx`. Muted / Reduce Motion → mouth stays
       // at rest so the screen reads as silent.
-      if (!muted && !reduceMotion) {
+      if (speechAudioEnabled && !reduceMotion) {
         run.visemeTimer = setInterval(() => {
           if (run.cancelled) {
             viseme.value = 0;
@@ -383,7 +381,7 @@ export function useMemSpeech(
 
       // Mouth animation — only when audio is playing AND motion is
       // allowed. Muted or Reduce Motion → mouth stays closed.
-      if (!muted && !reduceMotion) {
+      if (speechAudioEnabled && !reduceMotion) {
         const startedAt = Date.now();
         const tick = degraded ? DEGRADED_MOUTH_TICK_MS : MOUTH_TICK_MS;
         let degradedToggle = 0;
@@ -407,9 +405,9 @@ export function useMemSpeech(
         }, tick);
       }
 
-      // Muted path: no audio, no expo-speech call at all. The
-      // fallback timer drives the reveal and self-terminates.
-      if (muted) return;
+      // Silent path: user-muted, or no launch-approved voice id exists.
+      // No audio, no expo-speech call; fallback timer drives reveal and self-terminates.
+      if (!speechAudioEnabled || approvedVoiceId == null) return;
 
       try {
         Speech.speak(normalizeSpeechText(text), {
@@ -420,14 +418,9 @@ export function useMemSpeech(
           // "newsreader at 1.0" or "stoner at 0.85".
           rate: 0.94,
           pitch: 1.0,
-          // User-picked voice (Task #292). Only set when non-empty so
-          // the OS layer falls back to the system default for the
-          // unset case rather than receiving an explicit "" id and
-          // refusing to speak. An unknown id (e.g. the saved voice
-          // was uninstalled between launches) is also silently
-          // dropped by AVSpeechSynthesizer / Android TTS — they pick
-          // the default rather than throwing.
-          ...(voice ? { voice } : {}),
+          // Launch safety: never omit `voice`, because omitting it
+          // lets the OS pick the system/default TTS voice.
+          voice: approvedVoiceId,
           // iOS audio behavior (per task brief):
           //   - Use the *system* audio session so the silent switch
           //     mutes Mem (`useApplicationAudioSession: false` —

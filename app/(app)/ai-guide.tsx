@@ -66,16 +66,12 @@ import { useHaptics } from "@/lib/haptics";
 import {
   ensureMemCaptionsEnabledHydrated,
   ensureMemVoiceMuteHydrated,
-  hasMemIntroBeenSpoken,
   hasMemSkipHintBeenSeen,
-  markMemIntroSpoken,
   markMemSkipHintSeen,
   setMemVoiceMuted,
   useMemCaptionsEnabled,
-  useMemVoiceId,
   useMemVoiceMuted,
 } from "@/lib/memVoicePrefs";
-import { useEffectiveMemVoiceId } from "@/lib/memVoiceCatalog";
 import { useMemSpeech } from "@/lib/useMemSpeech";
 
 /**
@@ -118,8 +114,8 @@ import { useMemSpeech } from "@/lib/useMemSpeech";
  * - A header mute toggle (next to "Clear") persists per-user; when
  *   muted the streaming reveal continues at a faster fixed rate so
  *   silence doesn't slow the experience.
- * - The intro greeting speaks exactly once per user on first
- *   launch, gated by a one-shot AsyncStorage flag.
+ * - Launch safety: the intro greeting is visual-only on mount.
+ *   Future voice moments must opt in with an approved voice id.
  */
 
 // Per-user dedupe key for the streak opener message (Task #369).
@@ -248,16 +244,9 @@ export default function AiGuideScreen() {
   // bubble streaming is the always-on signal; this is for users who
   // need a stronger cue.
   const captionsEnabled = useMemCaptionsEnabled(userId);
-  // User-picked voice (Task #292). The saved id is funneled through
-  // `useEffectiveMemVoiceId` which checks the curated catalog on
-  // the *current* device and collapses unknown ids to `null`
-  // (system default) — so a "Warm" pick made on iOS doesn't try to
-  // speak with an iOS-only voice id when the user opens MemTool on
-  // an Android tablet. Until the catalog hydrates the hook returns
-  // `null` (system default) rather than the raw saved id, so Mem
-  // never speaks with an id we haven't verified is installed here.
-  const savedVoiceId = useMemVoiceId(userId);
-  const selectedVoiceId = useEffectiveMemVoiceId(savedVoiceId);
+  // Launch safety: no Mem chat TTS is approved for this surface yet.
+  // Voice prefs/catalog remain intact for future hand-picked avatar voices.
+  const approvedMemVoiceId: string | null = null;
 
   const [thread, setThread] = useState<StoredAiGuideMessage[]>([INTRO_MESSAGE]);
   const [hydrated, setHydrated] = useState(false);
@@ -304,7 +293,10 @@ export default function AiGuideScreen() {
   // Guard against double-submits during the in-flight POST.
   const sendingRef = useRef(false);
 
-  const speech = useMemSpeech({ muted, voice: selectedVoiceId });
+  const speech = useMemSpeech({
+    muted: muted || approvedMemVoiceId == null,
+    voice: approvedMemVoiceId,
+  });
 
   // The current "speak target" — the message whose text we are
   // streaming. We hold a ref so the speech callbacks can resolve
@@ -681,60 +673,8 @@ export default function AiGuideScreen() {
     }, [interruptSpeech]),
   );
 
-  // First-launch one-shot intro greeting. Speaks the locally-rendered
-  // intro bubble exactly once per user, then sets a persistent flag
-  // so subsequent screen mounts don't re-speak it.
-  const introHandledRef = useRef(false);
-  // Tracks "is the screen still mounted?" so the deferred
-  // intro-speak setTimeout can no-op cleanly if the screen
-  // unmounted between the AsyncStorage round-trip and the timer
-  // firing. Without this, jest teardowns flag the timer as a leak.
-  const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-  useEffect(() => {
-    if (!hydrated || !userId) return;
-    if (introHandledRef.current) return;
-    introHandledRef.current = true;
-    // The intro is only spoken when the very first message in the
-    // thread *is* the intro (i.e. brand-new thread). If the user
-    // already has prior messages the intro bubble isn't even on
-    // screen.
-    if (thread[0]?.id !== INTRO_MESSAGE.id) return;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    void (async () => {
-      const already = await hasMemIntroBeenSpoken(userId);
-      if (already || !mountedRef.current) return;
-      // Defer one tick so the freshly-mounted ChatThread has a
-      // chance to lay out the bubble before the words start
-      // streaming into it.
-      timer = setTimeout(() => {
-        if (!mountedRef.current) return;
-        // Persist the "intro spoken" flag *after* speech actually
-        // begins emitting words — not before. If `Speech.speak`
-        // throws synchronously or the device never emits any
-        // boundary at all, the flag stays unset so the user gets
-        // another chance to hear the intro on the next mount,
-        // matching the brief's "exactly once per user" guarantee
-        // (per actually-experienced once, not attempted-once).
-        startSpeakingMessage(INTRO_MESSAGE.id, INTRO_MESSAGE.text, {
-          onSpeechStart: () => {
-            void markMemIntroSpoken(userId);
-          },
-        });
-      }, 50);
-    })();
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-    // We deliberately ignore further changes — the intro is a one-shot
-    // and `thread` may grow after the first send.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, userId]);
+  // Launch safety: the initial Mem bubble is visual-only.
+  // No TTS should auto-play when the Mem page mounts.
 
   const sendMessage = useCallback(
     async (text: string, options: { isRetry?: boolean } = {}) => {

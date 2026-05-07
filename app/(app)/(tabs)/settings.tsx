@@ -725,8 +725,7 @@ export default function SettingsScreen() {
       } catch {
         // Voice enumeration is best-effort. If it throws (e.g. on a
         // platform without TTS), the picker section just stays
-        // hidden — Mem still works because `useMemSpeech` falls back
-        // to the system default voice when no id is passed.
+        // hidden. Mem visual replies still work without a TTS voice.
       }
     })();
     return () => {
@@ -757,11 +756,11 @@ export default function SettingsScreen() {
     // Stop any prior preview so back-to-back row taps don't queue
     // up multiple "Hi — I'm Mem." utterances on top of each other.
     Speech.stop().catch(() => {});
+    if (voice.id == null || voice.id.trim().length === 0) return;
+
     Speech.speak("Hi — I'm Mem.", {
-      // Omitting `voice` entirely tells expo-speech "use the system
-      // default" — the API rejects `null` on Android, so we only
-      // pass the key when we actually have a real voice id.
-      ...(voice.id ? { voice: voice.id } : {}),
+      // Launch safety: preview only a concrete curated voice id.
+      voice: voice.id,
       // Match the AI Guide cadence so the preview is a faithful
       // sample of what the user will actually hear from Mem.
       rate: 0.94,
@@ -1869,15 +1868,12 @@ export default function SettingsScreen() {
 
         {/*
           MEM'S VOICE picker (Task #292). Lets the user audition and
-          pick from a small curated set of installed system voices —
-          tapping a row selects it AND plays a one-line "Hi — I'm Mem."
-          preview so the choice is grounded in what they'll actually
-          hear during a chat. The selection is saved per-user in
-          AsyncStorage and read by `ai-guide.tsx` via `useMemVoiceId`,
-          which feeds it straight into `useMemSpeech`. If the saved id
-          isn't installed on the current device the OS layer drops it
-          silently and Mem still talks (with the system default), so
-          there's no "voice missing" error path to surface here.
+          pick from a small curated set of installed system voices.
+          Tapping a concrete voice row selects it AND plays a one-line
+          "Hi — I'm Mem." preview; tapping the System default row only
+          saves the visual selection and never invokes default TTS.
+          The selection remains saved per-user for future hand-picked
+          avatar voice approval.
 
           Hidden when no voices have hydrated yet — the picker only
           ever shows once we know what's actually selectable, so we
