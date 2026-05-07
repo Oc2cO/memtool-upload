@@ -67,19 +67,26 @@ const VALID_RESUME: ReadonlySet<Stage> = new Set([
 ]);
 
 export default function OnboardingScreen() {
+  const params = useLocalSearchParams<{ resume?: string }>();
+  const { user, hasSeenOnboarding } = useAuth();
+
+  if (hasSeenOnboarding) {
+    if (!user) return <Redirect href="/login" />;
+    return <Redirect href="/(app)/(tabs)" />;
+  }
+
+  const rawResume = typeof params.resume === "string" ? params.resume : "";
+  const resumeStage = VALID_RESUME.has(rawResume as Stage)
+    ? (rawResume as Stage)
+    : "video";
+
+  return <OnboardingFlow resumeStage={resumeStage} />;
+}
+
+function OnboardingFlow({ resumeStage }: { resumeStage: Stage }) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const params = useLocalSearchParams<{ resume?: string }>();
-  const { completeOnboarding, user, hasSeenOnboarding } = useAuth();
-
-  // When the user returns from /onboarding-chat we resume directly at
-  // the visual tour (`?resume=meet`) so the splash video doesn't play
-  // a second time. Any unknown value falls through to the normal
-  // video-first flow.
-  const resumeStage = ((): Stage => {
-    const raw = typeof params.resume === "string" ? params.resume : "";
-    return VALID_RESUME.has(raw as Stage) ? (raw as Stage) : "video";
-  })();
+  const { completeOnboarding } = useAuth();
 
   const [stage, setStage] = useState<Stage>(resumeStage);
   const advancedFromVideo = useRef(resumeStage !== "video");
@@ -91,15 +98,10 @@ export default function OnboardingScreen() {
   // replay surface stay byte-identical.
   const introPlayer = useVideoPlayer(INTRO_VIDEO_SOURCE, (p) => {
     p.loop = false;
-    p.muted = false;
+    p.muted = true;
     p.play();
   });
 
-  // Declarative redirect when onboarding state flips.
-  if (hasSeenOnboarding) {
-    if (!user) return <Redirect href="/login" />;
-    return <Redirect href="/(app)/(tabs)" />;
-  }
 
   // After the OC2CO splash scene ends we hand off to the chat route
   // (Task #46). The visual tour resumes when chat completes via
