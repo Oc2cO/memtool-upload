@@ -39,6 +39,7 @@ import {
   AuthCinematicStage,
   type AuthCinematicStageHandle,
 } from "@/components/alive/AuthCinematicStage";
+import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 
 // Hand-off glow timings: derived from DURATIONS so they live on
 // the same scale as every other Mercury motion in the app. Full
@@ -229,7 +230,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <SettleOnMount style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <SettleOnMount style={[styles.root, { backgroundColor: colors.background }]}>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <GradientBackground style={StyleSheet.absoluteFill} />
         <AmbientBlobs />
@@ -240,36 +241,26 @@ export default function LoginScreen() {
         />
       </View>
 
-      <View style={styles.brandHeader}>
-        <Text style={[styles.title, { color: colors.foreground }]}>MemTool</Text>
-        <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>Your notebook for the mind</Text>
-      </View>
+      <KeyboardAwareScrollViewCompat
+        contentContainerStyle={[
+          styles.container,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={insets.bottom + 24}
+        extraKeyboardSpace={24}
+      >
+        <View style={styles.brandHeader}>
+          <Text style={[styles.title, { color: colors.foreground }]}>MemTool</Text>
+          <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>Your notebook for the mind</Text>
+        </View>
 
-      <AuthCinematicStage
-        ref={cinematicRef}
-        mode={isLogin ? "login" : "signup"}
-        paused={keyboardOpen}
-        onSettle={handleCinematicSettled}
-      />
-
-      {/* Full-screen tap target while the cinematic plays so "tap
-          anywhere to skip" works outside the stage bounds too. The
-          form is pointerEvents="none" during this window, so this
-          overlay reliably catches the tap. We forward the tap to the
-          stage's imperative skip() so the timeline actually collapses
-          (otherwise it would keep running while the form fades up). */}
-      {!cinematicSettled ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Skip intro animation"
-          testID="auth-cinematic-skip-overlay"
-          style={StyleSheet.absoluteFill}
-          onPress={() => {
-            cinematicRef.current?.skip();
-            handleCinematicSettled();
-          }}
+        <AuthCinematicStage
+          ref={cinematicRef}
+          mode={isLogin ? "login" : "signup"}
+          paused={keyboardOpen}
+          onSettle={handleCinematicSettled}
         />
-      ) : null}
 
       <Animated.View
         style={formStyle}
@@ -385,6 +376,26 @@ export default function LoginScreen() {
         </Pressable>
       </FrostedCard>
       </Animated.View>
+      </KeyboardAwareScrollViewCompat>
+
+      {/* Full-screen tap target while the cinematic plays so "tap
+          anywhere to skip" works outside the stage bounds too. The
+          form is pointerEvents="none" during this window, so this
+          overlay reliably catches the tap. We forward the tap to the
+          stage's imperative skip() so the timeline actually collapses
+          (otherwise it would keep running while the form fades up). */}
+      {!cinematicSettled ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Skip intro animation"
+          testID="auth-cinematic-skip-overlay"
+          style={StyleSheet.absoluteFill}
+          onPress={() => {
+            cinematicRef.current?.skip();
+            handleCinematicSettled();
+          }}
+        />
+      ) : null}
 
       {handoff ? (
         <Animated.View
@@ -444,8 +455,11 @@ function FrostedCard({
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     paddingHorizontal: 20,
     paddingVertical: 16,
     justifyContent: "center",
