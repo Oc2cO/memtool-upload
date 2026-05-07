@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, Pressable, Platform, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +16,7 @@ import { stripPhotoMetadata } from "@/lib/memoryPhotos";
 import { useMemoryFacets } from "@/lib/useMemoryFacets";
 import { Toast } from "@/components/Toast";
 import { DraftSavedCue } from "@/components/DraftSavedCue";
+import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { SettleOnMount } from "@/components/alive/SettleOnMount";
 import { ScalePress } from "@/components/alive/ScalePress";
 import { MemCharacter } from "@/components/MemCharacter";
@@ -932,9 +933,8 @@ export default function CaptureScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={[styles.container, { backgroundColor: colors.background }]} 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <View
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
       <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Pressable
@@ -969,9 +969,14 @@ export default function CaptureScreen() {
       </View>
       <DraftSavedCue visible={draftCueVisible} topOffset={insets.top + 64} />
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
+      <KeyboardAwareScrollViewCompat
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + 120 },
+        ]}
         keyboardShouldPersistTaps="handled"
+        bottomOffset={insets.bottom + 24}
+        extraKeyboardSpace={insets.bottom}
       >
         {savedId ? (
           // Post-save confirmation card. The user lands here after a
@@ -1494,14 +1499,14 @@ export default function CaptureScreen() {
             </View>
           </>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollViewCompat>
       <Toast
         message={toastSynced ? "Captured!" : "Saved offline — will sync when reconnected"}
         icon={toastSynced ? "checkmark-circle" : "cloud-offline-outline"}
         iconColor={toastSynced ? undefined : colors.mutedForeground}
         visible={showToast}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
