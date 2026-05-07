@@ -46,7 +46,7 @@ export default function AboutScreen() {
 
   const player = useVideoPlayer(source, (p) => {
     p.loop = false;
-    p.muted = false;
+    p.muted = true;
     p.play();
   });
 
