@@ -1422,7 +1422,7 @@ export default function CaptureScreen() {
               )}
             </View>
 
-            {pickedPhotoUri ? (
+            {pickedPhotos.length > 0 ? (
               <VoicePromptControl
                 disabled={limitReached}
                 onTranscript={({ text: transcriptText }) => {
