@@ -96,10 +96,11 @@ function OnboardingFlow({ resumeStage }: { resumeStage: Stage }) {
   // Memora's voiceover + burned-in captions; same asset replays
   // from Settings → "Watch intro again" so first launch and the
   // replay surface stay byte-identical.
+  const shouldPlayIntroVideo = stage === "video";
   const introPlayer = useVideoPlayer(INTRO_VIDEO_SOURCE, (p) => {
     p.loop = false;
     p.muted = true;
-    p.play();
+    if (shouldPlayIntroVideo) p.play();
   });
 
 
