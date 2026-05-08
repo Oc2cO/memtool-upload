@@ -81,7 +81,19 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d461ab5b-e271-4215-a336-8fdcb6ac6ed3"
+        "projectId": "d461ab5b-e271-4215-a336-8fdcb6ac6ed3",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "VoiceProcessingLiveActivityWidget",
+                  "bundleIdentifier": "com.polsia.memtool.VoiceProcessingLiveActivityWidget"
+                }
+              ]
+            }
+          }
+        }
       }
     },
     "owner": "oc2co"
