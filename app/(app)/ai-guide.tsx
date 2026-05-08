@@ -32,9 +32,7 @@ import { BrandHero } from "@/components/BrandHero";
 import { ChatThread, FreeTextInput, type ChatMessage } from "@/components/ChatThread";
 import { MemCharacter, type MemExpression } from "@/components/MemCharacter";
 import { FrostBackground } from "@/components/alive/FrostBackground";
-import { ProUpsellCard } from "@/components/ProUpsellCard";
 import { useAuth } from "@/context/AuthContext";
-import { useSubscription } from "@/context/SubscriptionContext";
 import { AuthError } from "@/lib/auth";
 import {
   AiGuideError,
@@ -51,11 +49,6 @@ import {
 } from "@/lib/streak";
 import { getLocalDayKey } from "@/lib/captureLimits";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  bumpAiGuideCounter,
-  getAiGuideLimitState,
-  loadAiGuideCounter,
-} from "@/lib/aiGuideLimits";
 import {
   clearAiGuideThread,
   loadAiGuideThread,
@@ -92,10 +85,9 @@ import { useMemSpeech } from "@/lib/useMemSpeech";
  *   the screen, animating between mood colors with a low-opacity
  *   gradient. Spec says "subtle, not loud" — opacity stays under
  *   0.18 even at peak.
- * - Pro-gating: free users see a calm ProUpsellCard in place of the
- *   input once they hit the daily cap. Sending against the cap is
- *   guarded by both UI state and a re-check inside the send handler
- *   so a stale render can't rack up server cost.
+ * - Launch product rule: Mem chat stays available to free and Pro users.
+ *   Capture/library gates can remain Pro-aware, but this chat surface
+ *   does not block sends based on a local free-tier message cap.
  * - Crisis detection is server-authoritative (per task brief). The
  *   screen never inspects message content for safety routing —
  *   whatever the server returns is rendered verbatim.
@@ -232,8 +224,6 @@ export default function AiGuideScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { user } = useAuth();
-  const { status: subscriptionStatus } = useSubscription();
-  const isPro = subscriptionStatus?.is_pro === true;
   const haptics = useHaptics();
   const userId = user?.id ?? user?.email ?? "";
   const muted = useMemVoiceMuted(userId);
@@ -253,7 +243,6 @@ export default function AiGuideScreen() {
   const [sending, setSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null);
-  const [sentToday, setSentToday] = useState(0);
   // Consecutive 5xx-from-Polsia counter (Task #397). Tracks how many
   // back-to-back upstream-outage replies we've seen so the inline
   // "Try again in a moment" copy can be swapped for the dedicated
@@ -331,7 +320,6 @@ export default function AiGuideScreen() {
         streakResp,
       ] = await Promise.all([
         loadAiGuideThread(userId),
-        loadAiGuideCounter(),
         ensureMemVoiceMuteHydrated(userId),
         hasMemSkipHintBeenSeen(userId),
         // Captions hydrate alongside mute so the strip's first paint
@@ -427,8 +415,6 @@ export default function AiGuideScreen() {
     if (!userId) return;
     void saveAiGuideThread(userId, thread);
   }, [thread, hydrated, userId]);
-
-  const limitState = getAiGuideLimitState(sentToday, isPro);
 
   const moodForAmbient = useMemo(() => latestMemMood(thread), [thread]);
   const stageExpression = moodToExpression(moodForAmbient);
@@ -681,13 +667,6 @@ export default function AiGuideScreen() {
       if (sendingRef.current) return;
       const trimmed = text.trim();
       if (trimmed.length === 0) return;
-
-      // Re-check the cap inside the send handler — UI state can lag
-      // behind a multi-tab race or a stale subscription read. Pro
-      // bypass is enforced inside getAiGuideLimitState.
-      const live = getAiGuideLimitState(sentToday, isPro);
-      if (live.atLimit) return;
-
       // A fresh send interrupts any in-flight Mem speech immediately
       // so the previous reply doesn't keep streaming behind the new one.
       interruptSpeech();
@@ -724,8 +703,6 @@ export default function AiGuideScreen() {
         // (Task #397). One success is enough; a launch-day outage
         // recovers as soon as a single chat lands.
         setOutageStrikes(0);
-        const next = await bumpAiGuideCounter();
-        setSentToday(next.count);
         // Mem's reply just landed — use the "day-recap-ready" verb,
         // the existing arrival-cue chime, instead of the system
         // success buzz.
@@ -765,7 +742,7 @@ export default function AiGuideScreen() {
         setSending(false);
       }
     },
-    [isPro, sentToday, router, haptics, startSpeakingMessage, interruptSpeech],
+    [router, haptics, startSpeakingMessage, interruptSpeech],
   );
 
   const handleRetry = useCallback(() => {
@@ -824,18 +801,7 @@ export default function AiGuideScreen() {
   }));
 
   const inputNode = useMemo<React.ReactNode>(() => {
-    if (limitState.atLimit) {
-      return (
-        <View style={styles.upsellWrap}>
-          <ProUpsellCard
-            icon="sparkles"
-            title="You've used today's free messages with Mem"
-            body={`Upgrade to Pro for unlimited Mem chats. Free chats reset tomorrow.`}
-            ctaLabel="Upgrade to Pro"
-          />
-        </View>
-      );
-    }
+
     // Sustained Polsia outage (Task #397): show a calm,
     // informational banner ABOVE the regular composer so the user
     // can still attempt a send — that successful round-trip is
@@ -899,24 +865,13 @@ export default function AiGuideScreen() {
           }}
           palette={PALETTE}
         />
-        {!isPro ? (
-          <Text style={styles.capHint}>
-            {limitState.remainingToday === 0
-              ? "No free Mem chats left today"
-              : `${limitState.remainingToday} free Mem chat${
-                  limitState.remainingToday === 1 ? "" : "s"
-                } left today`}
-          </Text>
-        ) : null}
+
       </View>
     );
   }, [
-    limitState.atLimit,
-    limitState.remainingToday,
     errorMessage,
     isBackendUnavailable,
     handleRetry,
-    isPro,
     lastUserMessage,
     sending,
     sendMessage,
