@@ -29,7 +29,6 @@
 
 const {
   withInfoPlist,
-  withEntitlementsPlist,
   withXcodeProject,
   withDangerousMod,
 } = require("@expo/config-plugins");
@@ -65,14 +64,9 @@ function withLiveActivityInfoPlist(config) {
   });
 }
 
-/** Step 2: Entitlements for the main app target. */
+/** Step 2: Live Activity entitlement is not injected manually. */
 function withLiveActivityEntitlements(config) {
-  return withEntitlementsPlist(config, (cfg) => {
-    if (!cfg.modResults["com.apple.developer.live-activities"]) {
-      cfg.modResults["com.apple.developer.live-activities"] = true;
-    }
-    return cfg;
-  });
+  return config;
 }
 
 /**
@@ -515,3 +509,4 @@ module.exports = function withVoiceProcessingLiveActivityWidget(config) {
   config = withWidgetTarget(config);
   return config;
 };
+
