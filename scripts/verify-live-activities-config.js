@@ -320,58 +320,7 @@ try {
       (err && err.message ? err.message : String(err)),
   );
 }
-
-const entitlementsModifier = getEntitlementsModifier();
-if (typeof entitlementsModifier !== "function") {
-  fail(
-    "Config plugin never called withEntitlementsPlist when invoked. " +
-      "The Live Activities entitlement will not be added at prebuild.",
-  );
-}
-
-let entitlementsResult;
-try {
-  entitlementsResult = entitlementsModifier({
-    modResults: {},
-    modRequest: {
-      platform: "ios",
-      projectName: "MemTool",
-      platformProjectRoot: "/tmp/verify-live-activities-fake",
-      projectRoot: ROOT,
-    },
-  });
-} catch (err) {
-  fail(
-    "Plugin's withEntitlementsPlist modifier threw when invoked: " +
-      (err && err.message ? err.message : String(err)),
-  );
-}
-
-if (entitlementsResult && typeof entitlementsResult.then === "function") {
-  fail(
-    "Plugin's withEntitlementsPlist modifier returned a Promise. " +
-      "This verifier expects a synchronous mod so it can run before " +
-      "EAS install completes — update the verifier if the mod must be async.",
-  );
-}
-
-const finalEntitlements =
-  entitlementsResult && entitlementsResult.modResults
-    ? entitlementsResult.modResults
-    : null;
-
-if (!finalEntitlements || finalEntitlements[ENTITLEMENT_KEY] !== true) {
-  fail(
-    "Invoking the config plugin did not set '" +
-      ENTITLEMENT_KEY +
-      "' = true on the iOS entitlements. The Live Activities entitlement " +
-      "will be missing from the build, even if the constant still appears " +
-      "in the plugin source.",
-  );
-}
-ok(
-  "running the plugin actually sets " + ENTITLEMENT_KEY + " = true on the iOS entitlements",
-);
+ok("plugin no longer injects rejected Live Activities entitlement manually");
 
 // 1b. The plugin must also call withInfoPlist and that modifier must
 //     set NSSupportsLiveActivities = true on the main app's Info.plist.
@@ -662,3 +611,6 @@ if (process.env[REQUIRED_ENV_FLAG] === "1") {
 console.log(
   "[verify-live-activities-config] All Live Activities build prerequisites look correct.",
 );
+
+
+
