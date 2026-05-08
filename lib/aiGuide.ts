@@ -230,8 +230,13 @@ export async function sendAiGuideMessage(
   if (!raw || typeof raw !== "object") {
     throw new AiGuideError(AI_GUIDE_GENERIC_ERROR_MESSAGE, "bad response shape");
   }
-  const r = raw as Partial<RawAiGuideChatResponse>;
-  const responseText = typeof r.response === "string" ? r.response.trim() : "";
+  const r = raw as Partial<RawAiGuideChatResponse> & { reply?: unknown };
+  const responseText =
+    typeof r.response === "string"
+      ? r.response.trim()
+      : typeof r.reply === "string"
+        ? r.reply.trim()
+        : "";
   if (responseText.length === 0) {
     throw new AiGuideError(AI_GUIDE_GENERIC_ERROR_MESSAGE, "empty response");
   }
