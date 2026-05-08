@@ -198,7 +198,7 @@ function withWidgetTarget(config) {
         isa: "PBXFileReference",
         lastKnownFileType: "sourcecode.swift",
         name: `"${fname}"`,
-        path: `"${WIDGET_TARGET_NAME}/${fname}"`,
+        path: `"${fname}"`,
         sourceTree: '"<group>"',
       };
       objects["PBXFileReference"][`${fileRefUuid}_comment`] = fname;
@@ -222,7 +222,7 @@ function withWidgetTarget(config) {
       isa: "PBXFileReference",
       lastKnownFileType: "text.plist.xml",
       name: `"${infoPlistFile}"`,
-      path: `"${WIDGET_TARGET_NAME}/${infoPlistFile}"`,
+      path: `"${infoPlistFile}"`,
       sourceTree: '"<group>"',
     };
     objects["PBXFileReference"][`${infoPlistRefUuid}_comment`] = infoPlistFile;
@@ -509,4 +509,5 @@ module.exports = function withVoiceProcessingLiveActivityWidget(config) {
   config = withWidgetTarget(config);
   return config;
 };
+
 
