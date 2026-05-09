@@ -40,12 +40,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "$EXPO_APPLE_ID2",
+        "appleId": "Smakis3303@gmail.com",
         "appleTeamId": "7JDY7C3VR5",
-        "ascAppId": "6765775373",
-        "ascApiKeyPath": "$EXPO_ASC_API_KEY",
-        "ascApiKeyId": "7XBJCGMS4R",
-        "ascApiKeyIssuerId": "$EXPO_APPLE_ISSUER_ID"
+        "ascAppId": "6765775373"
       },
       "android": {
         "serviceAccountKeyPath": "$GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_PATH",
