@@ -271,6 +271,8 @@ export default function HomeScreen() {
               importantForAccessibility="no-hide-descendants"
               style={styles.greetingCharStack}
             >
+              <View style={styles.greetingAuraOuter} />
+              <View style={styles.greetingAuraInner} />
               <BrandHero variant="sagous-head" size={48} style={styles.greetingSagous} decorative />
               <BrandHero variant="memora-head" size={72} style={styles.greetingMemora} decorative />
             </View>
@@ -673,26 +675,43 @@ const styles = StyleSheet.create({
   greetingRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: 16,
   },
   // Memora-front, Sagous-peeking layered stack. Total width is just
   // the Memora avatar (72) — Sagous overlaps from the bottom-right so
   // the duo reads as one unit and doesn't push the greeting text off
   // the row on narrow phones.
   greetingCharStack: {
-    width: 72,
-    height: 72,
+    width: 78,
+    height: 76,
     position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  greetingAuraOuter: {
+    position: "absolute",
+    width: 78,
+    height: 76,
+    borderRadius: 39,
+    backgroundColor: "rgba(0, 229, 255, 0.12)",
+  },
+  greetingAuraInner: {
+    position: "absolute",
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: "rgba(255, 183, 77, 0.12)",
   },
   greetingMemora: {
     width: 72,
     height: 72,
     borderRadius: 36,
+    zIndex: 2,
   },
   greetingSagous: {
     position: "absolute",
-    right: -14,
-    bottom: -6,
+    right: -8,
+    bottom: -4,
     width: 48,
     height: 48,
     borderRadius: 24,

@@ -1219,12 +1219,15 @@ export default function CaptureScreen() {
               importantForAccessibility="no-hide-descendants"
               style={styles.memListening}
             >
-              <MemCharacter
-                size={64}
-                expression={MEM_STATES.thoughtful.expression}
-              />
+              <View style={styles.memListeningAura}>
+                <View style={styles.memListeningGlow} />
+                <MemCharacter
+                  size={64}
+                  expression={MEM_STATES.thoughtful.expression}
+                />
+              </View>
               <Text style={[styles.memListeningHint, { color: colors.mutedForeground }]}>
-                I'm listening.
+                I'm listening. Start messy.
               </Text>
             </View>
 
@@ -1566,11 +1569,30 @@ const styles = StyleSheet.create({
   },
   memListening: {
     alignItems: "center",
-    gap: 4,
-    marginBottom: spacing.base,
+    gap: 6,
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  memListeningAura: {
+    width: 86,
+    height: 72,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  memListeningGlow: {
+    position: "absolute",
+    width: 82,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: "rgba(0, 229, 255, 0.10)",
   },
   memListeningHint: {
     ...text.caption,
+    fontFamily: "Inter_500Medium",
+    fontWeight: "500",
+    textAlign: "center",
   },
   input: {
     fontSize: 20,
