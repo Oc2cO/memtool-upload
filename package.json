@@ -81,11 +81,12 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
-    "@react-native-community/netinfo": "^11.4.1",
-    "@react-native-community/slider": "^5.0.1",
-    "@sentry/react-native": "^7.2.0",
+    "@react-native-community/netinfo": "11.4.1",
+    "@react-native-community/slider": "5.0.1",
+    "@sentry/react-native": "~7.2.0",
     "@types/base-64": "^1.0.2",
     "base-64": "^1.0.0",
+    "expo-asset": "~12.0.13",
     "expo-audio": "~1.1.1",
     "expo-calendar": "^15.0.8",
     "expo-clipboard": "^8.0.8",
