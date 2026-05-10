@@ -305,7 +305,6 @@ export default function AiGuideScreen() {
     void (async () => {
       const [
         persistedThread,
-        counter,
         ,
         skipHintAlreadySeen,
         ,
@@ -397,7 +396,6 @@ export default function AiGuideScreen() {
           );
         }
       }
-      setSentToday(counter.count);
       // Gate the per-install "Tap Mem to skip" hint: only available
       // if the user has never seen it before. Stored in AsyncStorage
       // so a relaunch doesn't reset the gate.

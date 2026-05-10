@@ -54,7 +54,7 @@ const mockPlayer = {
   seekTo: jest.fn(),
   addListener: jest.fn(() => ({ remove: jest.fn() })),
 };
-const mockCreateAudioPlayer = jest.fn(() => mockPlayer);
+const mockCreateAudioPlayer = jest.fn((..._args: unknown[]) => mockPlayer);
 
 jest.mock("expo-audio", () => ({
   useAudioRecorder: () => mockRecorder,
@@ -75,7 +75,7 @@ jest.mock("expo-audio", () => ({
   createAudioPlayer: (...args: unknown[]) => mockCreateAudioPlayer(...args),
 }));
 
-const mockDeleteAsync = jest.fn(() => Promise.resolve());
+const mockDeleteAsync = jest.fn((..._args: unknown[]) => Promise.resolve());
 jest.mock(
   "expo-file-system/legacy",
   () => ({ deleteAsync: (...args: unknown[]) => mockDeleteAsync(...args) }),
