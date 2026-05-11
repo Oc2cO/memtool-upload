@@ -13,7 +13,7 @@
     "verify:live-activities": "node scripts/verify-live-activities-config.js",
     "verify:prebuild-output": "node scripts/verify-prebuild-widget-output.js",
     "verify:store-screenshots": "node scripts/verify-store-screenshots.js",
-    "eas-build-pre-install": "node scripts/verify-live-activities-config.js",
+    "eas-build-post-install": "node scripts/verify-live-activities-config.js",
     "lint": "eslint . --ext .ts,.tsx",
     "android": "expo run:android",
     "ios": "expo run:ios"
