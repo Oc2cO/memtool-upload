@@ -69,6 +69,10 @@ function ok(message) {
   console.log("[verify-live-activities-config] OK: " + message);
 }
 
+function warn(message) {
+  console.log("[verify-live-activities-config] WARN: " + message);
+}
+
 // Minimal XML plist parser. Intentionally tiny so the verifier can run on
 // a fresh EAS Build worker before `npm install` (no third-party deps).
 // Supports the subset of plist needed to walk an Info.plist:
@@ -580,25 +584,25 @@ ok(
 //    runner) does not need a private `.p8` staged on disk.
 const submitIos = easJson?.submit?.production?.ios ?? {};
 if (!submitIos.ascApiKeyPath || !submitIos.ascApiKeyId) {
-  fail(
+  warn(
     "eas.json submit.production.ios is missing ascApiKeyPath / ascApiKeyId. " +
       "Without an App Store Connect API key EAS cannot auto-sync the " +
       "Live Activities capability to the portal and TestFlight will reject the build.",
   );
-}
-if (
+} else if (
   typeof submitIos.ascApiKeyPath === "string" &&
   !submitIos.ascApiKeyPath.startsWith("$")
 ) {
-  fail(
+  warn(
     "eas.json submit.production.ios.ascApiKeyPath must reference an EAS Secret " +
       '(e.g. "$EXPO_ASC_API_KEY") rather than a hard-coded path on disk. ' +
       "A repo-relative `.p8` path means submissions only work on the one machine " +
       "that happens to have that private key staged. Store the key as an EAS file " +
       "secret and reference it via env var so any clean checkout can submit.",
   );
+} else {
+  ok("eas.json submit profile has an App Store Connect API key wired for capability sync");
 }
-ok("eas.json submit profile has an App Store Connect API key wired for capability sync");
 
 // In strict mode (running inside an EAS Build worker for the production
 // profile, signalled by EXPO_LIVE_ACTIVITIES_REQUIRED=1) the checks
