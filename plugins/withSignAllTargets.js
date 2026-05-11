@@ -1,4 +1,4 @@
-const { withXcodeProject } = require("@expo/config-plugins");
+const { withXcodeProject } = require("expo/config-plugins");
 
 module.exports = function withSignAllTargets(config) {
   return withXcodeProject(config, async (cfg) => {
