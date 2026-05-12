@@ -285,14 +285,14 @@ under contract**, NOT third-party data recipients per Apple's definition.
 auto-renewing subscriptions:
 
 - **Monthly:** Tier 4 ($3.99/mo) — product ID
-  `com.polsia.memtool.pro.monthly`
+  `memtool_pro_monthly`
 - **Annual:** Tier 30 ($29.99/yr) with a 14-day free trial — product ID
-  `com.polsia.memtool.pro.annual`
+  `memtool_pro_annual`
 
 (Subscription product IDs and tier choices live in
-`artifacts/memtool/lib/revenuecat.ts` → `OFFERING_IDS`. Confirm before
-submitting that the IDs in ASC → Subscriptions match the IDs the app
-requests.)
+`lib/revenuecat.ts` → `PRO_MONTHLY_PRODUCT_ID` /
+`PRO_ANNUAL_PRODUCT_ID`. Confirm before submitting that the IDs in ASC
+→ Subscriptions match the IDs the app requests.)
 
 ### Availability
 
@@ -548,9 +548,10 @@ exact strings are pinned here so two release engineers can't disagree.
 - [ ] In-App Purchase API key uploaded (the same `.p8` referenced by
       `eas.json` — re-upload only if RC reports it expired).
 - [ ] Two products are present in the catalog and tied to a single
-      offering: `com.polsia.memtool.pro.monthly`,
-      `com.polsia.memtool.pro.annual`. (Source of truth in
-      `artifacts/memtool/lib/revenuecat.ts` → `OFFERING_IDS`.)
+      offering: `memtool_pro_monthly`,
+      `memtool_pro_annual`. (Source of truth in
+      `lib/revenuecat.ts` → `PRO_MONTHLY_PRODUCT_ID` /
+      `PRO_ANNUAL_PRODUCT_ID`.)
 
 ### User-dashboard blockers (resolve before submitting)
 

@@ -70,8 +70,8 @@ export const REVENUECAT_ENTITLEMENT_IDENTIFIER = "pro";
  * App Store Review will reject a paywall that displays prices
  * inconsistent with App Store Connect.
  */
-export const PRO_MONTHLY_PRODUCT_ID = "com.oc2co.memtool.pro.monthly";
-export const PRO_ANNUAL_PRODUCT_ID = "com.oc2co.memtool.pro.annual";
+export const PRO_MONTHLY_PRODUCT_ID = "memtool_pro_monthly";
+export const PRO_ANNUAL_PRODUCT_ID = "memtool_pro_annual";
 
 /**
  * Resolved pair of packages for the two-option paywall. Either side
