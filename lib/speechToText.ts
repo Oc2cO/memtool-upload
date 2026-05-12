@@ -52,6 +52,11 @@ import {
  *  (WhisperKit, etc.) only needs to touch this file. */
 export const ON_DEVICE_SPEECH_ENGINE = "Apple Speech (on-device)";
 
+// Launch safety: keep live captions off until the streaming Apple
+// Speech path can be validated not to compete with expo-audio's file
+// recorder for the microphone. File-based transcription stays active.
+const ENABLE_STREAMING_TRANSCRIPTION = false;
+
 let registered = false;
 
 export type RegisterResult =
@@ -79,10 +84,9 @@ export type RegisterResult =
  *     recognition (`on_device_unsupported`),
  *   - or any other reason the native availability probe surfaced.
  *
- * On success both the file-based provider (used post-stop for
- * authoritative transcription when streaming was unavailable) and
- * the streaming provider (used during recording for live captions,
- * Task #265) are registered together so they are always in sync.
+ * On success the file-based provider is always registered. The
+ * streaming provider (Task #265) remains implemented below but is
+ * launch-disabled so hold-to-record has a single microphone owner.
  */
 export function registerOnDeviceSpeechToText(): RegisterResult {
   if (registered) return { registered: true };
@@ -126,7 +130,9 @@ export function registerOnDeviceSpeechToText(): RegisterResult {
   };
 
   setSpeechToTextProvider(provider, { engineName: ON_DEVICE_SPEECH_ENGINE });
-  setSpeechToTextStreamProvider(streamProvider);
+  setSpeechToTextStreamProvider(
+    ENABLE_STREAMING_TRANSCRIPTION ? streamProvider : null,
+  );
   registered = true;
   return { registered: true };
 }
