@@ -606,54 +606,98 @@ export default function HomeScreen() {
         <View style={styles.grid}>
           <ScalePress
             onPress={() => handleNavigate("/memory-match")}
-            style={[
-              styles.navCard,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
+            style={styles.navCard}
             accessibilityLabel="Memory Match"
           >
-            <Ionicons name="apps" size={32} color={colors.primary} style={styles.navIcon} />
-            <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Memory Match</Text>
-            <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Train recall</Text>
+            <LinearGradient
+              colors={["rgba(155, 122, 232, 0.18)", "rgba(21, 16, 42, 0.96)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
+            >
+              <View style={styles.navCardTop}>
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.18)" }]}>
+                  <Ionicons name="apps" size={22} color={colors.primary} />
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+              </View>
+              <View>
+                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Memory Match</Text>
+                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Train recall</Text>
+              </View>
+            </LinearGradient>
           </ScalePress>
 
           <ScalePress
             onPress={() => handleNavigate("/game-24")}
-            style={[
-              styles.navCard,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
+            style={styles.navCard}
             accessibilityLabel="24 Game"
           >
-            <Ionicons name="calculator" size={32} color={colors.accent} style={styles.navIcon} />
-            <Text style={[styles.navCardTitle, { color: colors.foreground }]}>24 Game</Text>
-            <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mental math</Text>
+            <LinearGradient
+              colors={["rgba(0, 229, 255, 0.16)", "rgba(21, 16, 42, 0.96)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
+            >
+              <View style={styles.navCardTop}>
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
+                  <Ionicons name="calculator" size={22} color={colors.accent} />
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+              </View>
+              <View>
+                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>24 Game</Text>
+                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mental math</Text>
+              </View>
+            </LinearGradient>
           </ScalePress>
 
           <ScalePress
             onPress={() => handleNavigate("/recap")}
-            style={[
-              styles.navCard,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
+            style={styles.navCard}
             accessibilityLabel="Daily Recap"
           >
-            <Ionicons name="sparkles" size={32} color="#f472b6" style={styles.navIcon} />
-            <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Daily Recap</Text>
-            <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Today's summary</Text>
+            <LinearGradient
+              colors={["rgba(244, 114, 182, 0.16)", "rgba(21, 16, 42, 0.96)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
+            >
+              <View style={styles.navCardTop}>
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(244, 114, 182, 0.14)" }]}>
+                  <Ionicons name="sparkles" size={22} color="#f472b6" />
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+              </View>
+              <View>
+                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Daily Recap</Text>
+                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Today's summary</Text>
+              </View>
+            </LinearGradient>
           </ScalePress>
 
           <ScalePress
             onPress={() => handleNavigate("/tip-archive")}
-            style={[
-              styles.navCard,
-              { backgroundColor: colors.card, borderColor: colors.border },
-            ]}
+            style={styles.navCard}
             accessibilityLabel="Boost Archive"
           >
-            <Ionicons name="library" size={32} color={colors.primary} style={styles.navIcon} />
-            <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Boost Archive</Text>
-            <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Browse & favorite</Text>
+            <LinearGradient
+              colors={["rgba(255, 183, 77, 0.15)", "rgba(21, 16, 42, 0.96)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
+            >
+              <View style={styles.navCardTop}>
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
+                  <Ionicons name="library" size={22} color={colors.primary} />
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+              </View>
+              <View>
+                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Boost Archive</Text>
+                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Browse & favorite</Text>
+              </View>
+            </LinearGradient>
           </ScalePress>
         </View>
       </Animated.ScrollView>
@@ -888,11 +932,33 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.base },
   navCard: {
     width: "47%",
+    borderRadius: radius.md,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 4,
+  },
+  navCardSurface: {
+    minHeight: 132,
     padding: spacing.base,
     borderRadius: radius.md,
     borderWidth: 1,
+    justifyContent: "space-between",
   },
-  navIcon: { marginBottom: spacing.md },
+  navCardTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: spacing.lg,
+  },
+  navIconBadge: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   navCardTitle: {
     ...text.bodyMedium,
     fontWeight: "600",
