@@ -28,7 +28,6 @@ import Animated, {
   interpolateColor,
 } from "react-native-reanimated";
 
-import { BrandHero } from "@/components/BrandHero";
 import { ChatThread, FreeTextInput, type ChatMessage } from "@/components/ChatThread";
 import { MemCharacter, type MemExpression } from "@/components/MemCharacter";
 import { FrostBackground } from "@/components/alive/FrostBackground";
@@ -775,13 +774,9 @@ export default function AiGuideScreen() {
     [thread, streamingId, visibleWords],
   );
 
-  // Empty-state Memora hero (Task #313). Shows the warm `mem-hero-chat`
-  // photo + a one-line greeting when the user hasn't sent anything
-  // yet — the intro Mem bubble is the verbal welcome, this is the
-  // visual one. Fades out the instant the first user message lands so
-  // it never crowds an active conversation, and lives behind the
-  // talking-Mem stage (lower zIndex, pointer-transparent) so it never
-  // interferes with the in-flight reply playback.
+  // Empty-state prompt. Keep the live Memora stage as the only
+  // companion anchor, and fade this quiet line out once the user sends
+  // their first message so it never crowds an active conversation.
   const hasUserMessages = useMemo(
     () => thread.some((m) => m.role === "user"),
     [thread],
@@ -901,11 +896,9 @@ export default function AiGuideScreen() {
         />
       </KeyboardAvoidingView>
 
-      {/* Empty-state hero (Task #313) — warm Memora photo + one-line
-          greeting that anchors a brand-new chat before the user has
-          said anything. Pointer-transparent and rendered with a
-          lower zIndex than the talking-Mem stage so the stage tap +
-          caption strip always win, and it never blocks chat scroll. */}
+      {/* Empty-state prompt. Pointer-transparent and rendered below
+          the talking-Mem stage so the stage tap + caption strip always
+          win, and it never blocks chat scroll. */}
       {showEmptyHero ? (
         <Animated.View
           pointerEvents="none"
@@ -919,9 +912,8 @@ export default function AiGuideScreen() {
           ]}
           accessibilityLabel="Memora is here whenever you're ready"
         >
-          <BrandHero variant="memora-hero-chat" size={180} decorative />
           <Text style={styles.emptyHeroText}>
-            I'm here whenever you're ready, Sunshine.
+            Memora is here when you're ready.
           </Text>
         </Animated.View>
       ) : null}
