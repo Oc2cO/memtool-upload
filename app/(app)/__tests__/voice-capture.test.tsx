@@ -31,7 +31,6 @@ import { act, fireEvent, render } from "@testing-library/react-native";
 
 import {
   CaptureBlockedError,
-  CaptureLimitReachedError,
   FREE_DAILY_CAPTURE_LIMIT,
 } from "@/lib/subscription";
 
@@ -126,8 +125,8 @@ jest.mock("@/context/SubscriptionContext", () => ({
   }),
 }));
 
-// Render the upsell card as a recognizable text node so the daily-cap
-// test can assert it actually mounted (and the mic button didn't).
+// Render the upsell card as a recognizable text node. Voice capture should
+// not mount it for the old daily-cap path, so tests can assert absence.
 jest.mock("@/components/ProUpsellCard", () => {
   const ReactActual = jest.requireActual("react");
   const RN = jest.requireActual("react-native");
@@ -464,22 +463,15 @@ describe("VoiceCaptureScreen — Live Activity lifecycle (Task #229)", () => {
     expect(mockEnd).toHaveBeenCalledWith(HANDLE);
   });
 
-  test("end fires AND THEN router.replace('/subscription') on cap-bypass save", async () => {
-    // The cap-bypass branch is the only failure path that also
-    // navigates away from the screen — if end is called AFTER the
-    // navigation (or not at all), the user lands on /subscription
-    // with a "Memory ready" pill on the lock screen for a memory
-    // they were never allowed to save. Order matters.
-    mockAddMemory.mockRejectedValueOnce(new CaptureLimitReachedError(5));
-
-    const callOrder: string[] = [];
-    mockEnd.mockImplementation(() => {
-      callOrder.push("end");
-      return Promise.resolve();
-    });
-    mockReplace.mockImplementation(() => {
-      callOrder.push("replace");
-    });
+  test("legacy capture-limit rejection leaves the draft in place without subscription routing", async () => {
+    // Core memory creation is unlimited/free right now, and voice
+    // saves pass bypassCaptureLimit: true. If a stale backend or
+    // old mock still returns the legacy daily-limit error, the screen
+    // should keep the draft available for retry instead of sending
+    // the user to an upsell route.
+    const legacyLimitError = new Error("Daily capture limit reached");
+    legacyLimitError.name = "CaptureLimitReachedError";
+    mockAddMemory.mockRejectedValueOnce(legacyLimitError);
 
     const view = render(<VoiceCaptureScreen />);
     await recordToDrafting(view);
@@ -488,14 +480,16 @@ describe("VoiceCaptureScreen — Live Activity lifecycle (Task #229)", () => {
       fireEvent.press(view.getByText("Save"));
     });
 
-    expect(mockEnd).toHaveBeenCalledTimes(1);
-    expect(mockEnd).toHaveBeenCalledWith(HANDLE);
-    expect(mockReplace).toHaveBeenCalledWith("/subscription");
+    expect(mockEnd).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalledWith("/subscription");
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(view.getByText("Save")).toBeTruthy();
 
-    // The dismissal must come BEFORE the navigation so the lock
-    // screen pill is gone by the time the user lands on the
-    // upgrade screen.
-    expect(callOrder).toEqual(["end", "replace"]);
+    // The save attempt still used the current unlimited-core payload.
+    expect(mockAddMemory).toHaveBeenCalledWith(expect.any(String), {
+      tags: [],
+      bypassCaptureLimit: true,
+    });
   });
 
   test("end fires on unmount", async () => {
@@ -578,12 +572,11 @@ describe("VoiceCaptureScreen — five-phase state machine (Task #201)", () => {
     jest.useRealTimers();
   });
 
-  test("daily-cap branch: renders ProUpsellCard and hides the mic when atLimit", () => {
-    // Free-tier user has already hit the daily ceiling. The cap math
-    // lives in `getCaptureLimitState`; the screen reads the same
-    // `todayMemories.length` capture.tsx does so voice can't be a
-    // trivial cap-bypass surface. Fill the array up to the limit so
-    // `atLimit` is true on first render.
+  test("old daily-cap state still renders the voice capture mic without an upsell", () => {
+    // Core memory creation is unlimited/free by default right now.
+    // Even if the mocked account has enough memories to trip the
+    // old free-tier daily ceiling, voice capture must stay available
+    // and must not show the Pro daily-limit card.
     mockTodayMemories = Array.from(
       { length: FREE_DAILY_CAPTURE_LIMIT },
       (_, i) => ({ id: `m-${i}` }),
@@ -592,18 +585,11 @@ describe("VoiceCaptureScreen — five-phase state machine (Task #201)", () => {
 
     const view = render(<VoiceCaptureScreen />);
 
-    // The upsell card mounted with the cap-reached headline. Locking
-    // the title text protects against a future refactor that strips
-    // the user-facing reason for the upsell.
-    expect(view.getByTestId("pro-upsell-card")).toBeTruthy();
-    expect(view.queryByText("Daily capture limit reached")).toBeTruthy();
-
-    // The mic button is gone — the cap branch must short-circuit
-    // the entire record zone, otherwise a determined user could
-    // still hold-to-record past their limit and only get the error
-    // at save time. queryByLabelText returns null when the element
-    // isn't in the tree.
-    expect(view.queryByLabelText("Hold to record a voice memory")).toBeNull();
+    // The old daily-limit upsell is absent, and the record control
+    // is still available.
+    expect(view.queryByTestId("pro-upsell-card")).toBeNull();
+    expect(view.queryByText("Daily capture limit reached")).toBeNull();
+    expect(view.getByLabelText("Hold to record a voice memory")).toBeTruthy();
   });
 
   test("STT-unavailable branch: pressing the mic pops a reason-specific alert and never records", async () => {
@@ -829,7 +815,10 @@ describe("VoiceCaptureScreen — five-phase state machine (Task #201)", () => {
     expect(content).toBe(
       "Coffee with Alex\n\nHad coffee with Alex — he's launching next week.",
     );
-    expect(options).toEqual({ tags: ["work", "idea"] });
+    expect(options).toEqual({
+      tags: ["work", "idea"],
+      bypassCaptureLimit: true,
+    });
   });
 
   test("empty-transcript hint surfaces in the drafting phase", async () => {
@@ -1204,4 +1193,3 @@ describe("VoiceCaptureScreen — drafting-view engine badge (Task #266)", () => 
     ).toBeNull();
   });
 });
-

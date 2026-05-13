@@ -21,7 +21,6 @@ import { SettleOnMount } from "@/components/alive/SettleOnMount";
 import { ScalePress } from "@/components/alive/ScalePress";
 import { MemCharacter } from "@/components/MemCharacter";
 import { MEM_STATES } from "@/lib/memStates";
-import { ProUpsellCard } from "@/components/ProUpsellCard";
 import { VoicePromptControl } from "@/components/VoicePromptControl";
 import { IllustrationLoader } from "@/components/IllustrationLoader";
 import { IllustrationPolaroid } from "@/components/IllustrationPolaroid";
@@ -29,7 +28,6 @@ import {
   CAPTURE_COOLDOWN_ALERT_BODY,
   CAPTURE_COOLDOWN_ALERT_TITLE,
   CaptureBlockedError,
-  CaptureLimitReachedError,
 } from "@/lib/subscription";
 import { MAX_PHOTOS_PER_MEMORY } from "@/lib/memoryPhotos";
 
@@ -39,7 +37,6 @@ interface PickedPhoto {
   takenAt?: string;
 }
 import {
-  getCaptureLimitState,
   getIllustrationQuotaState,
   getLocalDayKey,
   ILLUSTRATION_OUT_INLINE,
@@ -116,7 +113,6 @@ export default function CaptureScreen() {
   const userId = user?.id ?? null;
   const {
     addMemory,
-    todayMemories,
     memories,
     deleteMemory,
     illustrateMemory,
@@ -125,7 +121,7 @@ export default function CaptureScreen() {
     illustrationsLimit,
     attachPhotoToMemory,
   } = useMemories();
-  const { status: subscriptionStatus, freeDailyCaptureLimit } = useSubscription();
+  const { status: subscriptionStatus } = useSubscription();
   const haptics = useHaptics();
   useCognitiveAudio("capture");
 
@@ -301,8 +297,7 @@ export default function CaptureScreen() {
   }, [clearPickedPhotos, content, voicePromptText]);
 
   // Daily selfie ritual state lives next to the rest of the
-  // capture-flow state; the actual handlers are declared below
-  // `limitReached` since they need to read it.
+  // capture-flow state.
   const [savingSelfie, setSavingSelfie] = useState(false);
   // On-device structured tag/theme/mood extraction (Task #195). The
   // hook is the same status machine the dev spike uses; here we only
@@ -488,20 +483,11 @@ export default function CaptureScreen() {
   // never AuthContext.user.is_pro which doesn't refresh after upgrade.
   // Default to false while status is loading so we err on the side of
   // enforcing the cap; once status loads, Pro users see the form again.
-  // All cap math comes from `getCaptureLimitState` so this screen
   // can never disagree with the home hint or the data-layer throw.
-  // `atLimit` is renamed to `limitReached` here for screen-local
   // readability — same value, just the name capture.tsx already used.
   //
-  // `freeDailyCaptureLimit` (Task #144) carries the live server cap so
   // both the "X of Y left" hint and the upsell copy show on-call's
   // current value during a promotion instead of the compiled-in 10.
-  const { isPro, remainingToday, atLimit: limitReached, limit } = getCaptureLimitState(
-    todayMemories.length,
-    subscriptionStatus?.is_pro === true,
-    freeDailyCaptureLimit,
-  );
-
   // ---- Daily selfie ritual (Task #375) -----------------------------------
   // Single-tap entry that opens the front camera, enforces one
   // selfie per local calendar day, and reuses Task #372's photo
@@ -639,9 +625,7 @@ export default function CaptureScreen() {
           setTimeout(() => setShowToast(false), 1500);
         }
       } catch (err) {
-        if (err instanceof CaptureLimitReachedError) {
-          haptics.play("error");
-          router.replace("/subscription");
+        if (err instanceof Error && err.name === "CaptureLimitReachedError") {
           return;
         }
         if (err instanceof CaptureBlockedError) {
@@ -689,17 +673,10 @@ export default function CaptureScreen() {
       );
       return;
     }
-    // First-of-day path: enforce the cap up front. addMemory will
-    // also throw on the back end, but the early bounce keeps us
-    // from opening the camera just to fail at save time.
-    if (limitReached) {
-      router.push("/subscription");
-      return;
-    }
     void (async () => {
       const asset = await acquireSelfieAsset();
       if (!asset) return;
-      await persistSelfie(asset, { bypassCaptureLimit: false });
+      await persistSelfie(asset, { bypassCaptureLimit: true });
     })();
   }, [
     savingSelfie,
@@ -707,8 +684,6 @@ export default function CaptureScreen() {
     deleteMemory,
     acquireSelfieAsset,
     persistSelfie,
-    limitReached,
-    router,
   ]);
 
   const handleSave = async () => {
@@ -717,7 +692,7 @@ export default function CaptureScreen() {
     // counts as enough content to save the memory. The cap still
     // applies the same way, so a photo-only save consumes one of
     // the user's daily allotment just like a text-only one.
-    if ((!content.trim() && pickedPhotos.length === 0) || limitReached) return;
+    if (!content.trim() && pickedPhotos.length === 0) return;
     setSubmitting(true);
     // MemTool's signature "capture" haptic — soft-then-firm double tap
     // — replaces the generic iOS Success notification. See
@@ -752,23 +727,22 @@ export default function CaptureScreen() {
       savedResult = await addMemory(trimmed, {
         tags: selectedTags,
         facets: extractedFacets ?? undefined,
+        bypassCaptureLimit: true,
       });
       syncedToCloud = savedResult.syncedToCloud;
     } catch (err) {
+      if (err instanceof Error && err.name === "CaptureLimitReachedError") {
+        setSubmitting(false);
+        return;
+      }
       // Layer 2 catch-net for the case where local UI state thinks
       // we're under the cap but MemoriesContext (Layer 3) sees the
       // current memories list and disagrees (e.g. another open
       // surface saved a memory in between). Route to the upsell
       // instead of crashing — anything else re-throws to the error
       // boundary so real bugs aren't silently swallowed.
-      if (err instanceof CaptureLimitReachedError) {
-        haptics.play("error");
         // Cap-block routes the user away — drop the draft so the
         // next visit starts fresh (per task brief).
-        closeDraft();
-        router.replace("/subscription");
-        return;
-      }
       // Server-side auto-block (cap-bypass abuse pattern detected).
       // This is NOT an upsell case — there's no Pro plan to sell our
       // way out of it; the account is locked out until UTC midnight.
@@ -960,8 +934,8 @@ export default function CaptureScreen() {
             transform. */}
         <ScalePress
           onPress={() => handleSave()}
-          style={[styles.saveButton, ((!content.trim() && pickedPhotos.length === 0) || limitReached || submitting) && { opacity: 0.5 }]}
-          disabled={(!content.trim() && pickedPhotos.length === 0) || limitReached || submitting}
+          style={[styles.saveButton, ((!content.trim() && pickedPhotos.length === 0) || submitting) && { opacity: 0.5 }]}
+          disabled={(!content.trim() && pickedPhotos.length === 0) || submitting}
           accessibilityLabel="Save this memory"
         >
           <Text style={[styles.saveText, { color: colors.primary }]}>{submitting ? "Saving…" : "Save"}</Text>
@@ -1171,41 +1145,8 @@ export default function CaptureScreen() {
               </Pressable>
             </View>
           </SettleOnMount>
-        ) : limitReached ? (
-          // Replace the form entirely once the daily cap is hit so the
-          // user can't tap Save and silently fail. The card deep-links
-          // to /subscription via ProUpsellCard.
-          <ProUpsellCard
-            icon="infinite-outline"
-            title="Daily capture limit reached"
-            body={`You've captured ${limit} memories today on the free plan. Upgrade to MemTool Pro to capture unlimited memories every day.`}
-          />
         ) : (
           <>
-            {!isPro && (
-              <View
-                style={[
-                  styles.usageBanner,
-                  { backgroundColor: colors.card, borderColor: colors.border },
-                ]}
-              >
-                <Ionicons
-                  name="hourglass-outline"
-                  size={16}
-                  color={colors.mutedForeground}
-                />
-                <Text
-                  style={[
-                    styles.usageText,
-                    { color: colors.mutedForeground },
-                  ]}
-                >
-                  {remainingToday} of {limit} memories left
-                  today on the free plan
-                </Text>
-              </View>
-            )}
-
             {/*
               Small thoughtful Mem above the form (Task #340). She's
               decorative — `pointerEvents="none"` so she never steals
@@ -1365,8 +1306,7 @@ export default function CaptureScreen() {
               maxLength={MEMORY_CONTENT_MAX_LENGTH}
             />
             {/* Photo picker (Task #372). Available to every tier —
-                the existing daily capture cap is the only gate. Once
-                a photo is picked we show a small thumbnail with a
+                the memory save flow. Once a photo is picked we show a small thumbnail with a
                 clear button. */}
             <View style={styles.photoRow}>
               {pickedPhotos.length > 0 ? (
@@ -1465,7 +1405,7 @@ export default function CaptureScreen() {
 
             {pickedPhotos.length > 0 ? (
               <VoicePromptControl
-                disabled={limitReached}
+                disabled={false}
                 onTranscript={({ text: transcriptText }) => {
                   setContent(transcriptText);
                   setVoicePromptText(transcriptText);

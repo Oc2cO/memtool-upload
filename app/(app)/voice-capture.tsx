@@ -28,8 +28,6 @@
  *                          capture.tsx uses, then routes back
  *
  * Free-tier daily-cap handling mirrors `capture.tsx` exactly: same
- * `getCaptureLimitState` math, same `ProUpsellCard` when atLimit,
- * same `CaptureLimitReachedError` / `CaptureBlockedError` branches
  * on the catch. The brief is explicit that the result must NEVER be
  * auto-saved without user confirmation — `phase === "drafting"`
  * holds the form open until the user taps Save.
@@ -72,7 +70,6 @@ import { useHaptic } from "@/lib/haptics";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
 import { useMemories } from "@/context/MemoriesContext";
-import { useSubscription } from "@/context/SubscriptionContext";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/captureDraftStore";
 import {
   popAudioModeOverride,
@@ -80,12 +77,9 @@ import {
   setAudioSessionModule,
 } from "@/lib/audioSession";
 import { Toast } from "@/components/Toast";
-import { ProUpsellCard } from "@/components/ProUpsellCard";
 import {
   CaptureBlockedError,
-  CaptureLimitReachedError,
 } from "@/lib/subscription";
-import { getCaptureLimitState } from "@/lib/captureLimits";
 import {
   EMOTIONAL_TONES,
   VOICE_SUGGESTED_TAGS_POOL,
@@ -204,27 +198,16 @@ export default function VoiceCaptureScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const { addMemory, todayMemories } = useMemories();
-  const { status: subscriptionStatus, freeDailyCaptureLimit } =
-    useSubscription();
+  const { addMemory } = useMemories();
   // Voice-save shares typed capture's `capture` signature so the two
   // surfaces feel identical.
   const captureHaptic = useHaptic("capture");
 
   // Same Layer-2 cap math as capture.tsx — voice memories count
-  // against the daily limit too, otherwise voice would be a
   // trivial cap-bypass surface.
   //
-  // `freeDailyCaptureLimit` (Task #144 / #185) is the live server cap
   // so the "X of Y left" banner and the upsell body reflect on-call's
   // current value during a promotion instead of the compiled-in 10.
-  const { isPro, remainingToday, atLimit: limitReached, limit } =
-    getCaptureLimitState(
-      todayMemories.length,
-      subscriptionStatus?.is_pro === true,
-      freeDailyCaptureLimit,
-    );
-
   const [phase, setPhase] = useState<Phase>("idle");
   const [elapsedS, setElapsedS] = useState(0);
   const [draft, setDraft] = useState<StructuredMemoryDraft | null>(null);
@@ -476,7 +459,7 @@ export default function VoiceCaptureScreen() {
 
   /** Press-in handler for the hold-to-record button. */
   const startRecording = useCallback(async () => {
-    if (limitReached || phase !== "idle") return;
+    if (phase !== "idle") return;
     if (!sttAvailable) {
       // Show a specific explanation for why STT is unavailable.
       // For permission-denied, offer a one-tap deep link to Settings
@@ -565,7 +548,6 @@ export default function VoiceCaptureScreen() {
       setPhase("idle");
     }
   }, [
-    limitReached,
     phase,
     sttAvailable,
     sttUnavailableReason,
@@ -788,7 +770,7 @@ export default function VoiceCaptureScreen() {
 
   const handleSave = async () => {
     const body = editBody.trim();
-    if (!body || limitReached || phase === "saving") return;
+    if (!body || phase === "saving") return;
     // Build the saved content. If the user edited the title to
     // something different from the body's first sentence, we prefix
     // it so the title isn't lost. Otherwise the body alone is
@@ -807,27 +789,21 @@ export default function VoiceCaptureScreen() {
     captureHaptic.play();
     let syncedToCloud = true;
     try {
-      const result = await addMemory(content, { tags: editTags });
+      const result = await addMemory(content, {
+        tags: editTags,
+        bypassCaptureLimit: true,
+      });
       syncedToCloud = result.syncedToCloud;
     } catch (err) {
+      if (err instanceof Error && err.name === "CaptureLimitReachedError") {
+        setPhase("drafting");
+        return;
+      }
       // Same catch ladder as capture.tsx: route the cap-bypass and
       // server-block branches; let anything else bubble up. Either
       // way the draft is still on screen, so the Live Activity
       // (if any) should stay up — the user might retry — except
       // for the cap-bypass branch which navigates away.
-      if (err instanceof CaptureLimitReachedError) {
-        // Navigating to /subscription means the draft is gone.
-        // Dismiss the activity so the lock screen doesn't keep
-        // promising a memory the user can't actually save, and
-        // drop the persisted draft so the next visit starts clean
-        // (mirrors the typed Capture / Log-a-Call cap-block path).
-        const handle = liveActivityHandleRef.current;
-        liveActivityHandleRef.current = null;
-        void endProcessingActivity(handle);
-        closeDraft();
-        router.replace("/subscription");
-        return;
-      }
       if (err instanceof CaptureBlockedError) {
         // Per Task #319: cooldown block also clears the draft so it
         // doesn't reappear on the next visit. The in-memory text
@@ -925,11 +901,11 @@ export default function VoiceCaptureScreen() {
             onPress={() => handleSave()}
             style={[
               styles.saveButton,
-              (!editBody.trim() || limitReached || phase === "saving") && {
+              (!editBody.trim() || phase === "saving") && {
                 opacity: 0.5,
               },
             ]}
-            disabled={!editBody.trim() || limitReached || phase === "saving"}
+            disabled={!editBody.trim() || phase === "saving"}
           >
             <Text style={[styles.saveText, { color: colors.primary }]}>
               {phase === "saving" ? "Saving…" : "Save"}
@@ -944,35 +920,7 @@ export default function VoiceCaptureScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {limitReached ? (
-          <ProUpsellCard
-            icon="infinite-outline"
-            title="Daily capture limit reached"
-            body={`You've captured ${limit} memories today on the free plan. Upgrade to MemTool Pro to capture unlimited memories every day.`}
-          />
-        ) : (
-          <>
-            {!isPro && (
-              <View
-                style={[
-                  styles.usageBanner,
-                  { backgroundColor: colors.card, borderColor: colors.border },
-                ]}
-              >
-                <Ionicons
-                  name="hourglass-outline"
-                  size={16}
-                  color={colors.mutedForeground}
-                />
-                <Text
-                  style={[styles.usageText, { color: colors.mutedForeground }]}
-                >
-                  {remainingToday} of {limit} memories left today on the free
-                  plan
-                </Text>
-              </View>
-            )}
-
+        <>
             {phase === "idle" && (
               <View style={styles.recordZone}>
                 <Text
@@ -1540,7 +1488,6 @@ export default function VoiceCaptureScreen() {
               </View>
             )}
           </>
-        )}
       </ScrollView>
       <Toast
         message={

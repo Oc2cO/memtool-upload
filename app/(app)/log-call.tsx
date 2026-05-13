@@ -7,18 +7,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
 import { useMemories } from "@/context/MemoriesContext";
-import { useSubscription } from "@/context/SubscriptionContext";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/captureDraftStore";
 import { Toast } from "@/components/Toast";
 import { DraftSavedCue } from "@/components/DraftSavedCue";
-import { ProUpsellCard } from "@/components/ProUpsellCard";
 import {
   CAPTURE_COOLDOWN_ALERT_BODY,
   CAPTURE_COOLDOWN_ALERT_TITLE,
   CaptureBlockedError,
-  CaptureLimitReachedError,
 } from "@/lib/subscription";
-import { getCaptureLimitState } from "@/lib/captureLimits";
 import { MEMORY_CONTENT_MAX_LENGTH, PERSON_NAME_MAX_LENGTH } from "@/lib/inputLimits";
 import { useHaptics } from "@/lib/haptics";
 
@@ -38,24 +34,13 @@ export default function LogCallScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const { addCall, todayMemories } = useMemories();
-  const { status: subscriptionStatus, freeDailyCaptureLimit } = useSubscription();
+  const { addMemory } = useMemories();
   const haptics = useHaptics();
 
   // Same gate as the main capture screen — log-call also creates a
-  // memory, so it has to count against the same daily cap or the cap
   // would be trivially bypassable. Pro is read from useSubscription
   // (single source of truth post-Task #22). Math comes from
-  // `getCaptureLimitState` so all three layers stay in sync.
-  // `freeDailyCaptureLimit` (Task #144) is the live server cap so the
-  // upsell copy below ("You've logged N entries today...") matches
   // on-call's current override during a promotion.
-  const { atLimit: limitReached, limit } = getCaptureLimitState(
-    todayMemories.length,
-    subscriptionStatus?.is_pro === true,
-    freeDailyCaptureLimit,
-  );
-
   // Draft persistence (Task #319). Same shape as the Capture screen
   // — see the comment block there for the why behind the hydration
   // gate, the debounce window, the empty-state collapse, and the
@@ -182,7 +167,7 @@ export default function LogCallScreen() {
 
   const handleSave = async () => {
     if (submitting) return;
-    if (!person.trim() || !content.trim() || limitReached) return;
+    if (!person.trim() || !content.trim()) return;
     setSubmitting(true);
     // Same "capture" signature as capture.tsx — logging a call is a
     // capture verb, not a generic save, so we want the same haptic
@@ -190,22 +175,21 @@ export default function LogCallScreen() {
     haptics.play("capture");
     let syncedToCloud = true;
     try {
-      const result = await addCall({ person: person.trim(), content: content.trim(), tags: selectedTags });
+      const result = await addMemory(content.trim(), {
+        kind: "call",
+        person: person.trim(),
+        tags: selectedTags,
+        bypassCaptureLimit: true,
+      });
       syncedToCloud = result.syncedToCloud;
     } catch (err) {
-      // Same Layer 2 catch as capture.tsx: if MemoriesContext throws
-      // CaptureLimitReachedError (e.g. the main capture surface
-      // captured into the same day-bucket while this screen was
-      // open), route to upsell instead of crashing.
-      if (err instanceof CaptureLimitReachedError) {
-        haptics.play("error");
-        // Drop the draft on cap-block so the next visit starts clean.
-        closeDraft();
-        router.replace("/subscription");
+      if (err instanceof Error && err.name === "CaptureLimitReachedError") {
+        setSubmitting(false);
         return;
       }
+      // Same Layer 2 catch as capture.tsx: if MemoriesContext throws
+      // captured into the same day-bucket while this screen was
       // Server-side auto-block — same cooldown treatment as
-      // capture.tsx. Distinct from the cap upsell because there's
       // no Pro tier the user can buy out of this; the block
       // self-clears at UTC midnight.
       if (err instanceof CaptureBlockedError) {
@@ -233,7 +217,7 @@ export default function LogCallScreen() {
     }, 1500);
   };
 
-  const saveDisabled = !person.trim() || !content.trim() || limitReached || submitting;
+  const saveDisabled = !person.trim() || !content.trim() || submitting;
 
   return (
     <KeyboardAvoidingView 
@@ -266,14 +250,7 @@ export default function LogCallScreen() {
       <DraftSavedCue visible={draftCueVisible} topOffset={insets.top + 64} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {limitReached ? (
-          <ProUpsellCard
-            icon="infinite-outline"
-            title="Daily capture limit reached"
-            body={`You've captured ${limit} memories today on the free plan. Upgrade to MemTool Pro to capture unlimited memories every day.`}
-          />
-        ) : (
-          <>
+        <>
             <TextInput
               style={[styles.personInput, { color: colors.foreground, borderBottomColor: colors.border }]}
               placeholder="Who did you speak with?"
@@ -299,7 +276,6 @@ export default function LogCallScreen() {
               </Text>
             ) : null}
           </>
-        )}
       </ScrollView>
       <Toast
         message={toastSynced ? "Call logged" : "Saved offline — will sync when reconnected"}
