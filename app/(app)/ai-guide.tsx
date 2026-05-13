@@ -162,6 +162,7 @@ const INTRO_MESSAGE: StoredAiGuideMessage = {
 // the one-time "Tap Mem to skip" hint underneath without crowding
 // the first chat bubble.
 const MEM_STAGE_HEIGHT = 168;
+const FIRST_ENTRY_CONTENT_GAP = 32;
 const MEM_STAGE_CHAR_SIZE = 120;
 const SKIP_HINT_TIMEOUT_MS = 4000;
 // How many words on each side of the currently-spoken word to show
@@ -890,7 +891,9 @@ export default function AiGuideScreen() {
           palette={PALETTE}
           showAvatars={false}
           onScroll={scrollHandler}
-          contentTopInset={headerHeight + MEM_STAGE_HEIGHT}
+          contentTopInset={
+            headerHeight + MEM_STAGE_HEIGHT + FIRST_ENTRY_CONTENT_GAP
+          }
           scrollY={scrollY}
           speech={speech}
         />
@@ -905,7 +908,7 @@ export default function AiGuideScreen() {
           style={[
             styles.emptyHero,
             {
-              top: headerHeight + MEM_STAGE_HEIGHT + 8,
+              top: headerHeight + MEM_STAGE_HEIGHT + FIRST_ENTRY_CONTENT_GAP,
               paddingHorizontal: 32,
             },
             heroAnimStyle,
