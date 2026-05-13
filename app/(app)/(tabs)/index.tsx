@@ -556,8 +556,8 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Memory Match</Text>
-                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Train recall</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Memory Match</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Train recall</Text>
               </View>
             </LinearGradient>
           </ScalePress>
@@ -580,8 +580,8 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>24 Game</Text>
-                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mental math</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>24 Game</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mental math</Text>
               </View>
             </LinearGradient>
           </ScalePress>
@@ -604,8 +604,8 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Daily Recap</Text>
-                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Today's summary</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Daily Recap</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Daily summary</Text>
               </View>
             </LinearGradient>
           </ScalePress>
@@ -628,8 +628,8 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text style={[styles.navCardTitle, { color: colors.foreground }]}>Boost Archive</Text>
-                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Browse & favorite</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Boost Archive</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Saved boosts</Text>
               </View>
             </LinearGradient>
           </ScalePress>
@@ -863,19 +863,25 @@ const styles = StyleSheet.create({
     flex: 1,
     ...text.helper,
   },
-  grid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.base },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: spacing.base,
+  },
   navCard: {
-    width: "47%",
+    width: "48.25%",
     borderRadius: radius.md,
     shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
     elevation: 4,
   },
   navCardSurface: {
-    minHeight: 132,
-    padding: spacing.base,
+    minHeight: 116,
+    paddingHorizontal: spacing.base,
+    paddingVertical: 14,
     borderRadius: radius.md,
     borderWidth: 1,
     justifyContent: "space-between",
@@ -884,12 +890,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   navIconBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -897,7 +903,10 @@ const styles = StyleSheet.create({
     ...text.bodyMedium,
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
-    marginBottom: spacing.xs,
+    marginBottom: 2,
   },
-  navCardSubtitle: { ...text.caption },
+  navCardSubtitle: {
+    ...text.caption,
+    lineHeight: 16,
+  },
 });
