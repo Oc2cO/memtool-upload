@@ -398,40 +398,23 @@ describe("AiGuideScreen — talking-Mem stage (Task #283)", () => {
     expect(mockMarkSkipHintSeen).not.toHaveBeenCalled();
   });
 
-  test("on first launch the intro greeting speaks exactly once and the one-shot flag is set", async () => {
-    // Override the default — pretend the intro has NOT been spoken
-    // yet, so the screen should auto-speak it on mount.
+  test("on first launch the intro greeting does not auto-speak without an approved voice", async () => {
+    // Default/system robot voice playback is intentionally disabled.
+    // First launch can show the intro visually, but it should not
+    // auto-speak unless a future approved voice is explicitly wired.
     mockHasIntroBeenSpoken.mockResolvedValue(false);
 
     jest.useFakeTimers();
     render(<AiGuideScreen />);
     await flushAsync();
-    // The intro speak is deferred one tick (50 ms) so the bubble
-    // has time to layout. Advance the timer past that.
+
     await act(async () => {
       jest.advanceTimersByTime(60);
       await Promise.resolve();
     });
     jest.useRealTimers();
 
-    expect(mockSpeak).toHaveBeenCalledTimes(1);
-    // First arg is the intro text — pinning a substring keeps the
-    // assertion stable if we tweak the greeting copy later.
-    expect(String(mockSpeak.mock.calls[0][0])).toContain("I'm Mem");
-    // The intro flag is now deferred until speech actually emits a
-    // word boundary — so before any onWordIndex tick fires, the
-    // persistence write must NOT have happened.
+    expect(mockSpeak).not.toHaveBeenCalled();
     expect(mockMarkIntroSpoken).not.toHaveBeenCalled();
-    // Drive the first word boundary the way the real expo-speech
-    // mock would — this is what triggers `onSpeechStart` inside
-    // `startSpeakingMessage` and finally persists the intro flag.
-    const speakOpts = mockSpeak.mock.calls[0][1] as
-      | { onWordIndex?: (count: number) => void }
-      | undefined;
-    await act(async () => {
-      speakOpts?.onWordIndex?.(1);
-      await Promise.resolve();
-    });
-    expect(mockMarkIntroSpoken).toHaveBeenCalledWith("u1");
   });
 });
