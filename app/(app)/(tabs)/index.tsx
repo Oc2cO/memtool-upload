@@ -37,10 +37,7 @@ import { useGameStats } from "@/context/GameStatsContext";
 import { useAuth } from "@/context/AuthContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useTips } from "@/context/TipsContext";
-import {
-  getCaptureLimitState,
-  getIllustrationQuotaState,
-} from "@/lib/captureLimits";
+import { getIllustrationQuotaState } from "@/lib/captureLimits";
 import { useHaptics } from "@/lib/haptics";
 import { radius, spacing } from "@/constants/spacing";
 import { text } from "@/constants/typography";
@@ -112,27 +109,11 @@ export default function HomeScreen() {
   useEffect(() => {
     void refreshStreak();
   }, [refreshStreak, todayMemories.length]);
-  const { status: subscriptionStatus, freeDailyCaptureLimit } = useSubscription();
+  const { status: subscriptionStatus } = useSubscription();
   const { todayTip, todayFact, favorites, toggleFavorite } = useTips();
   const haptics = useHaptics();
 
-  // Layer 1 of the three-layer free-tier defense (see replit.md).
-  // Conservative default: while subscription is loading (status null)
-  // we treat the user as free so the cap renders rather than letting
-  // a free user briefly see no limit. A loaded Pro user flips past
-  // this on the next render and sees the original Quick Capture card.
-  // Math comes from `getCaptureLimitState` (the same helper Layer 2
-  // and Layer 3 use) so the layers cannot drift.
-  //
-  // `freeDailyCaptureLimit` is the active server-side cap (Task #144),
-  // so a promo lifting the cap to 20 shows up in "X of Y left" the
-  // moment the entitlement fetch lands instead of users seeing
-  // "0 of 10 left" and then succeeding past it.
-  const { isPro, remainingToday, atLimit, limit } = getCaptureLimitState(
-    todayMemories.length,
-    subscriptionStatus?.is_pro === true,
-    freeDailyCaptureLimit,
-  );
+  const isPro = subscriptionStatus?.is_pro === true;
 
   // Illustration quota hint. All math + wording (including
   // pluralization and the upsell sentence) lives in
@@ -155,19 +136,6 @@ export default function HomeScreen() {
   };
 
   const handleCapture = () => {
-    // When the user has hit the daily cap the same big-button tap
-    // routes to the upsell screen instead of opening the capture
-    // form. This keeps the primary affordance "tappable" — a dead
-    // button at the top of the home screen would be worse UX than a
-    // clear path to upgrade.
-    if (atLimit) {
-      // The cap-and-upsell tap is informational, not destructive — a
-      // soft "undo"-shaped pulse signals "we held your action back"
-      // without using the harsher "error" buzz.
-      haptics.play("undo");
-      router.push("/subscription");
-      return;
-    }
     // The full "capture" verb fires later when the memory actually
     // saves; here we anticipate it with the same shape so the home
     // screen feels physically connected to the capture flow.
@@ -291,13 +259,13 @@ export default function HomeScreen() {
           onPress={handleCapture}
           style={[
             styles.captureContainer,
-            { shadowColor: atLimit ? colors.primary : colors.primaryAction },
+            { shadowColor: colors.primaryAction },
           ]}
-          glowColor={atLimit ? colors.accent : colors.primaryAction}
-          glowIntensity={atLimit ? 0.4 : 1}
+          glowColor={colors.primaryAction}
+          glowIntensity={1}
           rippleColor="rgba(255, 255, 255, 0.42)"
-          fillColor={atLimit ? undefined : colors.primaryAction}
-          pressedFillColor={atLimit ? undefined : colors.primaryActionPressed}
+          fillColor={colors.primaryAction}
+          pressedFillColor={colors.primaryActionPressed}
           colorDurationMs={200}
           glowInDurationMs={300}
           glowOutDurationMs={300}
@@ -306,59 +274,25 @@ export default function HomeScreen() {
           // the "capture" AHAP so the button feels physical, not flat.
           pressScale={0.97}
           screenKey="home"
-          accessibilityLabel={atLimit ? "Daily limit reached, tap to upgrade" : "Quick Capture"}
+          accessibilityLabel="Quick Capture"
         >
-          {atLimit ? (
-            <LinearGradient
-              colors={["#3a3344", "#2a3438"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.captureGradient}
-            >
-              <View style={styles.captureIconBg}>
-                <Ionicons name="lock-closed" size={32} color="#e9e4f3" />
-              </View>
-              <Text style={[styles.captureTitle, { color: "#f4f0fa" }]}>
-                Daily limit reached
-              </Text>
-              <Text
-                style={[
-                  styles.captureSubtitle,
-                  { color: "rgba(244, 240, 250, 0.75)" },
-                ]}
-              >
-                Tap to upgrade to Pro
-              </Text>
-            </LinearGradient>
-          ) : (
-            <View style={styles.captureGradient}>
-              <View style={styles.captureIconBgActive}>
-                <Ionicons name="add" size={32} color="#ffffff" />
-              </View>
-              <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
-                Quick Capture
-              </Text>
-              <Text
-                style={[
-                  styles.captureSubtitle,
-                  { color: "rgba(255, 255, 255, 0.78)" },
-                ]}
-              >
-                Capture a fleeting memory
-              </Text>
+          <View style={styles.captureGradient}>
+            <View style={styles.captureIconBgActive}>
+              <Ionicons name="add" size={32} color="#ffffff" />
             </View>
-          )}
+            <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
+              Quick Capture
+            </Text>
+            <Text
+              style={[
+                styles.captureSubtitle,
+                { color: "rgba(255, 255, 255, 0.78)" },
+              ]}
+            >
+              Capture a fleeting memory
+            </Text>
+          </View>
         </AliveButton>
-        {!isPro && !atLimit && (
-          <Text
-            style={[
-              styles.captureHint,
-              { color: colors.mutedForeground },
-            ]}
-          >
-            {remainingToday} of {limit} memories left today
-          </Text>
-        )}
 
         {illustrationQuota.visible && (
           <ScalePress
