@@ -74,6 +74,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useMemories } from "@/context/MemoriesContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/captureDraftStore";
+import {
+  popAudioModeOverride,
+  pushAudioModeOverride,
+  setAudioSessionModule,
+} from "@/lib/audioSession";
 import { Toast } from "@/components/Toast";
 import { ProUpsellCard } from "@/components/ProUpsellCard";
 import {
@@ -125,6 +130,17 @@ const TIMER_TICK_MS = 250;
  * feel smooth; long enough that the transition is visible.
  */
 const CAPTION_FADE_MS = 180;
+
+const VOICE_RECORDING_AUDIO_OVERRIDE_KEY = "voice-capture-recording";
+const VOICE_RECORDING_AUDIO_MODE = {
+  allowsRecording: true,
+  playsInSilentMode: true,
+  shouldPlayInBackground: false,
+  shouldRouteThroughEarpiece: false,
+  interruptionMode: "doNotMix",
+  interruptionModeAndroid: "doNotMix",
+  allowsBackgroundRecording: false,
+} as const;
 
 type Phase = "idle" | "recording" | "processing" | "drafting" | "saving";
 
@@ -291,6 +307,15 @@ export default function VoiceCaptureScreen() {
   // on `recorderState.durationMillis` alone because that updates
   // less frequently and we want the timer to feel responsive.
   const recordStartedAtRef = useRef<number | null>(null);
+  const recordingAudioOverrideActiveRef = useRef(false);
+
+  const releaseRecordingAudioMode = useCallback(() => {
+    if (!recordingAudioOverrideActiveRef.current) return;
+    recordingAudioOverrideActiveRef.current = false;
+    void popAudioModeOverride(VOICE_RECORDING_AUDIO_OVERRIDE_KEY).catch(
+      () => {},
+    );
+  }, []);
 
   // Handle for the in-flight iOS Live Activity (Task #200). Null
   // when no activity has been started, when the native module isn't
@@ -482,6 +507,14 @@ export default function VoiceCaptureScreen() {
         );
         return;
       }
+      setAudioSessionModule({
+        setAudioModeAsync: AudioModule.setAudioModeAsync,
+      });
+      await pushAudioModeOverride(
+        VOICE_RECORDING_AUDIO_OVERRIDE_KEY,
+        VOICE_RECORDING_AUDIO_MODE,
+      );
+      recordingAudioOverrideActiveRef.current = true;
       await recorder.prepareToRecordAsync();
       recorder.record();
       recordStartedAtRef.current = Date.now();
@@ -523,6 +556,7 @@ export default function VoiceCaptureScreen() {
       // `capture` verb fires on save below.
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch (err) {
+      releaseRecordingAudioMode();
       console.warn("[voice-capture] start failed", err);
       Alert.alert(
         "Couldn't start recording",
@@ -538,6 +572,7 @@ export default function VoiceCaptureScreen() {
     streamingAvailable,
     recorder,
     router,
+    releaseRecordingAudioMode,
   ]);
 
   /** Press-out handler. Also called by the 60s auto-stop. Idempotent
@@ -582,6 +617,8 @@ export default function VoiceCaptureScreen() {
       uri = recorder.uri;
     } catch (err) {
       console.warn("[voice-capture] stop failed", err);
+    } finally {
+      releaseRecordingAudioMode();
     }
     const streamingTranscriptUsable =
       streamingTranscript != null && streamingTranscript.trim().length > 0;
@@ -645,7 +682,7 @@ export default function VoiceCaptureScreen() {
       void endProcessingActivity(handle);
       setPhase("idle");
     }
-  }, [phase, recorder]);
+  }, [phase, recorder, releaseRecordingAudioMode]);
 
   const toggleTag = (tag: VoiceSuggestedTag) => {
     setEditTags((prev) =>
@@ -727,7 +764,7 @@ export default function VoiceCaptureScreen() {
         // Advance ID so any in-flight streaming session start sees a
         // mismatched ID and cleans itself up without storing into the ref.
         ++recordingIdRef.current;
-        void recorder.stop().catch(() => {});
+        void recorder.stop().catch(() => {}).finally(releaseRecordingAudioMode);
         recordStartedAtRef.current = null;
         setElapsedS(0);
         setPartialCaption("");
@@ -747,7 +784,7 @@ export default function VoiceCaptureScreen() {
     });
     return () => sub.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
+  }, [phase, releaseRecordingAudioMode]);
 
   const handleSave = async () => {
     const body = editBody.trim();
@@ -857,7 +894,10 @@ export default function VoiceCaptureScreen() {
             }
             if (phase === "recording") {
               ++recordingIdRef.current;
-              void recorder.stop().catch(() => {});
+              void recorder
+                .stop()
+                .catch(() => {})
+                .finally(releaseRecordingAudioMode);
               recordStartedAtRef.current = null;
               setElapsedS(0);
               setPartialCaption("");
