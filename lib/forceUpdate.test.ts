@@ -24,6 +24,7 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 jest.mock("expo-constants", () => ({
   __esModule: true,
   default: {
+    nativeBuildVersion: "84",
     expoConfig: {
       version: "1.2.0",
       ios: { buildNumber: "42" },
@@ -62,8 +63,8 @@ describe("getCurrentVersion", () => {
 });
 
 describe("getCurrentBuildNumber", () => {
-  test("returns ios buildNumber on iOS", () => {
-    expect(getCurrentBuildNumber()).toBe("42");
+  test("prefers nativeBuildVersion from the installed binary", () => {
+    expect(getCurrentBuildNumber()).toBe("84");
   });
 });
 

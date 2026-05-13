@@ -63,11 +63,19 @@ export function getCurrentVersion(): string {
 
 /**
  * Returns the current build number as a string.
- * iOS: `ios.buildNumber` from app.json / EAS config.
- * Android: `android.versionCode` as a string.
+ * Prefer the native build version embedded in the installed binary.
+ * iOS: `CFBundleVersion`.
+ * Android: `versionCode`.
+ *
+ * `expoConfig` can be missing build metadata in production/EAS
+ * runtime manifests, so it is only a fallback for local/dev builds.
  * Fallback: "1".
  */
 export function getCurrentBuildNumber(): string {
+  const nativeBuildVersion = Constants.nativeBuildVersion;
+  if (nativeBuildVersion != null && nativeBuildVersion.length > 0) {
+    return nativeBuildVersion;
+  }
   if (Platform.OS === "ios") {
     return Constants.expoConfig?.ios?.buildNumber ?? "1";
   }
