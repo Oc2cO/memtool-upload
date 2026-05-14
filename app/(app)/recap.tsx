@@ -746,6 +746,32 @@ export default function RecapScreen() {
           <MonthRecapView windowDays={7} />
         ) : (
           <>
+        <Animated.View
+          entering={cardEntering(0, motionEnabled)}
+          style={[
+            styles.todayChapterCard,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
+          <Text
+            style={[styles.todayChapterEyebrow, { color: colors.primary }]}
+          >
+            TODAY'S CHAPTER
+          </Text>
+          <Text style={[styles.todayChapterTitle, { color: colors.foreground }]}>
+            A small page from right now
+          </Text>
+          <Text
+            style={[
+              styles.todayChapterBody,
+              { color: colors.mutedForeground },
+            ]}
+          >
+            Your recap gathers today's memories into the beginning of a living
+            journal.
+          </Text>
+        </Animated.View>
+
         {showRefreshErrorBanner && (
           <Animated.View
             entering={cardEntering(0, motionEnabled)}
@@ -1554,6 +1580,26 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.lg,
+  },
+  todayChapterCard: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  todayChapterEyebrow: {
+    fontSize: 12,
+    fontWeight: "800",
+    fontFamily: "Inter_700Bold",
+    marginBottom: spacing.xs,
+  },
+  todayChapterTitle: {
+    ...text.cardHeading,
+    marginBottom: 6,
+  },
+  todayChapterBody: {
+    ...text.helperRegular,
+    lineHeight: 20,
   },
   loadingContainer: {
     alignItems: "center",
