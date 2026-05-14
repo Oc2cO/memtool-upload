@@ -334,7 +334,7 @@ export default function SettingsScreen() {
   // `Speech.getAvailableVoicesAsync()` and trimmed to the 3-5 voices
   // we actually want to expose. Empty until hydration completes; the
   // picker section short-circuits while empty so we don't render an
-  // "empty list" flash. The "System default" entry is always first
+  // "empty list" flash. The device-default preview entry is always first
   // (`id: null`) so even devices with no extra voices installed get
   // a working selector.
   const [curatedVoices, setCuratedVoices] = useState<CuratedMemVoice[]>([]);
@@ -351,7 +351,7 @@ export default function SettingsScreen() {
   // Saved-id-to-display reconciliation. If the persisted id isn't
   // present in the catalog we resolved on this device (e.g. the
   // user picked "Warm" on iOS and then opened MemTool on Android),
-  // collapse to `null` so the "System default" row gets the
+  // collapse to `null` so the device-default preview row gets the
   // checkmark instead of orphaning the selection state. The actual
   // speech path is independently safe — `ai-guide.tsx` does the
   // same coercion before handing the id to `useMemSpeech`.
@@ -754,11 +754,11 @@ export default function SettingsScreen() {
     void setMemVoiceId(voicePrefsUserId, voice.id);
 
     // Stop any prior preview so back-to-back row taps don't queue
-    // up multiple "Hi — I'm Mem." utterances on top of each other.
+    // up multiple voice-preview utterances on top of each other.
     Speech.stop().catch(() => {});
     if (voice.id == null || voice.id.trim().length === 0) return;
 
-    Speech.speak("Hi — I'm Mem.", {
+    Speech.speak("Hi, I'm Memora.", {
       // Launch safety: preview only a concrete curated voice id.
       voice: voice.id,
       // Match the AI Guide cadence so the preview is a faithful
@@ -1870,7 +1870,7 @@ export default function SettingsScreen() {
           MEM'S VOICE picker (Task #292). Lets the user audition and
           pick from a small curated set of installed system voices.
           Tapping a concrete voice row selects it AND plays a one-line
-          "Hi — I'm Mem." preview; tapping the System default row only
+          voice preview; tapping the device-default row only
           saves the visual selection and never invokes default TTS.
           The selection remains saved per-user for future hand-picked
           avatar voice approval.
@@ -1884,7 +1884,7 @@ export default function SettingsScreen() {
             <Text
               style={[styles.sectionTitle, { color: colors.mutedForeground }]}
             >
-              MEM&apos;S VOICE
+              MEMORA VOICE PREVIEW
             </Text>
             <View
               testID="mem-voice-card"
@@ -1905,7 +1905,7 @@ export default function SettingsScreen() {
                   <Text
                     style={[styles.rowTitle, { color: colors.foreground }]}
                   >
-                    How Mem sounds
+                    Preview voice
                   </Text>
                   <Text
                     style={[
@@ -1913,9 +1913,9 @@ export default function SettingsScreen() {
                       { color: colors.mutedForeground },
                     ]}
                   >
-                    Tap a voice to hear a sample and pick it. Voices
-                    marked Premium are Apple&apos;s neural Siri voices —
-                    free, on-device, and the warmest pick.
+                    These on-device voices are temporary previews.
+                    Memora&apos;s finished voice will use intentional,
+                    approved avatar voices only.
                   </Text>
                 </View>
               </View>
@@ -1950,7 +1950,7 @@ export default function SettingsScreen() {
                       pressed && { opacity: 0.7 },
                     ]}
                     accessibilityRole="button"
-                    accessibilityLabel="Open iOS Settings to download Apple's free Premium voices for the warmest Mem voice"
+                    accessibilityLabel="Open iOS Settings to review higher-quality preview voices"
                     testID="mem-voice-premium-hint"
                   >
                     <View style={styles.rowIcon}>
@@ -1964,7 +1964,7 @@ export default function SettingsScreen() {
                       <Text
                         style={[styles.rowTitle, { color: colors.foreground }]}
                       >
-                        Get warmer voices (free)
+                        Preview voices are temporary
                       </Text>
                       <Text
                         style={[
@@ -1972,9 +1972,9 @@ export default function SettingsScreen() {
                           { color: colors.mutedForeground },
                         ]}
                       >
-                        Open iOS Settings → Accessibility → Spoken
-                        Content → Voices → English, then download
-                        Ava or Evan (Premium).
+                        Higher-quality iOS voices may sound less
+                        robotic, but they are not Memora&apos;s final
+                        approved companion voice.
                       </Text>
                     </View>
                     <View style={styles.rowIcon}>
@@ -1990,10 +1990,10 @@ export default function SettingsScreen() {
 
               {/*
                 Coerce a saved-but-uninstalled voice id back to the
-                "System default" pseudo-voice for the *display* state.
+                device-default pseudo-voice for the *display* state.
                 Without this, a user who picked "Warm" on an iPhone
                 and then opened MemTool on an Android tablet (where
-                Samantha isn't installed) would see no checkmark on
+                that voice isn't installed) would see no checkmark on
                 any row — the saved id matches none of the curated
                 entries. Falling back to `null` highlights "System
                 default" instead, which matches what Mem will
@@ -2001,6 +2001,12 @@ export default function SettingsScreen() {
               */}
               {curatedVoices.map((voice) => {
                 const isSelected = effectiveSelectedVoiceId === voice.id;
+                const displayLabel =
+                  voice.id == null ? "Device default preview" : voice.label;
+                const displaySubtitle =
+                  voice.id == null
+                    ? "Temporary device voice, not Memora's approved avatar voice"
+                    : `${voice.subtitle} preview`;
                 return (
                   <React.Fragment key={voice.id ?? "__default__"}>
                     <View
@@ -2017,7 +2023,7 @@ export default function SettingsScreen() {
                       ]}
                       accessibilityRole="button"
                       accessibilityState={{ selected: isSelected }}
-                      accessibilityLabel={`${voice.label} voice${
+                      accessibilityLabel={`${displayLabel} voice preview${
                         isSelected ? ", selected" : ""
                       }. Tap to preview and select.`}
                       testID={`mem-voice-row-${voice.id ?? "default"}`}
@@ -2043,7 +2049,7 @@ export default function SettingsScreen() {
                               { color: colors.foreground },
                             ]}
                           >
-                            {voice.label}
+                            {displayLabel}
                           </Text>
                           {voice.tier === "premium" ? (
                             <View
@@ -2081,7 +2087,7 @@ export default function SettingsScreen() {
                             { color: colors.mutedForeground },
                           ]}
                         >
-                          {voice.subtitle}
+                          {displaySubtitle}
                           {voice.recommended ? " · Recommended" : ""}
                         </Text>
                       </View>
