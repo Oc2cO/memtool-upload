@@ -783,17 +783,6 @@ export default function AiGuideScreen() {
     [thread],
   );
   const showEmptyHero = hydrated && !hasUserMessages;
-  const heroOpacity = useSharedValue(showEmptyHero ? 1 : 0);
-  useEffect(() => {
-    heroOpacity.value = withTiming(showEmptyHero ? 1 : 0, {
-      duration: 260,
-      easing: Easing.out(Easing.quad),
-    });
-  }, [showEmptyHero, heroOpacity]);
-  const heroAnimStyle = useAnimatedStyle(() => ({
-    opacity: heroOpacity.value,
-  }));
-
   const inputNode = useMemo<React.ReactNode>(() => {
 
     // Sustained Polsia outage (Task #397): show a calm,
@@ -850,6 +839,16 @@ export default function AiGuideScreen() {
     }
     return (
       <View>
+        {showEmptyHero ? (
+          <View
+            style={styles.emptyComposerNote}
+            accessibilityLabel="Memora is here whenever you're ready"
+          >
+            <Text style={styles.emptyComposerNoteText}>
+              Memora is here when you're ready.
+            </Text>
+          </View>
+        ) : null}
         <FreeTextInput
           placeholder="Tell Mem what's on your mind…"
           skippable={false}
@@ -869,6 +868,7 @@ export default function AiGuideScreen() {
     lastUserMessage,
     sending,
     sendMessage,
+    showEmptyHero,
   ]);
 
   return (
@@ -898,28 +898,6 @@ export default function AiGuideScreen() {
           speech={speech}
         />
       </KeyboardAvoidingView>
-
-      {/* Empty-state prompt. Pointer-transparent and rendered below
-          the talking-Mem stage so the stage tap + caption strip always
-          win, and it never blocks chat scroll. */}
-      {showEmptyHero ? (
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.emptyHero,
-            {
-              top: headerHeight + MEM_STAGE_HEIGHT + FIRST_ENTRY_CONTENT_GAP,
-              paddingHorizontal: 32,
-            },
-            heroAnimStyle,
-          ]}
-          accessibilityLabel="Memora is here whenever you're ready"
-        >
-          <Text style={styles.emptyHeroText}>
-            Memora is here when you're ready.
-          </Text>
-        </Animated.View>
-      ) : null}
 
       {/* Mem stage — sits below the frosted header, above the thread.
           Tapping it interrupts in-flight speech (per task brief). */}
@@ -1138,26 +1116,6 @@ const styles = StyleSheet.create({
     color: PALETTE.text,
     fontFamily: "Inter_700Bold",
     fontWeight: "700",
-  },
-  emptyHero: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    // Sit behind the talking-Mem stage (zIndex 5) and the caption
-    // strip (zIndex 6) so neither is ever obscured. The hero is
-    // purely decorative and pointer-transparent.
-    zIndex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    gap: 14,
-  },
-  emptyHeroText: {
-    color: PALETTE.text,
-    fontFamily: "Inter_500Medium",
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
-    opacity: 0.9,
   },
   upsellWrap: {
     paddingTop: 4,
