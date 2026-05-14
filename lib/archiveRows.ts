@@ -19,7 +19,68 @@ import type { Memory } from "@/lib/memories";
  */
 export type ArchiveRow =
   | { kind: "pinned-header"; id: "pinned-header"; count: number }
+  | { kind: "day-header"; id: string; day: ArchiveDayGroup }
   | { kind: "memory"; id: string; memory: Memory; index: number };
+
+export interface ArchiveDayGroup {
+  dateKey: string;
+  displayDate: string;
+  memoryCount: number;
+  hasPhoto: boolean;
+  hasSelfie: boolean;
+  callCount: number;
+  pendingSyncCount: number;
+}
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+function localDayParts(timestamp: string): {
+  dateKey: string;
+  displayDate: string;
+} {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return { dateKey: "unknown-date", displayDate: "Unknown date" };
+  }
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  return {
+    dateKey: `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+    displayDate: `${MONTH_NAMES[month]} ${day}, ${year}`,
+  };
+}
+
+function memoryHasPhoto(memory: Memory): boolean {
+  return (
+    memory.photoPendingUpload === true ||
+    typeof memory.photoUrl === "string" ||
+    (Array.isArray(memory.photos) && memory.photos.length > 0)
+  );
+}
+
+function memoryIsSelfie(memory: Memory): boolean {
+  if (typeof memory.dailySelfieDate === "string") return true;
+  return (
+    Array.isArray(memory.tags) &&
+    memory.tags.some(
+      (tag) => typeof tag === "string" && tag.toLowerCase() === "daily-selfie",
+    )
+  );
+}
 
 /**
  * Map a memory's outbox-derived flags to the three states the
@@ -101,6 +162,34 @@ export function splitPinnedMemories(memories: Memory[]): {
   return { pinned, rest };
 }
 
+export function buildArchiveDayGroups(memories: Memory[]): ArchiveDayGroup[] {
+  const groups: ArchiveDayGroup[] = [];
+  const byKey = new Map<string, ArchiveDayGroup>();
+  for (const memory of memories) {
+    const { dateKey, displayDate } = localDayParts(memory.timestamp);
+    let group = byKey.get(dateKey);
+    if (!group) {
+      group = {
+        dateKey,
+        displayDate,
+        memoryCount: 0,
+        hasPhoto: false,
+        hasSelfie: false,
+        callCount: 0,
+        pendingSyncCount: 0,
+      };
+      byKey.set(dateKey, group);
+      groups.push(group);
+    }
+    group.memoryCount += 1;
+    group.hasPhoto ||= memoryHasPhoto(memory);
+    group.hasSelfie ||= memoryIsSelfie(memory);
+    if (memory.kind === "call") group.callCount += 1;
+    if (isPendingOrFailed(memory)) group.pendingSyncCount += 1;
+  }
+  return groups;
+}
+
 /**
  * Build the discriminated row list rendered by Archive's FlatList.
  *
@@ -131,7 +220,23 @@ export function buildArchiveRows(filtered: Memory[]): ArchiveRow[] {
       });
     });
   }
+  const dayGroups = buildArchiveDayGroups(rest);
+  let dayIndex = 0;
+  let currentDateKey: string | null = null;
   rest.forEach((memory, i) => {
+    const { dateKey } = localDayParts(memory.timestamp);
+    if (dateKey !== currentDateKey) {
+      const day = dayGroups[dayIndex];
+      if (day) {
+        rows.push({
+          kind: "day-header",
+          id: `day:${day.dateKey}`,
+          day,
+        });
+      }
+      currentDateKey = dateKey;
+      dayIndex += 1;
+    }
     rows.push({
       kind: "memory",
       id: memory.id,

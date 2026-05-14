@@ -815,6 +815,31 @@ export default function ArchiveScreen() {
         </View>
       );
     }
+    if (item.kind === "day-header") {
+      const details = [
+        `${item.day.memoryCount} ${item.day.memoryCount === 1 ? "memory" : "memories"}`,
+        item.day.callCount > 0
+          ? `${item.day.callCount} ${item.day.callCount === 1 ? "call" : "calls"}`
+          : null,
+        item.day.hasPhoto ? "photos" : null,
+        item.day.hasSelfie ? "selfie" : null,
+        item.day.pendingSyncCount > 0
+          ? `${item.day.pendingSyncCount} pending`
+          : null,
+      ].filter((part): part is string => part !== null);
+      return (
+        <View style={styles.dayHeader}>
+          <Text style={[styles.dayHeaderDate, { color: colors.foreground }]}>
+            {item.day.displayDate}
+          </Text>
+          <Text
+            style={[styles.dayHeaderMeta, { color: colors.mutedForeground }]}
+          >
+            {details.join(" · ")}
+          </Text>
+        </View>
+      );
+    }
     return renderMemoryRow(item.memory, item.index);
   };
 
@@ -1140,6 +1165,18 @@ const styles = StyleSheet.create({
     ...text.captionStrong,
     letterSpacing: 0.4,
     textTransform: "uppercase",
+  },
+  dayHeader: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
+    paddingHorizontal: 4,
+  },
+  dayHeaderDate: {
+    ...text.bodySemibold,
+  },
+  dayHeaderMeta: {
+    ...text.caption,
+    marginTop: 2,
   },
   syncAllButton: {
     marginLeft: "auto",

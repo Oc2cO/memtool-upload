@@ -5,6 +5,7 @@ import { MemorySyncStatus } from "@/components/MemorySyncStatus";
 import type { Memory } from "@/lib/memories";
 import {
   applyArchiveClientFilters,
+  buildArchiveDayGroups,
   buildArchiveRows,
   getMemorySyncStatus,
   isPendingOrFailed,
@@ -62,8 +63,8 @@ describe("buildArchiveRows — pinned 'Pending sync' group", () => {
 
     const rows = buildArchiveRows([a, b, c, d, e]);
 
-    // Header + 2 pinned + 3 rest = 6 rows.
-    expect(rows).toHaveLength(6);
+    // Pending header + 2 pinned + day header + 3 rest = 7 rows.
+    expect(rows).toHaveLength(7);
     expect(rows[0]).toEqual({
       kind: "pinned-header",
       id: "pinned-header",
@@ -80,7 +81,11 @@ describe("buildArchiveRows — pinned 'Pending sync' group", () => {
       memory: d,
     });
     // The rest section keeps the synced rows in their original order.
-    expect(rows.slice(3).map((r) => r.kind === "memory" && r.id)).toEqual([
+    expect(rows[3]).toMatchObject({
+      kind: "day-header",
+      day: { dateKey: "2026-04-15", memoryCount: 3 },
+    });
+    expect(rows.slice(4).map((r) => r.kind === "memory" && r.id)).toEqual([
       "a",
       "c",
       "e",
@@ -89,8 +94,8 @@ describe("buildArchiveRows — pinned 'Pending sync' group", () => {
     // position in the visible list, not per-section.
     expect(rows[1]).toMatchObject({ index: 0 });
     expect(rows[2]).toMatchObject({ index: 1 });
-    expect(rows[3]).toMatchObject({ index: 2 });
-    expect(rows[5]).toMatchObject({ index: 4 });
+    expect(rows[4]).toMatchObject({ index: 2 });
+    expect(rows[6]).toMatchObject({ index: 4 });
   });
 
   test("(b) pinned section header is hidden when no rows qualify", () => {
@@ -98,8 +103,12 @@ describe("buildArchiveRows — pinned 'Pending sync' group", () => {
       baseMemory({ id: "a" }),
       baseMemory({ id: "b" }),
     ]);
-    expect(rows.every((r) => r.kind === "memory")).toBe(true);
-    expect(rows).toHaveLength(2);
+    expect(rows.map((r) => r.kind)).toEqual([
+      "day-header",
+      "memory",
+      "memory",
+    ]);
+    expect(rows).toHaveLength(3);
     expect(rows.find((r) => r.kind === "pinned-header")).toBeUndefined();
   });
 
@@ -125,6 +134,83 @@ describe("buildArchiveRows — pinned 'Pending sync' group", () => {
     const { pinned, rest } = splitPinnedMemories([a, b, c, d]);
     expect(pinned.map((m) => m.id)).toEqual(["a", "c"]);
     expect(rest.map((m) => m.id)).toEqual(["b", "d"]);
+  });
+});
+
+describe("buildArchiveDayGroups — local-day metadata for future Archive chapters", () => {
+  test("groups memories by local day while preserving incoming day order", () => {
+    const a = baseMemory({
+      id: "a",
+      timestamp: new Date(2026, 3, 16, 9, 0, 0).toISOString(),
+    });
+    const b = baseMemory({
+      id: "b",
+      timestamp: new Date(2026, 3, 16, 14, 0, 0).toISOString(),
+      kind: "call",
+      photoUrl: "https://example.com/photo.jpg",
+    });
+    const c = baseMemory({
+      id: "c",
+      timestamp: new Date(2026, 3, 15, 12, 0, 0).toISOString(),
+      tags: ["daily-selfie"],
+      syncFailed: true,
+    });
+
+    expect(buildArchiveDayGroups([a, b, c])).toEqual([
+      {
+        dateKey: "2026-04-16",
+        displayDate: "April 16, 2026",
+        memoryCount: 2,
+        hasPhoto: true,
+        hasSelfie: false,
+        callCount: 1,
+        pendingSyncCount: 0,
+      },
+      {
+        dateKey: "2026-04-15",
+        displayDate: "April 15, 2026",
+        memoryCount: 1,
+        hasPhoto: false,
+        hasSelfie: true,
+        callCount: 0,
+        pendingSyncCount: 1,
+      },
+    ]);
+  });
+
+  test("buildArchiveRows emits day headers for non-pinned memories", () => {
+    const rows = buildArchiveRows([
+      baseMemory({
+        id: "a",
+        timestamp: new Date(2026, 3, 16, 9, 0, 0).toISOString(),
+      }),
+      baseMemory({
+        id: "b",
+        timestamp: new Date(2026, 3, 16, 14, 0, 0).toISOString(),
+      }),
+      baseMemory({
+        id: "c",
+        timestamp: new Date(2026, 3, 15, 12, 0, 0).toISOString(),
+      }),
+    ]);
+
+    expect(rows.map((r) => r.kind)).toEqual([
+      "day-header",
+      "memory",
+      "memory",
+      "day-header",
+      "memory",
+    ]);
+    expect(rows[0]).toMatchObject({
+      kind: "day-header",
+      id: "day:2026-04-16",
+      day: { displayDate: "April 16, 2026", memoryCount: 2 },
+    });
+    expect(rows[3]).toMatchObject({
+      kind: "day-header",
+      id: "day:2026-04-15",
+      day: { displayDate: "April 15, 2026", memoryCount: 1 },
+    });
   });
 });
 
