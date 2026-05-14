@@ -1071,7 +1071,7 @@ export default function RecapScreen() {
                   />
                 </View>
                 <Text style={[styles.resultTitle, { color: colors.primary }]}>
-                  Your Daily Insight
+                  Daily Insight
                 </Text>
               </View>
               <Text style={[styles.recapText, { color: colors.foreground }]}>
