@@ -257,6 +257,23 @@ function sortByTimestampDesc(list: Memory[]): Memory[] {
   );
 }
 
+function reconcilePhotoPendingUploads<
+  M extends { id: string; photoUrl?: string; photoPendingUpload?: boolean },
+>(list: M[], pendingPhotoIds: Set<string>): M[] {
+  return list.map((m) => {
+    if (pendingPhotoIds.has(m.id)) {
+      if (m.photoUrl) return m;
+      return m.photoPendingUpload === true
+        ? m
+        : { ...m, photoPendingUpload: true };
+    }
+    if (m.photoPendingUpload === true) {
+      return { ...m, photoPendingUpload: false };
+    }
+    return m;
+  });
+}
+
 function toEngineInput(m: Memory): EngineMemoryInput {
   return {
     id: m.id,
@@ -545,15 +562,20 @@ export function MemoriesProvider({ children }: { children: React.ReactNode }) {
     if (photoDrainLockRef.current) return;
     photoDrainLockRef.current = true;
     try {
-      const { confirmed, stillPending } = await drainPhotoQueue(email);
+      const { confirmed, drainedIds, stillPending } = await drainPhotoQueue(email);
       const confirmedIds = Object.keys(confirmed);
-      if (confirmedIds.length === 0 && stillPending.length === 0) return;
+      if (
+        confirmedIds.length === 0 &&
+        drainedIds.length === 0 &&
+        stillPending.length === 0
+      ) {
+        return;
+      }
       const stillPendingSet = new Set(stillPending);
       setMemories((prev) => {
-        const next = mergePhotos(prev, confirmed).map((m) =>
-          stillPendingSet.has(m.id) && !m.photoUrl
-            ? { ...m, photoPendingUpload: true }
-            : m,
+        const next = reconcilePhotoPendingUploads(
+          mergePhotos(prev, confirmed),
+          stillPendingSet,
         );
         void writeMemoriesCache(email, next);
         return next;
@@ -741,13 +763,7 @@ export function MemoriesProvider({ children }: { children: React.ReactNode }) {
           photoMap,
         ),
       );
-      const merged = pendingPhotoIds.size > 0
-        ? mergedBase.map((m) =>
-            pendingPhotoIds.has(m.id) && !m.photoUrl
-              ? { ...m, photoPendingUpload: true }
-              : m,
-          )
-        : mergedBase;
+      const merged = reconcilePhotoPendingUploads(mergedBase, pendingPhotoIds);
       setMemories(merged);
       await writeMemoriesCache(email, merged);
       // Fire-and-forget: keep AI engine maintenance off the render path so
@@ -769,14 +785,9 @@ export function MemoriesProvider({ children }: { children: React.ReactNode }) {
           photoMap,
         ),
       );
-      const merged = pendingPhotoIds.size > 0
-        ? mergedBase.map((m) =>
-            pendingPhotoIds.has(m.id) && !m.photoUrl
-              ? { ...m, photoPendingUpload: true }
-              : m,
-          )
-        : mergedBase;
+      const merged = reconcilePhotoPendingUploads(mergedBase, pendingPhotoIds);
       setMemories(merged);
+      await writeMemoriesCache(email, merged);
       void maintainAiEngine(
         email,
         subscriptionStatus?.is_pro === true,

@@ -124,6 +124,7 @@ describe("photo upload outbox", () => {
     expect(out.confirmed["mem-1"]).toHaveLength(1);
     expect(out.confirmed["mem-1"][0].url).toContain("/objects/uploads/abc");
     expect(out.confirmed["mem-1"][0].thumbUrl).toContain("abc-thumb");
+    expect(out.drainedIds).toEqual(["mem-1"]);
     expect(out.stillPending).toEqual([]);
 
     // Queue is empty after a clean drain.
@@ -152,6 +153,7 @@ describe("photo upload outbox", () => {
     const out = await drainPhotoQueue(TEST_EMAIL);
 
     expect(out.confirmed).toEqual({});
+    expect(out.drainedIds).toEqual(["mem-2"]);
     expect(out.stillPending).toEqual(["mem-2"]);
 
     const pending = await listPendingPhotoIds(TEST_EMAIL);
@@ -191,6 +193,7 @@ describe("photo upload outbox", () => {
     const out = await drainPhotoQueue(TEST_EMAIL);
 
     expect(out.confirmed).toEqual({});
+    expect(out.drainedIds).toEqual(["mem-bad"]);
     expect(out.stillPending).toEqual([]);
     const pending = await listPendingPhotoIds(TEST_EMAIL);
     expect(pending.size).toBe(0);
@@ -216,6 +219,7 @@ describe("photo upload outbox", () => {
     const out = await drainPhotoQueue(TEST_EMAIL);
 
     expect(out.confirmed).toEqual({});
+    expect(out.drainedIds).toEqual(["mem-3"]);
     // Permanent failures must NOT remain queued — otherwise we'd
     // burn forever retrying a file that no longer exists.
     expect(out.stillPending).toEqual([]);

@@ -140,6 +140,19 @@ jest.mock("@/lib/illustrations", () => {
   };
 });
 
+jest.mock("@/lib/memoryPhotos", () => {
+  const actual = jest.requireActual("@/lib/memoryPhotos");
+  return {
+    ...actual,
+    apiFetchPhotos: jest.fn(() => Promise.resolve({})),
+    drainPhotoQueue: jest.fn(() =>
+      Promise.resolve({ confirmed: {}, drainedIds: [], stillPending: [] }),
+    ),
+    enqueuePhotoUpload: jest.fn(() => Promise.resolve()),
+    listPendingPhotoIds: jest.fn(() => Promise.resolve(new Set<string>())),
+  };
+});
+
 jest.mock("@/lib/api", () => ({
   setSyncProActive: jest.fn(),
 }));
@@ -187,6 +200,20 @@ describe("MemoriesContext.addMemory — live capture limit (Task #144)", () => {
       status: { is_pro: false },
       freeDailyCaptureLimit: 3,
     };
+    const photos = jest.requireMock("@/lib/memoryPhotos") as {
+      apiFetchPhotos: jest.Mock;
+      drainPhotoQueue: jest.Mock;
+      enqueuePhotoUpload: jest.Mock;
+      listPendingPhotoIds: jest.Mock;
+    };
+    photos.apiFetchPhotos.mockResolvedValue({});
+    photos.drainPhotoQueue.mockResolvedValue({
+      confirmed: {},
+      drainedIds: [],
+      stillPending: [],
+    });
+    photos.enqueuePhotoUpload.mockResolvedValue(undefined);
+    photos.listPendingPhotoIds.mockResolvedValue(new Set<string>());
   });
 
   test("throws CaptureLimitReachedError at the LIVE cap, not the compiled-in default", async () => {
@@ -273,5 +300,37 @@ describe("MemoriesContext.addMemory — live capture limit (Task #144)", () => {
     }
 
     expect(handle.current!.memories.length).toBe(4);
+  });
+
+  test("clears cached photoPendingUpload when no queued photo remains", async () => {
+    mockStore.set(
+      "memories_alice@example.com",
+      JSON.stringify([
+        {
+          id: "mem-photo",
+          userId: mockAuthUser.email,
+          content: "photo was dropped permanently",
+          timestamp: "2026-05-14T12:00:00.000Z",
+          kind: "memory",
+          photoPendingUpload: true,
+        },
+      ]),
+    );
+
+    const handle: CapturedHandle = { current: null };
+    render(
+      <MemoriesProvider>
+        <Consumer handle={handle} />
+      </MemoriesProvider>,
+    );
+    await flushAsync();
+    await flushAsync();
+
+    expect(handle.current!.memories).toHaveLength(1);
+    expect(handle.current!.memories[0].photoPendingUpload).toBe(false);
+    const cached = JSON.parse(
+      mockStore.get("memories_alice@example.com")!,
+    ) as Array<{ photoPendingUpload?: boolean }>;
+    expect(cached[0].photoPendingUpload).toBe(false);
   });
 });

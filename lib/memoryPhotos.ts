@@ -548,6 +548,10 @@ export async function listPendingPhotoIds(email: string): Promise<Set<string>> {
 }
 
 export interface DrainOutcome {
+  /** clientIds that had at least one queued upload when this drain
+   *  started. Lets callers distinguish "queue was empty" from
+   *  "queued upload was permanently dropped". */
+  drainedIds: string[];
   /** clientIds → confirmed photos from this drain, in the order
    *  they were uploaded. A single drain can produce multiple
    *  entries for the same memory (the user picked 4 photos at
@@ -571,7 +575,10 @@ export interface DrainOutcome {
  */
 export async function drainPhotoQueue(email: string): Promise<DrainOutcome> {
   const queue = await readQueue(email);
-  if (queue.length === 0) return { confirmed: {}, stillPending: [] };
+  if (queue.length === 0) {
+    return { confirmed: {}, drainedIds: [], stillPending: [] };
+  }
+  const drainedIds = Array.from(new Set(queue.map((e) => e.clientId)));
   const confirmed: Record<string, PhotoMapEntry[]> = {};
   const remaining: QueuedEntry[] = [];
   for (const entry of queue) {
@@ -592,6 +599,7 @@ export async function drainPhotoQueue(email: string): Promise<DrainOutcome> {
   await writeQueue(email, remaining);
   return {
     confirmed,
+    drainedIds,
     stillPending: Array.from(new Set(remaining.map((e) => e.clientId))),
   };
 }
