@@ -42,8 +42,8 @@ import { DURATIONS, EASING } from "@/lib/animationTokens";
  *
  * Modes:
  *   - "login"  → cinematic plays once per cold launch, then resting.
- *   - "signup" → same cinematic, plus a small Sagous "welcome" wave
- *                on settle (one-shot, reduce-motion-aware).
+ *   - "signup" → same cinematic, plus a restrained Sagous "welcome"
+ *                signal on settle (one-shot, reduce-motion-aware).
  *   - "forgot" → no cinematic, only the resting composition with
  *                Memora pulled forward and dimmed (softer / concerned).
  *
@@ -100,16 +100,17 @@ export function _hasAuthCinematicPlayedForTests(): boolean {
 
 const IS_WEB = Platform.OS === "web";
 
-// Choreography timings (in ms) — keep the total under ~3.5s per spec.
+// Quiet Signal Wake timings (in ms) — keep the total under ~3.5s
+// while giving the arrival enough air to feel intentional.
 // DRIFT/BEAT/SETTLE/REDUCED_FADE durations are choreography-locked at
 // non-token values: they were tuned against the BRAND.md storyboard
 // and the composer's haptic cues, so they MUST NOT be replaced with
 // the generic DURATIONS scale even though the magnitudes are similar.
 // SKIP_FADE is an OS-style short cross-fade and IS pulled from
 // DURATIONS.base so it tracks the global token if it ever moves.
-const DRIFT_DURATION = 1100;
-const BEAT_DURATION = 700;
-const SETTLE_DURATION = 700;
+const DRIFT_DURATION = 1500;
+const BEAT_DURATION = 900;
+const SETTLE_DURATION = 900;
 const REDUCED_FADE = 250;
 const SKIP_FADE = DURATIONS.base;
 
@@ -340,23 +341,22 @@ export const AuthCinematicStage = forwardRef<
       );
     }
 
-    // 2. Small shared beat — Sagous flickers brighter once, Memora
-    //    gives a calm look (subtle scale up). The full sequence is
-    //    short enough (~700ms) that re-issuing it on a mid-beat
-    //    resume reads as a continuation rather than a restart.
+    // 2. Small shared signal — Sagous brightens softly once while
+    //    Memora barely shifts. This keeps the wake present without a
+    //    mascot-like body pulse.
     const beatP = remainOf(DRIFT_DURATION, BEAT_DURATION);
     if (beatP) {
       sagSpark.value = withDelay(
         beatP.delay,
         withSequence(
-          withTiming(1, { duration: BEAT_DURATION / 2, easing: easeInOut }),
-          withTiming(0.7, { duration: BEAT_DURATION / 2, easing: easeInOut }),
+          withTiming(0.78, { duration: BEAT_DURATION / 2, easing: easeInOut }),
+          withTiming(0.64, { duration: BEAT_DURATION / 2, easing: easeInOut }),
         ),
       );
       memScale.value = withDelay(
         beatP.delay,
         withSequence(
-          withTiming(1.04, { duration: BEAT_DURATION / 2, easing: easeInOut }),
+          withTiming(1.01, { duration: BEAT_DURATION / 2, easing: easeInOut }),
           withTiming(1, { duration: BEAT_DURATION / 2, easing: easeInOut }),
         ),
       );
@@ -391,8 +391,8 @@ export const AuthCinematicStage = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion, skipped, shouldPlayCinematic, appBackgrounded]);
 
-  // Resting "alive" loop: Memora breathes (subtle scale + glow),
-  // Sagous's spark flickers on a slow random-feeling cadence. Both
+  // Resting Quiet Signal Wake: near-still presence driven by slow
+  // light modulation instead of obvious body pumping. Both loops
   // pause when the keyboard is open or motion is disabled, and the
   // signup-only welcome wave fires on settle.
   useEffect(() => {
@@ -409,40 +409,41 @@ export const AuthCinematicStage = forwardRef<
     cancelAnimation(sagWave);
 
     if (!allowMotion) {
-      memGlow.value = withTiming(0.6, { duration: 200 });
-      sagSpark.value = withTiming(0.7, { duration: 200 });
+      memGlow.value = withTiming(0.56, { duration: 200 });
+      sagSpark.value = withTiming(0.62, { duration: 200 });
       sagWave.value = withTiming(0, { duration: 200 });
       return;
     }
 
     memGlow.value = withRepeat(
       withSequence(
-        withTiming(0.85, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.55, { duration: 2000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.66, { duration: 3600, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.54, { duration: 4200, easing: Easing.inOut(Easing.sin) }),
       ),
       -1,
       false,
     );
     sagSpark.value = withRepeat(
       withSequence(
-        withTiming(1.0, { duration: 1100, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.55, { duration: 1700, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.78, { duration: 3200, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.58, { duration: 3800, easing: Easing.inOut(Easing.sin) }),
       ),
       -1,
       false,
     );
 
     if (mode === "signup" && !signupWavePlayedThisSession) {
-      // Small "welcome" wave — one shot, ~600ms. The module-level
+      // Restrained welcome signal — one shot, slow enough to read as
+      // acknowledgement rather than a toy-like wave. The module-level
       // guard means toggling login↔signup or paused↔unpaused after
       // the first settle does NOT replay the wave (caught in code
       // review).
       signupWavePlayedThisSession = true;
       sagWave.value = withSequence(
-        withTiming(1, { duration: 220, easing: EASING.out }),
-        withTiming(-0.7, { duration: 200, easing: EASING.default }),
-        withTiming(0.4, { duration: 200, easing: EASING.default }),
-        withTiming(0, { duration: 200, easing: EASING.in }),
+        withTiming(0.55, { duration: 320, easing: EASING.out }),
+        withTiming(-0.25, { duration: 260, easing: EASING.default }),
+        withTiming(0.12, { duration: 240, easing: EASING.default }),
+        withTiming(0, { duration: 260, easing: EASING.in }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -479,19 +480,19 @@ export const AuthCinematicStage = forwardRef<
   }));
   const memGlowStyle = useAnimatedStyle(() => ({
     opacity: memGlow.value,
-    transform: [{ scale: 0.95 + memGlow.value * 0.25 }],
+    transform: [{ scale: 0.99 + memGlow.value * 0.08 }],
   }));
   const sagWrapStyle = useAnimatedStyle(() => ({
     opacity: sagOpacity.value,
     transform: [
       { translateX: sagX.value },
       { translateY: sagY.value },
-      { rotate: `${sagWave.value * 14}deg` },
+      { rotate: `${sagWave.value * 6}deg` },
     ],
   }));
   const sagSparkStyle = useAnimatedStyle(() => ({
     opacity: sagSpark.value,
-    transform: [{ scale: 0.9 + sagSpark.value * 0.3 }],
+    transform: [{ scale: 0.98 + sagSpark.value * 0.08 }],
   }));
 
   // Forgot-password gets a smaller, dimmer Memora — softer expression
