@@ -204,6 +204,48 @@ export default function HomeScreen() {
     scrollY.value = event.contentOffset.y;
   });
 
+  const atriumDoorways: {
+    title: string;
+    subtitle: string;
+    route: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    iconColor: string;
+    badgeColor: string;
+    gradient: [string, string];
+    accessibilityLabel: string;
+  }[] = [
+    {
+      title: "MeMChat",
+      subtitle: "Talk with Memora",
+      route: "/ai-guide",
+      icon: "chatbubble-ellipses",
+      iconColor: colors.accent,
+      badgeColor: "rgba(0, 229, 255, 0.14)",
+      gradient: ["rgba(0, 229, 255, 0.18)", "rgba(21, 16, 42, 0.88)"],
+      accessibilityLabel: "MeMChat, talk with Memora",
+    },
+    {
+      title: "Daily Chapter",
+      subtitle: "Review today",
+      route: "/recap",
+      icon: "today",
+      iconColor: "#f472b6",
+      badgeColor: "rgba(244, 114, 182, 0.14)",
+      gradient: ["rgba(244, 114, 182, 0.17)", "rgba(21, 16, 42, 0.88)"],
+      accessibilityLabel: "Daily Chapter, review today",
+    },
+    {
+      title: "Memory Book",
+      subtitle: "Browse archive",
+      route: "/archive",
+      icon: "book",
+      iconColor: "#ffb74d",
+      badgeColor: "rgba(255, 183, 77, 0.14)",
+      gradient: ["rgba(255, 183, 77, 0.16)", "rgba(21, 16, 42, 0.88)"],
+      accessibilityLabel: "Memory Book, browse archive",
+    },
+  ];
+
   return (
     <SettleOnMount style={[styles.container, { backgroundColor: colors.background }]}>
       <Animated.ScrollView
@@ -345,6 +387,100 @@ export default function HomeScreen() {
             )}
           </ScalePress>
         )}
+
+        <BreatheCard index={0} style={styles.atriumSection}>
+          <LinearGradient
+            colors={["rgba(155, 122, 232, 0.18)", "rgba(0, 229, 255, 0.10)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.atriumShell, { borderColor: colors.border }]}
+          >
+            <View style={styles.atriumHeader}>
+              <View style={styles.atriumHeaderCopy}>
+                <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
+                  Memory Atrium
+                </Text>
+                <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
+                  Choose a doorway
+                </Text>
+              </View>
+              <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
+                <Ionicons name="sparkles" size={20} color={colors.primary} />
+              </View>
+            </View>
+            <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
+              Memora and Sagous are making room for your living memory world.
+            </Text>
+
+            <View style={styles.atriumGrid}>
+              {atriumDoorways.map((doorway) => (
+                <ScalePress
+                  key={doorway.route}
+                  onPress={() => handleNavigate(doorway.route)}
+                  style={styles.atriumDoor}
+                  accessibilityLabel={doorway.accessibilityLabel}
+                >
+                  <LinearGradient
+                    colors={doorway.gradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.atriumDoorSurface, { borderColor: colors.border }]}
+                  >
+                    <View style={[styles.atriumIconBadge, { backgroundColor: doorway.badgeColor }]}>
+                      <Ionicons name={doorway.icon} size={20} color={doorway.iconColor} />
+                    </View>
+                    <View style={styles.atriumDoorCopy}>
+                      <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
+                        {doorway.title}
+                      </Text>
+                      <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
+                        {doorway.subtitle}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </ScalePress>
+              ))}
+
+              <View style={[styles.gameRoomDoor, { borderColor: colors.border }]}>
+                <View style={styles.gameRoomHeader}>
+                  <View style={[styles.atriumIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
+                    <Ionicons name="game-controller" size={20} color={colors.primary} />
+                  </View>
+                  <View style={styles.atriumDoorCopy}>
+                    <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
+                      Game Room
+                    </Text>
+                    <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
+                      Train your mind
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.gameRoomActions}>
+                  <ScalePress
+                    onPress={() => handleNavigate("/memory-match")}
+                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="Memory Match"
+                  >
+                    <Ionicons name="apps" size={16} color={colors.primary} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      Memory Match
+                    </Text>
+                  </ScalePress>
+                  <ScalePress
+                    onPress={() => handleNavigate("/game-24")}
+                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="24 Game"
+                  >
+                    <Ionicons name="calculator" size={16} color={colors.accent} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      24 Game
+                    </Text>
+                  </ScalePress>
+                </View>
+              </View>
+            </View>
+          </LinearGradient>
+        </BreatheCard>
 
         <View style={styles.quickActions}>
           <ScalePress
@@ -754,6 +890,115 @@ const styles = StyleSheet.create({
     ...text.helper,
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
+  },
+  atriumSection: { marginBottom: spacing.lg },
+  atriumShell: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing.base,
+    overflow: "hidden",
+  },
+  atriumHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  atriumHeaderCopy: { flex: 1 },
+  atriumEyebrow: {
+    ...text.caption,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  atriumTitle: {
+    ...text.cardTitle,
+  },
+  atriumCompanionOrb: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  atriumSubtitle: {
+    ...text.helperRegular,
+    lineHeight: 20,
+    marginTop: spacing.xs,
+    marginBottom: spacing.base,
+  },
+  atriumGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: spacing.sm,
+  },
+  atriumDoor: {
+    width: "48.5%",
+    borderRadius: radius.md,
+  },
+  atriumDoorSurface: {
+    minHeight: 118,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.md,
+    justifyContent: "space-between",
+  },
+  atriumIconBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  atriumDoorCopy: { flex: 1, justifyContent: "flex-end" },
+  atriumDoorTitle: {
+    ...text.bodyMedium,
+    fontWeight: "700",
+    fontFamily: "Inter_700Bold",
+    marginTop: spacing.sm,
+  },
+  atriumDoorSubtitle: {
+    ...text.caption,
+    lineHeight: 16,
+    marginTop: 2,
+  },
+  gameRoomDoor: {
+    width: "100%",
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.md,
+    backgroundColor: "rgba(21, 16, 42, 0.82)",
+  },
+  gameRoomHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  gameRoomActions: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  gameRoomAction: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+  },
+  gameRoomActionText: {
+    ...text.caption,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
   },
   quickActions: { flexDirection: "row", gap: spacing.md, marginBottom: 20 },
   quickAction: {
