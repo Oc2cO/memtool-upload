@@ -791,7 +791,6 @@ export default function VoiceCaptureScreen() {
     try {
       const result = await addMemory(content, {
         tags: editTags,
-        bypassCaptureLimit: true,
       });
       syncedToCloud = result.syncedToCloud;
     } catch (err) {

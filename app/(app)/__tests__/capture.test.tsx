@@ -69,6 +69,7 @@ jest.mock("@/context/MemoriesContext", () => ({
   useMemories: () => ({
     addMemory: mockAddMemory,
     todayMemories: [],
+    memories: [],
   }),
 }));
 
@@ -158,6 +159,7 @@ describe("CaptureScreen — cooldown branch (Task #138)", () => {
     });
 
     expect(mockAddMemory).toHaveBeenCalledTimes(1);
+    expect(mockAddMemory.mock.calls[0][1]).not.toHaveProperty("bypassCaptureLimit");
     expect(alertSpy).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
   });

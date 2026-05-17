@@ -179,7 +179,6 @@ export default function LogCallScreen() {
         kind: "call",
         person: person.trim(),
         tags: selectedTags,
-        bypassCaptureLimit: true,
       });
       syncedToCloud = result.syncedToCloud;
     } catch (err) {

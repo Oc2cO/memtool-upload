@@ -727,7 +727,6 @@ export default function CaptureScreen() {
       savedResult = await addMemory(trimmed, {
         tags: selectedTags,
         facets: extractedFacets ?? undefined,
-        bypassCaptureLimit: true,
       });
       syncedToCloud = savedResult.syncedToCloud;
     } catch (err) {

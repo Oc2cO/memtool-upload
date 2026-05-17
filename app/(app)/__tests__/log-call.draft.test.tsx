@@ -16,7 +16,7 @@ import { act, fireEvent, render } from "@testing-library/react-native";
 
 const mockReplace = jest.fn();
 const mockBack = jest.fn();
-const mockAddCall = jest.fn();
+const mockAddMemory = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({
@@ -52,7 +52,7 @@ jest.mock("@/context/AuthContext", () => ({
 
 jest.mock("@/context/MemoriesContext", () => ({
   useMemories: () => ({
-    addCall: mockAddCall,
+    addMemory: mockAddMemory,
     todayMemories: [],
   }),
 }));
@@ -97,7 +97,7 @@ describe("LogCallScreen — draft persistence (Task #319)", () => {
     mockedStorage.removeItem.mockReset();
     mockReplace.mockReset();
     mockBack.mockReset();
-    mockAddCall.mockReset();
+    mockAddMemory.mockReset();
     mockCurrentUserId = "alice";
   });
 
@@ -142,7 +142,7 @@ describe("LogCallScreen — draft persistence (Task #319)", () => {
 
   test("a successful save clears the persisted draft", async () => {
     const store = installInMemoryStorage();
-    mockAddCall.mockResolvedValueOnce({ syncedToCloud: true });
+    mockAddMemory.mockResolvedValueOnce({ syncedToCloud: true });
 
     const view = render(<LogCallScreen />);
     await act(async () => {
@@ -204,7 +204,7 @@ describe("LogCallScreen — draft persistence (Task #319)", () => {
     const store = installInMemoryStorage();
     const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { CaptureBlockedError } = jest.requireActual("@/lib/subscription");
-    mockAddCall.mockImplementationOnce(() =>
+    mockAddMemory.mockImplementationOnce(() =>
       Promise.reject(new CaptureBlockedError()),
     );
 
@@ -238,7 +238,7 @@ describe("LogCallScreen — draft persistence (Task #319)", () => {
 
   test("saving before the debounce fires does not let the timer revive the draft", async () => {
     const store = installInMemoryStorage();
-    mockAddCall.mockResolvedValueOnce({ syncedToCloud: true, id: "c1" });
+    mockAddMemory.mockResolvedValueOnce({ syncedToCloud: true, id: "c1" });
     const view = render(<LogCallScreen />);
     await act(async () => {
       await Promise.resolve();
@@ -267,7 +267,7 @@ describe("LogCallScreen — draft persistence (Task #319)", () => {
     const store = installInMemoryStorage();
     const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
     const { CaptureBlockedError } = jest.requireActual("@/lib/subscription");
-    mockAddCall.mockImplementationOnce(() =>
+    mockAddMemory.mockImplementationOnce(() =>
       Promise.reject(new CaptureBlockedError()),
     );
 

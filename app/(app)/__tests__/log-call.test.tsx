@@ -4,7 +4,7 @@
  * test (Task #138) — log-a-call also creates a memory and shares the
  * exact same cooldown contract, so both screens must stay in lockstep:
  *
- *   1. `addCall` throws `CaptureBlockedError` →
+ *   1. `addMemory` throws `CaptureBlockedError` →
  *      `Alert.alert` is called with the cooldown title + copy, AND
  *   2. `router.replace("/subscription")` is NOT called.
  *
@@ -24,7 +24,7 @@ import {
 
 const mockReplace = jest.fn();
 const mockBack = jest.fn();
-const mockAddCall = jest.fn();
+const mockAddMemory = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({
@@ -57,7 +57,7 @@ jest.mock("@/context/AuthContext", () => ({
 
 jest.mock("@/context/MemoriesContext", () => ({
   useMemories: () => ({
-    addCall: mockAddCall,
+    addMemory: mockAddMemory,
     todayMemories: [],
   }),
 }));
@@ -80,7 +80,7 @@ describe("LogCallScreen — cooldown branch (Task #138)", () => {
   beforeEach(() => {
     mockReplace.mockReset();
     mockBack.mockReset();
-    mockAddCall.mockReset();
+    mockAddMemory.mockReset();
     alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
   });
 
@@ -88,11 +88,11 @@ describe("LogCallScreen — cooldown branch (Task #138)", () => {
     alertSpy.mockRestore();
   });
 
-  test("addCall throws CaptureBlockedError → cooldown alert fires AND no /subscription redirect", async () => {
+  test("addMemory throws CaptureBlockedError → cooldown alert fires AND no /subscription redirect", async () => {
     // mockImplementationOnce (not mockRejectedValueOnce) — same
     // reason as the Capture test: the eager form trips jest's
     // unhandled-rejection watcher and deadlocks act().
-    mockAddCall.mockImplementationOnce(() =>
+    mockAddMemory.mockImplementationOnce(() =>
       Promise.reject(new CaptureBlockedError()),
     );
 
@@ -130,8 +130,8 @@ describe("LogCallScreen — cooldown branch (Task #138)", () => {
     expect(mockBack).not.toHaveBeenCalled();
   });
 
-  test("addCall succeeds → no cooldown alert, save flow proceeds normally", async () => {
-    mockAddCall.mockResolvedValueOnce({ syncedToCloud: true });
+  test("addMemory succeeds → no cooldown alert, save flow proceeds normally", async () => {
+    mockAddMemory.mockResolvedValueOnce({ syncedToCloud: true });
 
     const view = render(<LogCallScreen />);
     fireEvent.changeText(
@@ -147,7 +147,9 @@ describe("LogCallScreen — cooldown branch (Task #138)", () => {
       fireEvent.press(view.getByText("Save"));
     });
 
-    expect(mockAddCall).toHaveBeenCalledTimes(1);
+    expect(mockAddMemory).toHaveBeenCalledTimes(1);
+    expect(mockAddMemory.mock.calls[0][1]).toMatchObject({ kind: "call", person: "Alex" });
+    expect(mockAddMemory.mock.calls[0][1]).not.toHaveProperty("bypassCaptureLimit");
     expect(alertSpy).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
   });

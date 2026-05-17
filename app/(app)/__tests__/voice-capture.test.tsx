@@ -464,8 +464,8 @@ describe("VoiceCaptureScreen — Live Activity lifecycle (Task #229)", () => {
   });
 
   test("legacy capture-limit rejection leaves the draft in place without subscription routing", async () => {
-    // Core memory creation is unlimited/free right now, and voice
-    // saves pass bypassCaptureLimit: true. If a stale backend or
+    // Voice capture is a normal new-memory path and should respect
+    // the capture limit. If a stale backend or
     // old mock still returns the legacy daily-limit error, the screen
     // should keep the draft available for retry instead of sending
     // the user to an upsell route.
@@ -485,10 +485,9 @@ describe("VoiceCaptureScreen — Live Activity lifecycle (Task #229)", () => {
     expect(mockBack).not.toHaveBeenCalled();
     expect(view.getByText("Save")).toBeTruthy();
 
-    // The save attempt still used the current unlimited-core payload.
+    // The save attempt still used the normal new-memory payload.
     expect(mockAddMemory).toHaveBeenCalledWith(expect.any(String), {
       tags: [],
-      bypassCaptureLimit: true,
     });
   });
 
@@ -817,7 +816,6 @@ describe("VoiceCaptureScreen — five-phase state machine (Task #201)", () => {
     );
     expect(options).toEqual({
       tags: ["work", "idea"],
-      bypassCaptureLimit: true,
     });
   });
 
