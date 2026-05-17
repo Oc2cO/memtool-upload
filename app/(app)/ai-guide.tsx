@@ -159,7 +159,7 @@ const INTRO_MESSAGE: StoredAiGuideMessage = {
 
 // Height of the dedicated Mem stage at the top of the AI chat
 // (Task #283). Sized to comfortably hold a 120 px Mem character +
-// the one-time "Tap Mem to skip" hint underneath without crowding
+// the one-time "Tap Memora to skip" hint underneath without crowding
 // the first chat bubble.
 const MEM_STAGE_HEIGHT = 168;
 const FIRST_ENTRY_CONTENT_GAP = 32;
@@ -915,7 +915,7 @@ export default function AiGuideScreen() {
           onPress={interruptSpeech}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Tap Mem to skip the current voice"
+          accessibilityLabel="Tap Memora to skip the current voice"
           style={styles.stageTap}
         >
           <MemCharacter
@@ -982,7 +982,7 @@ export default function AiGuideScreen() {
         </View>
         <View style={styles.headerLeft}>
           <Ionicons name="sparkles" size={18} color={PALETTE.mem} />
-          <Text style={styles.headerTitle}>Mem</Text>
+          <Text style={styles.headerTitle}>MeMChat</Text>
         </View>
         <View style={styles.headerActions}>
           <Pressable
@@ -990,7 +990,7 @@ export default function AiGuideScreen() {
             hitSlop={12}
             style={styles.headerIconBtn}
             accessibilityRole="button"
-            accessibilityLabel={muted ? "Unmute Mem's voice" : "Mute Mem's voice"}
+            accessibilityLabel={muted ? "Unmute Memora's voice" : "Mute Memora's voice"}
             accessibilityState={{ selected: muted }}
           >
             <Feather
@@ -1004,7 +1004,7 @@ export default function AiGuideScreen() {
             hitSlop={12}
             style={styles.clearBtn}
             accessibilityRole="button"
-            accessibilityLabel="Clear conversation with Mem"
+            accessibilityLabel="Clear conversation with Memora"
           >
             <Text style={styles.clearBtnText}>Clear</Text>
           </Pressable>
