@@ -21,15 +21,14 @@ const INTRO_SOURCE = require("@/assets/videos/intro.mp4");
  * UX:
  *   - Tap anywhere to pause / resume.
  *   - Long-press anywhere to skip and close.
- *   - Always-reachable Close pill (top right), Mute toggle (top
- *     left), and Replay pill (bottom center).
+ *   - Always-reachable Close pill (top right) and Replay pill
+ *     (bottom center).
  *   - Auto-dismisses on `playToEnd`; a 23s hard cap guarantees
  *     the user is never trapped on the splash.
  */
 export default function IntroVideoScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const closedRef = useRef(false);
@@ -43,14 +42,15 @@ export default function IntroVideoScreen() {
 
   const player = useVideoPlayer(INTRO_SOURCE, (p) => {
     p.loop = false;
-    p.muted = muted;
+    p.muted = true;
     p.play();
   });
 
-  // Keep the player's mute state in sync with the toggle.
+  // The shipped MP4 still contains baked voiceover; keep replay silent until
+  // a Steve-approved intro voice asset replaces it.
   useEffect(() => {
-    player.muted = muted;
-  }, [player, muted]);
+    player.muted = true;
+  }, [player, replayKey]);
 
   // Keep the player's playback state in sync with the pause toggle.
   useEffect(() => {
@@ -126,22 +126,6 @@ export default function IntroVideoScreen() {
         <BlurView intensity={30} tint="dark" style={styles.pillInner}>
           <Ionicons name="close" size={20} color="#fff" />
           <Text style={styles.pillText}>Close</Text>
-        </BlurView>
-      </Pressable>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={muted ? "Unmute Memora" : "Mute Memora"}
-        onPress={() => setMuted((m) => !m)}
-        style={[styles.pill, { top: insets.top + 12, left: 16 }]}
-        hitSlop={12}
-      >
-        <BlurView intensity={30} tint="dark" style={styles.pillInner}>
-          <Ionicons
-            name={muted ? "volume-mute" : "volume-high"}
-            size={20}
-            color="#fff"
-          />
         </BlurView>
       </Pressable>
 
