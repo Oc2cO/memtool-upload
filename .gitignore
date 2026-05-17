@@ -52,3 +52,9 @@ yarn-error.*
 .vercel
 
 .env
+
+# Local-only BBWAAS / agent sync context
+.agent_sync/
+
+# Local-only MemTool source-of-truth files
+MEMTOOL_SOURCE_OF_TRUTH_*.md
