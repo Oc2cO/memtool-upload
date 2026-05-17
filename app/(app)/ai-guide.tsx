@@ -152,8 +152,8 @@ const INTRO_MESSAGE: StoredAiGuideMessage = {
   id: "intro",
   role: "mem",
   text:
-    "Hi — I'm Mem. Tell me how today's going. There's no right way to talk " +
-    "about it; I'm here to listen.",
+    "Hi — I'm Memora. Tell me what's on your mind. I'll help you reflect, " +
+    "organize the pieces, and notice what matters.",
   accentMood: "calm",
 };
 
@@ -806,7 +806,7 @@ export default function AiGuideScreen() {
             </Text>
           </View>
           <FreeTextInput
-            placeholder="Tell Mem what's on your mind…"
+            placeholder="Tell Memora what's on your mind…"
             skippable={false}
             disabled={sending}
             onSubmit={(value) => {
@@ -845,12 +845,12 @@ export default function AiGuideScreen() {
             accessibilityLabel="Memora is here whenever you're ready"
           >
             <Text style={styles.emptyComposerNoteText}>
-              Memora is here when you're ready.
+              Memora is listening when you're ready.
             </Text>
           </View>
         ) : null}
         <FreeTextInput
-          placeholder="Tell Mem what's on your mind…"
+          placeholder="Tell Memora what's on your mind…"
           skippable={false}
           disabled={sending}
           onSubmit={(value) => {

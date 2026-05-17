@@ -96,7 +96,7 @@ export interface AiGuideChatResponse {
  * "Try again" banner and the user can re-send their last message.
  */
 export const AI_GUIDE_NETWORK_ERROR_MESSAGE =
-  "Mem couldn't reach the network. Try again in a moment.";
+  "Memora couldn't reach the network. Try again in a moment.";
 
 /**
  * User-facing fallback shown when the server replies but the body
@@ -104,7 +104,7 @@ export const AI_GUIDE_NETWORK_ERROR_MESSAGE =
  * Same retry affordance as the network case.
  */
 export const AI_GUIDE_GENERIC_ERROR_MESSAGE =
-  "Mem couldn't respond just now. Try again in a moment.";
+  "Memora couldn't respond just now. Try again in a moment.";
 
 /**
  * User-facing fallback shown when Polsia returns 429 — either the
@@ -114,7 +114,7 @@ export const AI_GUIDE_GENERIC_ERROR_MESSAGE =
  * tier-gating. Stays calm and retryable.
  */
 export const AI_GUIDE_RATE_LIMIT_MESSAGE =
-  "Mem is being asked a lot right now. Try again in a moment.";
+  "Memora is being asked a lot right now. Try again in a moment.";
 
 /**
  * User-facing copy for the dedicated "backend is down" banner that
@@ -129,7 +129,7 @@ export const AI_GUIDE_RATE_LIMIT_MESSAGE =
  * for the same reason.
  */
 export const AI_GUIDE_UNAVAILABLE_MESSAGE =
-  "Mem is temporarily unavailable — we'll be back shortly.";
+  "Memora is temporarily unavailable — we'll be back shortly.";
 
 /**
  * Discriminated error thrown by `sendAiGuideMessage` for everything
