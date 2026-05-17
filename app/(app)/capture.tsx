@@ -676,7 +676,7 @@ export default function CaptureScreen() {
     void (async () => {
       const asset = await acquireSelfieAsset();
       if (!asset) return;
-      await persistSelfie(asset, { bypassCaptureLimit: true });
+      await persistSelfie(asset, { bypassCaptureLimit: false });
     })();
   }, [
     savingSelfie,
