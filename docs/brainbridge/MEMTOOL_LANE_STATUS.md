@@ -6,6 +6,9 @@ Branch: `mobile-app`
 
 Active project: MemTool / Oc2cO
 
+Latest shared hub commit:
+- `6966826 docs: add MemTool shared brain hub`
+
 ## Current Lane
 
 LANE 27S-E - Home Memory Atrium V1 Build
@@ -29,6 +32,10 @@ Home Stage 2:
 Home Stage 3:
 - `669528b feat: polish home atrium foreground objects`
 - Result: Polished foreground destination objects for Quick Capture, MeMChat, Daily Recap, Archive, Games, Daily Boost, Website, Upgrade, Learn, and FAQ/About.
+
+Shared Brain Hub:
+- `6966826 docs: add MemTool shared brain hub`
+- Result: Added durable repo-readable Brain Hub under `docs/brainbridge`.
 
 ## Next Home Stage
 
@@ -63,6 +70,10 @@ Loading / Splash / First-Impression Polish:
 Avatar asset wiring / asset prep:
 - Existing reference assets need manifest and app-readiness review.
 - Generated sheets/reference images are reference-only until app-ready exports are selected.
+
+Loading / Splash / Intro polish:
+- Parked until Steve explicitly opens the lane.
+- Do not touch splash or intro during Home work.
 
 ## Resume Proof
 

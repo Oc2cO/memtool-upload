@@ -4,6 +4,12 @@ These rules apply to GPT, Codex, future chats, and future agents working in this
 
 ## Before Acting
 
+Every agent must run the ENTER GATE in:
+
+```text
+docs/brainbridge/MEMTOOL_WORKFLOW.md
+```
+
 Read local active context when available:
 
 ```text
@@ -25,6 +31,8 @@ git status --short --branch
 git log -1 --oneline
 ```
 
+Do not rely on chat memory alone.
+
 ## Source Of Truth Rules
 
 - Repo/Git/GitHub are technical truth.
@@ -33,6 +41,7 @@ git log -1 --oneline
 - File Library/uploads are the evidence vault.
 - Canvas first for drafting shared plans, summaries, and context blocks.
 - Do not trust old chat without current proof.
+- Do not rely on chat memory alone.
 
 ## Hard No-Touch Rules
 
@@ -41,6 +50,7 @@ git log -1 --oneline
 - Do not use Replit assumptions.
 - Do not use Notepad workflow.
 - Do not use `git add .`.
+- Do not make mixed-lane edits.
 - Do not make broad mixed-lane patches.
 - Do not replace/delete/recreate files to make small edits.
 - Do not touch native/prebuild/build config unless Steve opens that lane.
@@ -57,6 +67,25 @@ git log -1 --oneline
 - Avoid new dependencies unless Steve explicitly opens that work.
 - Validate with the requested command set for the lane.
 - Report exact files changed, validation output, and whether a commit is recommended.
+
+## Exit Rules
+
+Before closing, every agent must run the EXIT GATE in:
+
+```text
+docs/brainbridge/MEMTOOL_WORKFLOW.md
+```
+
+The final report must include:
+- Exact files changed.
+- Validation results.
+- Git status.
+- Git diff stat.
+- Suggested commit message.
+- Whether `docs/brainbridge` needs updates.
+- Whether `.agent_sync` needs updates.
+- Whether image/screenshot manifest needs updates.
+- Next recommended lane.
 
 ## Image Rules
 

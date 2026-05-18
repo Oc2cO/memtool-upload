@@ -12,6 +12,7 @@ BBWAAS means Brain Bridge Workflow Active Agent Sync.
 
 Core rules:
 - Scopecheck before acting.
+- Run the ENTER GATE and EXIT GATE in `MEMTOOL_WORKFLOW.md`.
 - Separate verified proof from assumptions.
 - Repo/Git/GitHub are technical truth.
 - Canvas first for drafting shared context and lane plans.
@@ -25,6 +26,11 @@ Core rules:
 - Do not use Notepad workflow.
 - Do not use `git add .`.
 - Do not mix broad lanes in one patch.
+
+Required workflow:
+- `docs/brainbridge/MEMTOOL_WORKFLOW.md` is required reading for agents.
+- Agents must use its ENTER GATE before editing.
+- Agents must use its EXIT GATE before closing.
 
 ## Project
 
@@ -47,6 +53,9 @@ Home completed:
 - Stage 1: `2fb2a77 feat: shape home memory atrium panels`
 - Stage 2: `eec39b3 feat: layer home atrium visual system`
 - Stage 3: `669528b feat: polish home atrium foreground objects`
+
+Shared Brain Hub:
+- `6966826 docs: add MemTool shared brain hub`
 
 Next Home stage:
 - Stage 4 - Motion / Snap Feel / Spacing / Visual Hierarchy Tuning
@@ -106,6 +115,28 @@ Panel 3 - Oc2cO / Upgrade / Learn:
 - Games Visual Polish / Memory Match Premium Pass
 - Loading / Splash / First-Impression Polish
 - Avatar asset wiring / asset prep
+
+## Sub-Brain Map
+
+Required workflow:
+- `MEMTOOL_WORKFLOW.md` - ENTER / EXIT gates and update rules.
+
+Core hub:
+- `MEMTOOL_MASTER_BRAIN_BLOCK.md` - durable project overview and guardrails.
+- `MEMTOOL_LANE_STATUS.md` - current lane, completed checkpoints, parked lanes, next lane/stage.
+- `MEMTOOL_AGENT_RULES.md` - agent behavior, no-touch rules, validation expectations.
+
+Sub-brains:
+- `MEMTOOL_HOME_ATRIUM_SOT.md` - Home Memory Atrium lane SOT.
+- `MEMTOOL_VOICE_CAPTURE_SOT.md` - Voice Capture completed/parked work SOT.
+- `MEMTOOL_MEMCHAT_SOT.md` - MeMChat / Memora future polish SOT.
+- `MEMTOOL_GAMES_VISUAL_SOT.md` - Games visual evidence and future polish SOT.
+- `MEMTOOL_ASSET_MANIFEST.md` - character/brand asset manifest and app-ready export rules.
+
+Evidence docs:
+- `MEMTOOL_IMAGE_MANIFEST.md` - screenshot/reference/image evidence manifest.
+- `MEMTOOL_SCREENSHOT_INTAKE.md` - screenshot observations and interpretation.
+- `MEMTOOL_VISUAL_BACKLOG.md` - parked visual lanes and future work.
 
 ## Hard No-Touch Rules
 
