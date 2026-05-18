@@ -225,31 +225,23 @@ export default function HomeScreen() {
       accessibilityLabel: "MeMChat, talk with Memora",
     },
     {
-      title: "Daily Chapter",
+      title: "Daily Recap",
       subtitle: "Review today",
       route: "/recap",
       icon: "today",
       iconColor: "#f472b6",
       badgeColor: "rgba(244, 114, 182, 0.14)",
       gradient: ["rgba(244, 114, 182, 0.17)", "rgba(21, 16, 42, 0.88)"],
-      accessibilityLabel: "Daily Chapter, review today",
-    },
-    {
-      title: "Memory Book",
-      subtitle: "Browse archive",
-      route: "/archive",
-      icon: "book",
-      iconColor: "#ffb74d",
-      badgeColor: "rgba(255, 183, 77, 0.14)",
-      gradient: ["rgba(255, 183, 77, 0.16)", "rgba(21, 16, 42, 0.88)"],
-      accessibilityLabel: "Memory Book, browse archive",
+      accessibilityLabel: "Daily Recap, review today",
     },
   ];
 
   return (
     <SettleOnMount style={[styles.container, { backgroundColor: colors.background }]}>
       <Animated.ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 24, paddingBottom: 100 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 104 }]}
+        decelerationRate="fast"
+        snapToAlignment="start"
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
@@ -297,97 +289,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <AliveButton
-          onPress={handleCapture}
-          style={[
-            styles.captureContainer,
-            { shadowColor: colors.primaryAction },
-          ]}
-          glowColor={colors.primaryAction}
-          glowIntensity={1}
-          rippleColor="rgba(255, 255, 255, 0.42)"
-          fillColor={colors.primaryAction}
-          pressedFillColor={colors.primaryActionPressed}
-          colorDurationMs={200}
-          glowInDurationMs={300}
-          glowOutDurationMs={300}
-          // Tiny squish on press, then a Reanimated 4 spring bounces
-          // back through SPRINGS.lift inside AliveButton. Pairs with
-          // the "capture" AHAP so the button feels physical, not flat.
-          pressScale={0.97}
-          screenKey="home"
-          accessibilityLabel="Quick Capture"
-        >
-          <View style={styles.captureGradient}>
-            <View style={styles.captureIconBgActive}>
-              <Ionicons name="add" size={32} color="#ffffff" />
-            </View>
-            <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
-              Quick Capture
-            </Text>
-            <Text
-              style={[
-                styles.captureSubtitle,
-                { color: "rgba(255, 255, 255, 0.78)" },
-              ]}
-            >
-              Capture a fleeting memory
-            </Text>
-          </View>
-        </AliveButton>
-
-        {illustrationQuota.visible && (
-          <ScalePress
-            onPress={
-              illustrationQuota.atLimit
-                ? () => handleNavigate("/subscription")
-                : undefined
-            }
-            disabled={!illustrationQuota.atLimit}
-            style={[
-              styles.illustrationQuotaRow,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-              },
-            ]}
-            accessibilityLabel={
-              illustrationQuota.atLimit
-                ? illustrationQuota.upsellLabel
-                : illustrationQuota.label
-            }
-          >
-            <Ionicons
-              name={illustrationQuota.atLimit ? "lock-closed" : "sparkles"}
-              size={16}
-              color={
-                illustrationQuota.atLimit ? colors.mutedForeground : colors.primary
-              }
-            />
-            <Text
-              style={[
-                styles.illustrationQuotaText,
-                {
-                  color: illustrationQuota.atLimit
-                    ? colors.mutedForeground
-                    : colors.foreground,
-                },
-              ]}
-            >
-              {illustrationQuota.atLimit
-                ? illustrationQuota.upsellLabel
-                : illustrationQuota.label}
-            </Text>
-            {illustrationQuota.atLimit && (
-              <Ionicons
-                name="chevron-forward"
-                size={16}
-                color={colors.mutedForeground}
-              />
-            )}
-          </ScalePress>
-        )}
-
         <BreatheCard index={0} style={styles.atriumSection}>
           <LinearGradient
             colors={["rgba(155, 122, 232, 0.18)", "rgba(0, 229, 255, 0.10)"]}
@@ -398,10 +299,10 @@ export default function HomeScreen() {
             <View style={styles.atriumHeader}>
               <View style={styles.atriumHeaderCopy}>
                 <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
-                  Memory Atrium
+                  Panel 1 · Core Memory
                 </Text>
                 <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
-                  Choose a doorway
+                  Memora’s Atrium
                 </Text>
               </View>
               <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
@@ -409,8 +310,96 @@ export default function HomeScreen() {
               </View>
             </View>
             <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
-              Memora and Sagous are making room for your living memory world.
+              Talk with Memora, capture a spark, or open today’s glowing chapter.
             </Text>
+
+            <AliveButton
+              onPress={handleCapture}
+              style={[
+                styles.captureContainer,
+                { shadowColor: colors.primaryAction },
+              ]}
+              glowColor={colors.primaryAction}
+              glowIntensity={1}
+              rippleColor="rgba(255, 255, 255, 0.42)"
+              fillColor={colors.primaryAction}
+              pressedFillColor={colors.primaryActionPressed}
+              colorDurationMs={200}
+              glowInDurationMs={300}
+              glowOutDurationMs={300}
+              pressScale={0.97}
+              screenKey="home"
+              accessibilityLabel="Quick Capture"
+            >
+              <View style={styles.captureGradient}>
+                <View style={styles.captureIconBgActive}>
+                  <Ionicons name="add" size={32} color="#ffffff" />
+                </View>
+                <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
+                  Quick Capture
+                </Text>
+                <Text
+                  style={[
+                    styles.captureSubtitle,
+                    { color: "rgba(255, 255, 255, 0.78)" },
+                  ]}
+                >
+                  A bright mirror for fleeting memories
+                </Text>
+              </View>
+            </AliveButton>
+
+            {illustrationQuota.visible && (
+              <ScalePress
+                onPress={
+                  illustrationQuota.atLimit
+                    ? () => handleNavigate("/subscription")
+                    : undefined
+                }
+                disabled={!illustrationQuota.atLimit}
+                style={[
+                  styles.illustrationQuotaRow,
+                  {
+                    backgroundColor: "rgba(255, 255, 255, 0.06)",
+                    borderColor: colors.border,
+                  },
+                ]}
+                accessibilityLabel={
+                  illustrationQuota.atLimit
+                    ? illustrationQuota.upsellLabel
+                    : illustrationQuota.label
+                }
+              >
+                <Ionicons
+                  name={illustrationQuota.atLimit ? "lock-closed" : "sparkles"}
+                  size={16}
+                  color={
+                    illustrationQuota.atLimit ? colors.mutedForeground : colors.primary
+                  }
+                />
+                <Text
+                  style={[
+                    styles.illustrationQuotaText,
+                    {
+                      color: illustrationQuota.atLimit
+                        ? colors.mutedForeground
+                        : colors.foreground,
+                    },
+                  ]}
+                >
+                  {illustrationQuota.atLimit
+                    ? illustrationQuota.upsellLabel
+                    : illustrationQuota.label}
+                </Text>
+                {illustrationQuota.atLimit && (
+                  <Ionicons
+                    name="chevron-forward"
+                    size={16}
+                    color={colors.mutedForeground}
+                  />
+                )}
+              </ScalePress>
+            )}
 
             <View style={styles.atriumGrid}>
               {atriumDoorways.map((doorway) => (
@@ -578,7 +567,56 @@ export default function HomeScreen() {
           onDismiss={() => setCelebratedMilestone(null)}
         />
 
-        <BreatheCard index={0} style={styles.boostCard}>
+        <BreatheCard index={1} style={styles.atriumSection}>
+          <LinearGradient
+            colors={["rgba(255, 183, 77, 0.16)", "rgba(155, 122, 232, 0.12)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.atriumShell, { borderColor: colors.border }]}
+          >
+            <View style={styles.atriumHeader}>
+              <View style={styles.atriumHeaderCopy}>
+                <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
+                  Panel 2 · Vault / Games / Guidance
+                </Text>
+                <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
+                  Sagous’ Memory Vault
+                </Text>
+              </View>
+              <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
+                <Ionicons name="library" size={20} color="#ffb74d" />
+              </View>
+            </View>
+            <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
+              Browse the book-vault, train in the game room, or take today’s curated signal.
+            </Text>
+
+            <ScalePress
+              onPress={() => handleNavigate("/archive")}
+              style={styles.vaultDoor}
+              accessibilityLabel="Archive"
+            >
+              <LinearGradient
+                colors={["rgba(255, 183, 77, 0.18)", "rgba(21, 16, 42, 0.88)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.vaultDoorSurface, { borderColor: colors.border }]}
+              >
+                <View style={[styles.atriumIconBadge, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
+                  <Ionicons name="book" size={20} color="#ffb74d" />
+                </View>
+                <View style={styles.atriumDoorCopy}>
+                  <Text style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
+                    Archive
+                  </Text>
+                  <Text style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
+                    Open the memory book-vault
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+              </LinearGradient>
+            </ScalePress>
+
         <ScalePress
           onPress={() => handleNavigate("/tip-archive")}
           style={styles.boostCardInner}
@@ -619,9 +657,7 @@ export default function HomeScreen() {
             <Text style={[styles.boostText, { color: colors.foreground }]}>{todayTip.text}</Text>
           </LinearGradient>
         </ScalePress>
-        </BreatheCard>
 
-        <BreatheCard index={1}>
           <View style={[styles.factCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.boostHeaderLeft}>
               <Ionicons name="school" size={16} color={colors.accent} />
@@ -629,7 +665,6 @@ export default function HomeScreen() {
             </View>
             <Text style={[styles.factText, { color: colors.foreground }]}>{todayFact.text}</Text>
           </View>
-        </BreatheCard>
 
         <MemNoticedCard />
 
@@ -670,8 +705,32 @@ export default function HomeScreen() {
             ))}
           </View>
         )}
+          </LinearGradient>
+        </BreatheCard>
 
-        <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Train Your Mind</Text>
+        <BreatheCard index={2} style={styles.atriumSection}>
+          <LinearGradient
+            colors={["rgba(0, 229, 255, 0.14)", "rgba(244, 114, 182, 0.10)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.atriumShell, { borderColor: colors.border }]}
+          >
+            <View style={styles.atriumHeader}>
+              <View style={styles.atriumHeaderCopy}>
+                <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
+                  Panel 3 · Oc2cO / Upgrade / Learn
+                </Text>
+                <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
+                  Portal & Learning Theater
+                </Text>
+              </View>
+              <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
+                <Ionicons name="planet" size={20} color={colors.accent} />
+              </View>
+            </View>
+            <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
+              The website portal is staged for a later route; Pro and Learn stay tappable now.
+            </Text>
 
         <View style={styles.grid}>
           <ScalePress
@@ -770,6 +829,8 @@ export default function HomeScreen() {
             </LinearGradient>
           </ScalePress>
         </View>
+          </LinearGradient>
+        </BreatheCard>
       </Animated.ScrollView>
     </SettleOnMount>
   );
@@ -947,6 +1008,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     justifyContent: "space-between",
+  },
+  vaultDoor: {
+    width: "100%",
+    borderRadius: radius.md,
+  },
+  vaultDoorSurface: {
+    minHeight: 104,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
   },
   atriumIconBadge: {
     width: 36,
