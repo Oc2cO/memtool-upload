@@ -63,6 +63,10 @@ export type RegisterResult =
   | { registered: true }
   | { registered: false; reason: STTUnavailableReason };
 
+export function isStreamingTranscriptionDisabledByLaunchSafety(): boolean {
+  return !ENABLE_STREAMING_TRANSCRIPTION;
+}
+
 /**
  * Attempt to register the on-device speech-to-text provider.
  * Idempotent — calling it more than once is a no-op so app-boot
@@ -97,6 +101,9 @@ export function registerOnDeviceSpeechToText(): RegisterResult {
     // voice-capture screen can surface a specific explanation for each
     // failure mode without importing the native module itself.
     setSpeechToTextUnavailableReason(reason);
+    if (__DEV__) {
+      console.info("[speech-to-text] unavailable", { reason });
+    }
     return {
       registered: false,
       reason,

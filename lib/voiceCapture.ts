@@ -286,8 +286,8 @@ export function isFoundationModelsAvailable(): boolean {
 export async function transcribeRecording(audioFileUri: string): Promise<string> {
   if (registry.stt == null) {
     throw new Error(
-      "Voice transcription is not available on this device yet. " +
-        "The on-device speech-to-text module ships in a future build.",
+      "Voice transcription is not available in this installed build. " +
+        "Install a build that includes voice transcription.",
     );
   }
   const text = await registry.stt(audioFileUri);

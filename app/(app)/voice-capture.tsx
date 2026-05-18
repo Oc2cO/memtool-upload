@@ -181,7 +181,7 @@ function sttUnavailableMessage(reason: STTUnavailableReason | null): string {
     case "framework_not_present":
       return "Apple's Speech framework isn't available on this device.";
     case "module_not_linked":
-      return "Voice transcription isn't available in this build. It ships in the production release.";
+      return "Voice transcription is not available in this installed build. Install a build that includes voice transcription.";
     case "non_ios_platform":
       return "Voice transcription is only available on iPhone and iPad.";
     case "recognizer_unavailable":
@@ -540,7 +540,9 @@ export default function VoiceCaptureScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch (err) {
       releaseRecordingAudioMode();
-      console.warn("[voice-capture] start failed", err);
+      if (__DEV__) {
+        console.warn("[voice-capture] start failed", err);
+      }
       Alert.alert(
         "Couldn't start recording",
         "Something interrupted the microphone. Try again in a moment.",
@@ -598,7 +600,9 @@ export default function VoiceCaptureScreen() {
       await recorder.stop();
       uri = recorder.uri;
     } catch (err) {
-      console.warn("[voice-capture] stop failed", err);
+      if (__DEV__) {
+        console.warn("[voice-capture] stop failed", err);
+      }
     } finally {
       releaseRecordingAudioMode();
     }
@@ -650,7 +654,9 @@ export default function VoiceCaptureScreen() {
       }
       setPhase("drafting");
     } catch (err) {
-      console.warn("[voice-capture] transcribe / extract failed", err);
+      if (__DEV__) {
+        console.warn("[voice-capture] transcribe / extract failed", err);
+      }
       Alert.alert(
         "Couldn't process that recording",
         err instanceof Error

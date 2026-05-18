@@ -633,6 +633,31 @@ describe("VoiceCaptureScreen — five-phase state machine (Task #201)", () => {
     expect(mockRecorder.record).not.toHaveBeenCalled();
   });
 
+  test("module_not_linked explains the installed build is missing voice transcription", async () => {
+    mockSttAvailable = false;
+    mockSttUnavailableReason = "module_not_linked";
+
+    const view = render(<VoiceCaptureScreen />);
+
+    const message =
+      "Voice transcription is not available in this installed build. Install a build that includes voice transcription.";
+    expect(view.queryByText(message)).toBeTruthy();
+
+    await act(async () => {
+      fireEvent(
+        view.getByLabelText("Hold to record a voice memory"),
+        "pressIn",
+      );
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      "Voice transcription unavailable",
+      message,
+      [{ text: "OK", style: "cancel" }],
+    );
+    expect(mockRecorder.prepareToRecordAsync).not.toHaveBeenCalled();
+  });
+
   test("authorization_denied: idle card shows Open Settings and pressing the mic offers an Open Settings alert action (Task #264)", async () => {
     // The OS-level mic / speech-recognition prompt was denied. The
     // user can't fix this from inside the app — they have to flip

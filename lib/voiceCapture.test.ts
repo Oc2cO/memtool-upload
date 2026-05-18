@@ -32,7 +32,7 @@ describe("provider registry defaults", () => {
 describe("transcribeRecording", () => {
   it("rejects with a user-readable message when no provider is registered", async () => {
     await expect(transcribeRecording("file://recording.m4a")).rejects.toThrow(
-      /not available/i,
+      "Voice transcription is not available in this installed build. Install a build that includes voice transcription.",
     );
   });
 

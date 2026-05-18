@@ -15,10 +15,13 @@
 import {
   ON_DEVICE_SPEECH_ENGINE,
   __resetSpeechToTextRegistrationForTests,
+  isStreamingTranscriptionDisabledByLaunchSafety,
   registerOnDeviceSpeechToText,
 } from "./speechToText";
 import {
   getSpeechToTextEngineName,
+  getSpeechToTextUnavailableReason,
+  isStreamingTranscriptionAvailable,
   isSpeechToTextAvailable,
   resetVoiceCaptureProviders,
   transcribeRecording,
@@ -50,6 +53,7 @@ describe("registerOnDeviceSpeechToText", () => {
 
     expect(result).toEqual({ registered: false, reason: "module_not_linked" });
     expect(isSpeechToTextAvailable()).toBe(false);
+    expect(getSpeechToTextUnavailableReason()).toBe("module_not_linked");
     expect(getSpeechToTextEngineName()).toBeNull();
   });
 
@@ -65,6 +69,8 @@ describe("registerOnDeviceSpeechToText", () => {
     // The drafting badge text comes straight from this label, so
     // the value is part of the user-facing contract.
     expect(getSpeechToTextEngineName()).toBe(ON_DEVICE_SPEECH_ENGINE);
+    expect(isStreamingTranscriptionDisabledByLaunchSafety()).toBe(true);
+    expect(isStreamingTranscriptionAvailable()).toBe(false);
   });
 
   test("registered provider delegates to the native transcribe call", async () => {
