@@ -2,6 +2,12 @@
 
 Purpose: Durable summary of screenshot evidence and how future agents should use it.
 
+For the full access and storage map, see:
+
+```text
+docs/brainbridge/MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md
+```
+
 ## Current Intake Summary
 
 Evidence currently known from recent uploads/chat:
@@ -59,3 +65,4 @@ Interpretation:
 - Summaries should separate observation from interpretation.
 - Do not treat screenshot thumbnails as full-fidelity proof.
 - Do not spend build credits or run EAS to gather screenshots without Steve's explicit approval.
+- Add or update manifest entries when new screenshots are uploaded, created, or promoted to lane evidence.

@@ -4,6 +4,12 @@ Purpose: Shared evidence and reference manifest for screenshots, uploads, local 
 
 Images are evidence or references until explicitly promoted into an app-ready asset lane.
 
+For access rules across GPT, Codex, repo docs, local folders, and uploads, see:
+
+```text
+docs/brainbridge/MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md
+```
+
 ## Active Local Reference Folder
 
 `C:\Users\Sagou\OneDrive\Desktop\MemTool Home Atrium References`
@@ -86,3 +92,21 @@ Lane:
 - Mark generated sheets/reference images as reference-only until app-ready exports are selected.
 - Mark game/loading screenshots as future-lane visual evidence unless those lanes are active.
 - Do not let image evidence derail the current Home lane.
+- Do not copy all big images into the repo by default; manifest first, then promote only selected app-ready assets.
+
+## Standard Entry Template
+
+```text
+Image name:
+Storage location:
+GPT upload/file id if known:
+Local path:
+Repo path if committed:
+Lane:
+Status:
+What it shows:
+Problem observed:
+Future action:
+App-ready/reference-only/delete-candidate:
+Last reviewed:
+```

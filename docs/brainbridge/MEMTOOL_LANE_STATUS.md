@@ -37,6 +37,10 @@ Shared Brain Hub:
 - `6966826 docs: add MemTool shared brain hub`
 - Result: Added durable repo-readable Brain Hub under `docs/brainbridge`.
 
+Brainbridge workflow/sub-brains:
+- `d20bf6e docs: add MemTool brainbridge workflow and sub-brains`
+- Result: Added ENTER/EXIT workflow and lane-specific sub-brains.
+
 ## Next Home Stage
 
 Stage 4 - Motion / Snap Feel / Spacing / Visual Hierarchy Tuning

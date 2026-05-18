@@ -137,6 +137,7 @@ Evidence docs:
 - `MEMTOOL_IMAGE_MANIFEST.md` - screenshot/reference/image evidence manifest.
 - `MEMTOOL_SCREENSHOT_INTAKE.md` - screenshot observations and interpretation.
 - `MEMTOOL_VISUAL_BACKLOG.md` - parked visual lanes and future work.
+- `MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md` - access map for Canvas, repo hub, `.agent_sync`, uploads, local folders, Git/GitHub, and saved memory.
 
 ## Hard No-Touch Rules
 

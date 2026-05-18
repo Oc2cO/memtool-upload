@@ -2,6 +2,12 @@
 
 Purpose: Asset sub-brain for Memora, Sagous, Oc2cO / brand creature references, app-ready exports, and future wiring decisions.
 
+For the full access and storage map, see:
+
+```text
+docs/brainbridge/MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md
+```
+
 ## Current Status
 
 Active local reference folder:
@@ -69,3 +75,5 @@ Screenshot observations belong in:
 - `MEMTOOL_SCREENSHOT_INTAKE.md`
 
 Every meaningful uploaded/reference image should have a manifest entry before future agents use it as project evidence.
+
+Do not copy all large local image sets into the repo by default. Manifest first, then promote only selected app-ready assets into repo assets during a dedicated lane.
