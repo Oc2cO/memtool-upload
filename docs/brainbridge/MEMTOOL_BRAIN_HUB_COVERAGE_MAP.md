@@ -80,7 +80,7 @@ C:\Users\Sagou\OneDrive\Desktop\MemTool Home Atrium References
 ```
 
 Known prior inventory:
-- 86 image/video files in the active folder.
+- 86 image/video files in the active folder, confirmed by HUB-04 local inventory.
 - 102 likely avatar-related files in wider scan.
 - Memora, Sagous, and Oc2cO/brand creature groups exist.
 
@@ -149,6 +149,13 @@ Current status:
 - Reference-only until app-ready exports are selected.
 - Do not generate more assets by default.
 - Do not wire generated sheets into app assets by default.
+
+HUB-04 inventory status:
+- Local folder exists.
+- 86 `.png`, `.jpg`, `.jpeg`, `.webp`, `.mp4`, and `.mov` files indexed.
+- Raw inventory location: `.agent_sync/MEMTOOL_LOCAL_IMAGE_INVENTORY.md`
+- Inventory entries are `needs classification`.
+- No large images/videos were copied into the repo.
 
 ## Current Uploaded / Current-Chat Evidence
 

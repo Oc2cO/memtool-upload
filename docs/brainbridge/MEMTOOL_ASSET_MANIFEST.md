@@ -17,7 +17,7 @@ C:\Users\Sagou\OneDrive\Desktop\MemTool Home Atrium References
 ```
 
 Known inventory from local context:
-- Main folder: about 86 image/video files.
+- Main folder: 86 image/video files confirmed by HUB-04 local inventory.
 - Wider scan: about 102 likely avatar-related files.
 
 Known groups:
@@ -44,6 +44,14 @@ Generated sheets/reference images are reference-only until clean no-text app-rea
 Do not wire generated sheets into app assets by default.
 
 Do not generate more assets by default.
+
+App-ready assets must be selected later in a dedicated asset prep/wiring lane.
+
+HUB-04 raw local inventory lives at:
+
+```text
+.agent_sync/MEMTOOL_LOCAL_IMAGE_INVENTORY.md
+```
 
 ## Parked Work
 

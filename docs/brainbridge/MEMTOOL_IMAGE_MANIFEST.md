@@ -15,7 +15,7 @@ docs/brainbridge/MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md
 `C:\Users\Sagou\OneDrive\Desktop\MemTool Home Atrium References`
 
 Known inventory from local context:
-- Main folder: about 86 image/video files.
+- Main folder: 86 image/video files confirmed by HUB-04 local inventory.
 - Wider scan: about 102 likely avatar-related files.
 
 Known groups:
@@ -28,6 +28,11 @@ Status:
 - Reference-only until app-ready exports are chosen.
 - Do not generate more by default.
 - Do not wire generated sheets into app assets without a dedicated asset prep/wiring lane.
+
+HUB-04 local raw inventory:
+- `.agent_sync/MEMTOOL_LOCAL_IMAGE_INVENTORY.md`
+- Inventory file status: local fast-sync only, not durable repo hub.
+- Includes `.png`, `.jpg`, `.jpeg`, `.webp`, `.mp4`, and `.mov` files with file name, relative path, full path, extension, size, last modified, initial category guess, and `needs classification` status.
 
 ## Current Wired App Asset Groups
 
