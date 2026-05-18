@@ -42,6 +42,8 @@ Do not rely on chat memory alone.
 - Canvas first for drafting shared plans, summaries, and context blocks.
 - Do not trust old chat without current proof.
 - Do not rely on chat memory alone.
+- Use `MEMTOOL_BRAIN_HUB_CURATION.md` before changing durable truth.
+- Do not blindly append new truth if it contradicts existing Brain Hub files.
 
 ## Hard No-Touch Rules
 
@@ -67,6 +69,9 @@ Do not rely on chat memory alone.
 - Avoid new dependencies unless Steve explicitly opens that work.
 - Validate with the requested command set for the lane.
 - Report exact files changed, validation output, and whether a commit is recommended.
+- Search relevant Brain Hub docs for conflicting lane, commit, no-touch, source-of-truth, image, or asset statements before editing durable docs.
+- Mark stale entries `SUPERSEDED`, `PARKED`, `HISTORY ONLY`, `NEEDS PROOF`, or `DO NOT USE FOR CURRENT WORK` when needed.
+- Stop and report conflicts instead of guessing.
 
 ## Exit Rules
 
@@ -86,6 +91,8 @@ The final report must include:
 - Whether `.agent_sync` needs updates.
 - Whether image/screenshot manifest needs updates.
 - Next recommended lane.
+- Whether curation labels or a work-log entry are needed.
+- Whether unresolved Brain Hub conflicts remain.
 
 ## Image Rules
 

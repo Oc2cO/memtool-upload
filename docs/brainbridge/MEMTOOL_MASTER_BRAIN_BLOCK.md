@@ -31,6 +31,7 @@ Required workflow:
 - `docs/brainbridge/MEMTOOL_WORKFLOW.md` is required reading for agents.
 - Agents must use its ENTER GATE before editing.
 - Agents must use its EXIT GATE before closing.
+- Agents must use `MEMTOOL_BRAIN_HUB_CURATION.md` when durable context may conflict or become stale.
 
 ## Project
 
@@ -120,6 +121,8 @@ Panel 3 - Oc2cO / Upgrade / Learn:
 
 Required workflow:
 - `MEMTOOL_WORKFLOW.md` - ENTER / EXIT gates and update rules.
+- `MEMTOOL_BRAIN_HUB_CURATION.md` - truth labels, contradiction guard, curation checklist, conflict report format.
+- `MEMTOOL_WORK_LOG.md` - curated operational work-log index.
 
 Core hub:
 - `MEMTOOL_MASTER_BRAIN_BLOCK.md` - durable project overview and guardrails.
@@ -138,6 +141,14 @@ Evidence docs:
 - `MEMTOOL_SCREENSHOT_INTAKE.md` - screenshot observations and interpretation.
 - `MEMTOOL_VISUAL_BACKLOG.md` - parked visual lanes and future work.
 - `MEMTOOL_BRAIN_HUB_COVERAGE_MAP.md` - access map for Canvas, repo hub, `.agent_sync`, uploads, local folders, Git/GitHub, and saved memory.
+
+Curation labels:
+- `CURRENT`
+- `SUPERSEDED`
+- `PARKED`
+- `NEEDS PROOF`
+- `HISTORY ONLY`
+- `DO NOT USE FOR CURRENT WORK`
 
 ## Hard No-Touch Rules
 

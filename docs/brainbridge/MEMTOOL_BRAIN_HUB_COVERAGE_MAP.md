@@ -33,6 +33,7 @@ Use for:
 - Lane status.
 - Agent rules.
 - Sub-brain SOTs.
+- Brain Hub curation and work logs.
 - Image/screenshot/asset manifests.
 - Durable context that should survive across chats and agents.
 
@@ -223,3 +224,16 @@ When a new file/image/screenshot is created or uploaded:
 ## Practical Rule
 
 Manifest first. Commit selected context second. Promote assets into the app only in a dedicated asset/app lane.
+
+## Curation / Work Log Coverage
+
+Durable curation and operational history live in:
+
+```text
+docs/brainbridge/MEMTOOL_BRAIN_HUB_CURATION.md
+docs/brainbridge/MEMTOOL_WORK_LOG.md
+```
+
+Use these files to prevent stale or conflicting project truth from looking current.
+
+Do not use saved memory, old chat, uploads, or local-only notes as current truth when Brain Hub and Git proof disagree.

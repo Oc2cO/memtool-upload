@@ -35,6 +35,8 @@ Then decide:
 - Does the request touch a parked lane?
 - Does it require build credits, native/prebuild/build config, or broad mixed-lane work?
 - Are screenshots/assets being used, and do they need manifest entries?
+- Does the requested update conflict with existing Brain Hub truth?
+- Does the work need a curation label or work-log entry?
 
 Stop and ask Steve if:
 - The repo is not in the expected state.
@@ -56,6 +58,21 @@ Rules:
 - Do not run EAS build or spend build credits unless Steve explicitly approves.
 - Do not commit or push unless Steve explicitly approves.
 - Keep app code, docs, assets, native config, and screenshots in their proper lanes.
+- Do not blindly append new truth when existing Brain Hub files conflict.
+- Use `MEMTOOL_BRAIN_HUB_CURATION.md` truth labels when context is current, superseded, parked, needs proof, history-only, or not usable for current work.
+
+## WHEN TO CURATE BRAIN HUB TRUTH
+
+Use `docs/brainbridge/MEMTOOL_BRAIN_HUB_CURATION.md` before changing durable project truth.
+
+Agents must search relevant Brain Hub files for overlapping lane names, commit hashes, active-lane statements, no-touch rules, image entries, and source-of-truth statements before updating durable docs.
+
+If conflict is found, stop and report:
+- File A says:
+- File B says:
+- Likely current truth:
+- Recommended correction:
+- Whether Steve approval is required:
 
 ## WHEN TO UPDATE `docs/brainbridge`
 
@@ -65,6 +82,7 @@ Update `docs/brainbridge` when:
 - Shared agent rules or workflow changes.
 - A new sub-brain/SOT is needed.
 - Image/screenshot evidence should be durable across chats and agents.
+- A curation label or work-log entry is needed to prevent stale/conflicting context.
 
 Do not update it for tiny transient notes that only matter within one local agent session.
 
@@ -126,6 +144,20 @@ Before closing, every agent must report:
 - Whether `.agent_sync` needs updates.
 - Whether image/screenshot manifest needs updates.
 - Next recommended lane.
+
+Also run the Brain Hub closeout check:
+
+```powershell
+git status --short --branch
+git log -1 --oneline
+```
+
+Confirm:
+- Current lane.
+- Next lane.
+- Whether curation labels are needed.
+- Whether `MEMTOOL_WORK_LOG.md` needs an entry.
+- Whether any conflicting directions remain unresolved.
 
 If validation was not run, say exactly why.
 

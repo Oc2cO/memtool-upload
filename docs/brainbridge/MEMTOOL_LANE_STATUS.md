@@ -41,6 +41,16 @@ Brainbridge workflow/sub-brains:
 - `d20bf6e docs: add MemTool brainbridge workflow and sub-brains`
 - Result: Added ENTER/EXIT workflow and lane-specific sub-brains.
 
+Brain Hub coverage / inventory:
+- `8c1e22e docs: add brain hub coverage map`
+- Result: Added context-container access map for GPT, Codex, repo hub, `.agent_sync`, uploads, local folders, Git/GitHub, and saved memory.
+- `a58d192 docs: sync local image inventory summary`
+- Result: Summarized HUB-04 local image inventory in Brain Hub manifests.
+
+Brain Hub curation / work logs:
+- Pending HUB-06 commit
+- Result: Adds truth labels, contradiction guard, conflict report format, curation checklist, and work-log system.
+
 ## Next Home Stage
 
 Stage 4 - Motion / Snap Feel / Spacing / Visual Hierarchy Tuning
