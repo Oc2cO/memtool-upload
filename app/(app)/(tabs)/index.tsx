@@ -386,6 +386,7 @@ export default function HomeScreen() {
               onPress={handleCapture}
               style={[
                 styles.captureContainer,
+                styles.captureObject,
                 { shadowColor: colors.primaryAction },
               ]}
               glowColor={colors.primaryAction}
@@ -400,8 +401,8 @@ export default function HomeScreen() {
               screenKey="home"
               accessibilityLabel="Quick Capture"
             >
-              <View style={styles.captureGradient}>
-                <View style={styles.captureIconBgActive}>
+              <View style={[styles.captureGradient, styles.captureObjectSurface]}>
+                <View style={[styles.captureIconBgActive, styles.captureObjectIcon]}>
                   <Ionicons name="add" size={32} color="#ffffff" />
                 </View>
                 <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
@@ -482,9 +483,26 @@ export default function HomeScreen() {
                     colors={doorway.gradient}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={[styles.atriumDoorSurface, styles.coreDoorSurface, { borderColor: colors.border }]}
+                    style={[
+                      styles.atriumDoorSurface,
+                      styles.atriumObjectSurface,
+                      styles.coreDoorSurface,
+                      doorway.title === "MeMChat"
+                        ? styles.memoraDoorSurface
+                        : styles.journalObjectSurface,
+                      { borderColor: colors.border },
+                    ]}
                   >
-                    <View style={[styles.atriumIconBadge, { backgroundColor: doorway.badgeColor }]}>
+                    <View
+                      style={[
+                        styles.atriumIconBadge,
+                        styles.atriumObjectIcon,
+                        doorway.title === "MeMChat"
+                          ? styles.memoraObjectIcon
+                          : styles.journalObjectIcon,
+                        { backgroundColor: doorway.badgeColor },
+                      ]}
+                    >
                       <Ionicons name={doorway.icon} size={20} color={doorway.iconColor} />
                     </View>
                     <View style={styles.atriumDoorCopy}>
@@ -499,9 +517,9 @@ export default function HomeScreen() {
                 </ScalePress>
               ))}
 
-              <View style={[styles.gameRoomDoor, { borderColor: colors.border }]}>
+              <View style={[styles.gameRoomDoor, styles.gameRoomObject, { borderColor: colors.border }]}>
                 <View style={styles.gameRoomHeader}>
-                  <View style={[styles.atriumIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
+                  <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.gameObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
                     <Ionicons name="game-controller" size={20} color={colors.primary} />
                   </View>
                   <View style={styles.atriumDoorCopy}>
@@ -516,7 +534,7 @@ export default function HomeScreen() {
                 <View style={styles.gameRoomActions}>
                   <ScalePress
                     onPress={() => handleNavigate("/memory-match")}
-                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
                     accessibilityLabel="Memory Match"
                   >
                     <Ionicons name="apps" size={16} color={colors.primary} />
@@ -526,7 +544,7 @@ export default function HomeScreen() {
                   </ScalePress>
                   <ScalePress
                     onPress={() => handleNavigate("/game-24")}
-                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
                     accessibilityLabel="24 Game"
                   >
                     <Ionicons name="calculator" size={16} color={colors.accent} />
@@ -672,16 +690,21 @@ export default function HomeScreen() {
 
             <ScalePress
               onPress={() => handleNavigate("/archive", "secondary")}
-              style={styles.vaultDoor}
+              style={[styles.vaultDoor, styles.vaultObject]}
               accessibilityLabel="Archive"
             >
               <LinearGradient
                 colors={["rgba(255, 183, 77, 0.18)", "rgba(21, 16, 42, 0.88)"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={[styles.vaultDoorSurface, { borderColor: HOME_PANEL_THEMES.vault.edge }]}
+                style={[
+                  styles.vaultDoorSurface,
+                  styles.atriumObjectSurface,
+                  styles.vaultObjectSurface,
+                  { borderColor: HOME_PANEL_THEMES.vault.edge },
+                ]}
               >
-                <View style={[styles.atriumIconBadge, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
+                <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.vaultObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
                   <Ionicons name="book" size={20} color="#ffb74d" />
                 </View>
                 <View style={styles.atriumDoorCopy}>
@@ -698,14 +721,14 @@ export default function HomeScreen() {
 
         <ScalePress
           onPress={() => handleNavigate("/tip-archive")}
-          style={styles.boostCardInner}
+          style={[styles.boostCardInner, styles.signalObject]}
           accessibilityLabel={`Daily Boost: ${todayTip.text}`}
         >
           <LinearGradient
             colors={["rgba(155, 122, 232, 0.20)", "rgba(0, 229, 255, 0.14)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.boostGradient, { borderColor: colors.border }]}
+            style={[styles.boostGradient, styles.signalObjectSurface, { borderColor: colors.border }]}
           >
             <View style={styles.boostHeader}>
               <View style={styles.boostHeaderLeft}>
@@ -737,7 +760,7 @@ export default function HomeScreen() {
           </LinearGradient>
         </ScalePress>
 
-          <View style={[styles.factCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={[styles.factCard, styles.signalFactObject, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.boostHeaderLeft}>
               <Ionicons name="school" size={16} color={colors.accent} />
               <Text style={[styles.boostLabel, { color: colors.mutedForeground }]}>Did You Know?</Text>
@@ -831,10 +854,15 @@ export default function HomeScreen() {
               colors={["rgba(0, 229, 255, 0.18)", "rgba(21, 16, 42, 0.88)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.navCardSurface, styles.portalNavSurface, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
+              style={[
+                styles.navCardSurface,
+                styles.portalNavSurface,
+                styles.portalObjectSurface,
+                { borderColor: HOME_PANEL_THEMES.portal.edge },
+              ]}
             >
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
+                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.portalObjectIcon, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
                   <Ionicons name="globe" size={22} color={colors.accent} />
                 </View>
                 <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Soon</Text>
@@ -855,10 +883,15 @@ export default function HomeScreen() {
               colors={["rgba(255, 183, 77, 0.18)", "rgba(21, 16, 42, 0.90)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.navCardSurface, styles.portalNavSurface, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
+              style={[
+                styles.navCardSurface,
+                styles.portalNavSurface,
+                styles.passObjectSurface,
+                { borderColor: HOME_PANEL_THEMES.portal.edge },
+              ]}
             >
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
+                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.passObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
                   <Ionicons name="diamond" size={22} color="#ffb74d" />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
@@ -879,10 +912,15 @@ export default function HomeScreen() {
               colors={["rgba(155, 122, 232, 0.18)", "rgba(21, 16, 42, 0.90)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.navCardSurface, styles.portalNavSurface, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
+              style={[
+                styles.navCardSurface,
+                styles.portalNavSurface,
+                styles.theaterObjectSurface,
+                { borderColor: HOME_PANEL_THEMES.portal.edge },
+              ]}
             >
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
+                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.theaterObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
                   <Ionicons name="school" size={22} color={colors.primary} />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
@@ -903,10 +941,15 @@ export default function HomeScreen() {
               colors={["rgba(244, 114, 182, 0.14)", "rgba(21, 16, 42, 0.90)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[styles.navCardSurface, styles.portalNavSurface, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
+              style={[
+                styles.navCardSurface,
+                styles.portalNavSurface,
+                styles.helpObjectSurface,
+                { borderColor: HOME_PANEL_THEMES.portal.edge },
+              ]}
             >
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, { backgroundColor: "rgba(244, 114, 182, 0.12)" }]}>
+                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.helpObjectIcon, { backgroundColor: "rgba(244, 114, 182, 0.12)" }]}>
                   <Ionicons name="help-circle" size={22} color="#f472b6" />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
@@ -990,7 +1033,17 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
+  captureObject: {
+    shadowOpacity: 0.28,
+    shadowRadius: 22,
+    elevation: 10,
+  },
   captureGradient: { padding: spacing.lg },
+  captureObjectSurface: {
+    minHeight: 132,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+  },
   captureIconBg: {
     width: 48,
     height: 48,
@@ -1008,6 +1061,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.base,
+  },
+  captureObjectIcon: {
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.42,
+    shadowRadius: 14,
+    elevation: 6,
   },
   captureTitle: {
     ...text.cardTitle,
@@ -1161,6 +1221,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     justifyContent: "space-between",
   },
+  atriumObjectSurface: {
+    borderColor: HOME_ATRIUM_PALETTE.glassEdge,
+    backgroundColor: "rgba(255,255,255,0.035)",
+  },
   coreDoorSurface: {
     shadowColor: "#00e5ff",
     shadowOffset: { width: 0, height: 8 },
@@ -1168,9 +1232,25 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     elevation: 4,
   },
+  memoraDoorSurface: {
+    minHeight: 132,
+    shadowOpacity: 0.2,
+    shadowRadius: 18,
+  },
+  journalObjectSurface: {
+    borderColor: "rgba(244, 114, 182, 0.22)",
+    shadowColor: "#f472b6",
+  },
   vaultDoor: {
     width: "100%",
     borderRadius: radius.md,
+  },
+  vaultObject: {
+    shadowColor: "#ffb74d",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    elevation: 6,
   },
   vaultDoorSurface: {
     minHeight: 104,
@@ -1181,12 +1261,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.md,
   },
+  vaultObjectSurface: {
+    minHeight: 118,
+    backgroundColor: "rgba(255, 183, 77, 0.035)",
+  },
   atriumIconBadge: {
     width: 36,
     height: 36,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+  },
+  atriumObjectIcon: {
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.13)",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  memoraObjectIcon: {
+    shadowColor: "#00e5ff",
+    borderColor: "rgba(0, 229, 255, 0.22)",
+  },
+  journalObjectIcon: {
+    shadowColor: "#f472b6",
+    borderColor: "rgba(244, 114, 182, 0.22)",
+  },
+  vaultObjectIcon: {
+    shadowColor: "#ffb74d",
+    borderColor: "rgba(255, 183, 77, 0.24)",
+  },
+  gameObjectIcon: {
+    shadowColor: "#9b7ae8",
+    borderColor: "rgba(155, 122, 232, 0.22)",
   },
   atriumDoorCopy: { flex: 1, justifyContent: "flex-end" },
   atriumDoorTitle: {
@@ -1206,6 +1314,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     backgroundColor: "rgba(21, 16, 42, 0.82)",
+  },
+  gameRoomObject: {
+    shadowColor: "#9b7ae8",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 4,
   },
   gameRoomHeader: {
     flexDirection: "row",
@@ -1227,6 +1342,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.xs,
+  },
+  gameActionObject: {
+    borderColor: "rgba(255,255,255,0.14)",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
   },
   gameRoomActionText: {
     ...text.caption,
@@ -1273,10 +1396,21 @@ const styles = StyleSheet.create({
   statValue: { ...text.screenTitle },
   boostCard: { marginBottom: spacing.md },
   boostCardInner: { borderRadius: radius.md, overflow: "hidden" },
+  signalObject: {
+    shadowColor: "#00e5ff",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 4,
+  },
   boostGradient: {
     padding: spacing.base,
     borderRadius: radius.md,
     borderWidth: 1,
+  },
+  signalObjectSurface: {
+    borderColor: "rgba(0, 229, 255, 0.16)",
+    backgroundColor: "rgba(0, 229, 255, 0.035)",
   },
   boostHeader: {
     flexDirection: "row",
@@ -1308,6 +1442,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: spacing.lg,
     gap: spacing.sm,
+  },
+  signalFactObject: {
+    borderColor: "rgba(151, 180, 162, 0.16)",
+    backgroundColor: "rgba(151, 180, 162, 0.055)",
   },
   factText: { ...text.helperRegular, lineHeight: 20 },
   sectionTitle: {
@@ -1371,6 +1509,22 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     elevation: 4,
   },
+  portalObjectSurface: {
+    backgroundColor: "rgba(0, 229, 255, 0.04)",
+    opacity: 0.86,
+  },
+  passObjectSurface: {
+    backgroundColor: "rgba(255, 183, 77, 0.045)",
+    shadowColor: "#ffb74d",
+  },
+  theaterObjectSurface: {
+    backgroundColor: "rgba(155, 122, 232, 0.045)",
+    shadowColor: "#9b7ae8",
+  },
+  helpObjectSurface: {
+    backgroundColor: "rgba(244, 114, 182, 0.035)",
+    shadowColor: "#f472b6",
+  },
   navCardTop: {
     flexDirection: "row",
     alignItems: "center",
@@ -1383,6 +1537,22 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+  },
+  portalObjectIcon: {
+    shadowColor: "#00e5ff",
+    borderColor: "rgba(0, 229, 255, 0.22)",
+  },
+  passObjectIcon: {
+    shadowColor: "#ffb74d",
+    borderColor: "rgba(255, 183, 77, 0.24)",
+  },
+  theaterObjectIcon: {
+    shadowColor: "#9b7ae8",
+    borderColor: "rgba(155, 122, 232, 0.22)",
+  },
+  helpObjectIcon: {
+    shadowColor: "#f472b6",
+    borderColor: "rgba(244, 114, 182, 0.22)",
   },
   navCardTitle: {
     ...text.bodyMedium,
