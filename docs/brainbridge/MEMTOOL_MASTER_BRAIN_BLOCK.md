@@ -113,6 +113,7 @@ Panel 3 - Oc2cO / Upgrade / Learn:
 
 - LANE 27S-D2 - Voice Capture Modal + Bubble/Text Sync Visual System
 - LANE 27S-F - MeMChat Visual / Interaction Polish
+- Memora Memory Synthesis Engine - north-star AI/journal/visual memory feature, not the immediate coding lane.
 - Games Visual Polish / Memory Match Premium Pass
 - Loading / Splash / First-Impression Polish
 - Avatar asset wiring / asset prep
@@ -135,6 +136,7 @@ Sub-brains:
 - `MEMTOOL_MEMCHAT_SOT.md` - MeMChat / Memora future polish SOT.
 - `MEMTOOL_GAMES_VISUAL_SOT.md` - Games visual evidence and future polish SOT.
 - `MEMTOOL_ASSET_MANIFEST.md` - character/brand asset manifest and app-ready export rules.
+- `MEMTOOL_MEMORY_SYNTHESIS_ENGINE_SPEC.md` - Memora Memory Synthesis Engine north-star feature spec.
 
 Evidence docs:
 - `MEMTOOL_IMAGE_MANIFEST.md` - screenshot/reference/image evidence manifest.

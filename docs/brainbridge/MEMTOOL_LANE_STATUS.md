@@ -48,8 +48,12 @@ Brain Hub coverage / inventory:
 - Result: Summarized HUB-04 local image inventory in Brain Hub manifests.
 
 Brain Hub curation / work logs:
-- Pending HUB-06 commit
+- `dc6bb2f docs: add brain hub curation and work log rules`
 - Result: Adds truth labels, contradiction guard, conflict report format, curation checklist, and work-log system.
+
+Product vision specs:
+- Pending docs sync: Memora Memory Synthesis Engine
+- Result: Durable north-star spec for companion-led memory harvesting and visual life journal. Not the immediate coding lane.
 
 ## Next Home Stage
 
@@ -84,6 +88,11 @@ Loading / Splash / First-Impression Polish:
 Avatar asset wiring / asset prep:
 - Existing reference assets need manifest and app-readiness review.
 - Generated sheets/reference images are reference-only until app-ready exports are selected.
+
+Memora Memory Synthesis Engine:
+- North-star AI/journal/visual memory feature.
+- Future dedicated lane required before implementation.
+- Should influence future AI, recap, journal, avatar, visual, premium, and companion-memory work.
 
 Loading / Splash / Intro polish:
 - Parked until Steve explicitly opens the lane.

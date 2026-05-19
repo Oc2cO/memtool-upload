@@ -105,3 +105,53 @@ Yes.
 
 Next action:
 Review, then commit if Steve approves.
+
+## 2026-05-18 - Memora Memory Synthesis Engine Spec
+
+Status:
+CURRENT
+
+Related lane:
+MemTool docs - Save Memora Memory Synthesis Engine Spec
+
+Related commits:
+- Starts from `dc6bb2f docs: add brain hub curation and work log rules`
+
+Related files:
+- `docs/brainbridge/MEMTOOL_MEMORY_SYNTHESIS_ENGINE_SPEC.md`
+- `docs/brainbridge/MEMTOOL_MASTER_BRAIN_BLOCK.md`
+- `docs/brainbridge/MEMTOOL_VISUAL_BACKLOG.md`
+- `docs/brainbridge/MEMTOOL_LANE_STATUS.md`
+- `docs/brainbridge/MEMTOOL_WORK_LOG.md`
+
+Related screenshots/assets:
+- None
+
+Agent/tool:
+- Codex
+- PowerShell
+- Git
+
+What was discussed:
+Save the Memora Memory Synthesis Engine product vision into durable Brain Hub docs so it does not remain chat-only.
+
+What was done:
+Created a north-star feature spec for companion-led memory harvesting, daily synthesis, visual memory artifacts, review/recall, premium direction, privacy guardrails, and phased build interpretation.
+
+What changed:
+Brain Hub now tracks the Memory Synthesis Engine as a current product vision but parked implementation lane.
+
+Validation/proof:
+Pending final validation.
+
+What was deferred:
+No app code, AI prompt implementation, storage model, visual generation, Home Stage 4 tuning, or MeMChat redesign.
+
+Contradictions found:
+None blocking. Active build lane remains Home Memory Atrium Stage 4.
+
+Brain docs updated:
+Yes.
+
+Next action:
+Validate docs diff, then Steve can review and decide whether to commit.

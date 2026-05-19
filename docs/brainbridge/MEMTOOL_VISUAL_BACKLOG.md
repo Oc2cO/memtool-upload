@@ -24,6 +24,23 @@ Stage 4 focus:
 
 ## Parked Visual Lanes
 
+### Memora Memory Synthesis Engine / Visual Life Journal
+
+Status:
+- `PARKED` for implementation.
+- `CURRENT` as a north-star feature spec in `MEMTOOL_MEMORY_SYNTHESIS_ENGINE_SPEC.md`.
+
+Future direction:
+- Companion-led memory harvesting.
+- Daily synthesis into editable memory chapters.
+- Visual memory cards.
+- Visual journal / storybook.
+- Future reel / movie / memory cinema.
+
+Rule:
+- Do not implement this during Home Stage 4.
+- Let it influence future AI, recap, journal, avatar, visual, premium, and companion-memory lanes.
+
 ### LANE 27S-D2 - Voice Capture Modal + Bubble/Text Sync Visual System
 
 Parked because Voice Capture Connection Patch 1 is complete and Home is active.
