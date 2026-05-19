@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, View, Text, StyleSheet, Pressable } from "react-native";
+import { Alert, View, Text, StyleSheet, Pressable, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -108,6 +108,7 @@ const HOME_HAPTIC_WEIGHTS = {
 export default function HomeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
   const router = useRouter();
   const { user } = useAuth();
   const {
@@ -259,6 +260,7 @@ export default function HomeScreen() {
   // off the JS thread by `useAnimatedScrollHandler` so the BlurView
   // ramp stays smooth even while the rest of the screen is busy.
   const scrollY = useSharedValue(0);
+  const panelMinHeight = Math.max(560, Math.min(720, windowHeight - insets.top - insets.bottom - 124));
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   });
@@ -348,12 +350,15 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <BreatheCard index={HOME_MOTION_LEVELS.core.breatheIndex} style={styles.atriumSection}>
+        <BreatheCard
+          index={HOME_MOTION_LEVELS.core.breatheIndex}
+          style={[styles.atriumSection, styles.atriumSectionFirst, { minHeight: panelMinHeight }]}
+        >
           <LinearGradient
             colors={HOME_PANEL_THEMES.core.shell}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, { borderColor: HOME_PANEL_THEMES.core.edge }]}
+            style={[styles.atriumShell, styles.atriumShellStretch, { borderColor: HOME_PANEL_THEMES.core.edge }]}
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowCore]} />
@@ -381,6 +386,11 @@ export default function HomeScreen() {
             <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
               Talk with Memora, capture a spark, or open today’s glowing chapter.
             </Text>
+            <View pointerEvents="none" style={styles.panelProgressRail}>
+              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
+              <View style={styles.panelProgressDot} />
+              <View style={styles.panelProgressDot} />
+            </View>
 
             <AliveButton
               onPress={handleCapture}
@@ -517,47 +527,11 @@ export default function HomeScreen() {
                 </ScalePress>
               ))}
 
-              <View style={[styles.gameRoomDoor, styles.gameRoomObject, { borderColor: colors.border }]}>
-                <View style={styles.gameRoomHeader}>
-                  <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.gameObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
-                    <Ionicons name="game-controller" size={20} color={colors.primary} />
-                  </View>
-                  <View style={styles.atriumDoorCopy}>
-                    <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
-                      Game Room
-                    </Text>
-                    <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
-                      Train your mind
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.gameRoomActions}>
-                  <ScalePress
-                    onPress={() => handleNavigate("/memory-match")}
-                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
-                    accessibilityLabel="Memory Match"
-                  >
-                    <Ionicons name="apps" size={16} color={colors.primary} />
-                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
-                      Memory Match
-                    </Text>
-                  </ScalePress>
-                  <ScalePress
-                    onPress={() => handleNavigate("/game-24")}
-                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
-                    accessibilityLabel="24 Game"
-                  >
-                    <Ionicons name="calculator" size={16} color={colors.accent} />
-                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
-                      24 Game
-                    </Text>
-                  </ScalePress>
-                </View>
-              </View>
             </View>
           </LinearGradient>
         </BreatheCard>
 
+        <View style={styles.interPanelUtility}>
         <View style={styles.quickActions}>
           <ScalePress
             onPress={handleLogCall}
@@ -648,18 +622,22 @@ export default function HomeScreen() {
             <Text style={[styles.statValue, { color: colors.foreground }]}>{todayMemories.length}</Text>
           </View>
         </View>
+        </View>
 
         <StreakMilestoneOverlay
           milestone={celebratedMilestone}
           onDismiss={() => setCelebratedMilestone(null)}
         />
 
-        <BreatheCard index={HOME_MOTION_LEVELS.vault.breatheIndex} style={styles.atriumSection}>
+        <BreatheCard
+          index={HOME_MOTION_LEVELS.vault.breatheIndex}
+          style={[styles.atriumSection, { minHeight: panelMinHeight }]}
+        >
           <LinearGradient
             colors={HOME_PANEL_THEMES.vault.shell}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, styles.vaultShell, { borderColor: HOME_PANEL_THEMES.vault.edge }]}
+            style={[styles.atriumShell, styles.atriumShellStretch, styles.vaultShell, { borderColor: HOME_PANEL_THEMES.vault.edge }]}
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowVault]} />
@@ -687,6 +665,11 @@ export default function HomeScreen() {
             <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
               Browse the book-vault, train in the game room, or take today’s curated signal.
             </Text>
+            <View pointerEvents="none" style={styles.panelProgressRail}>
+              <View style={styles.panelProgressDot} />
+              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
+              <View style={styles.panelProgressDot} />
+            </View>
 
             <ScalePress
               onPress={() => handleNavigate("/archive", "secondary")}
@@ -718,6 +701,44 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </LinearGradient>
             </ScalePress>
+
+              <View style={[styles.gameRoomDoor, styles.gameRoomObject, { borderColor: colors.border }]}>
+                <View style={styles.gameRoomHeader}>
+                  <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.gameObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
+                    <Ionicons name="game-controller" size={20} color={colors.primary} />
+                  </View>
+                  <View style={styles.atriumDoorCopy}>
+                    <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
+                      Game Room
+                    </Text>
+                    <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
+                      Train your mind
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.gameRoomActions}>
+                  <ScalePress
+                    onPress={() => handleNavigate("/memory-match")}
+                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="Memory Match"
+                  >
+                    <Ionicons name="apps" size={16} color={colors.primary} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      Memory Match
+                    </Text>
+                  </ScalePress>
+                  <ScalePress
+                    onPress={() => handleNavigate("/game-24")}
+                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="24 Game"
+                  >
+                    <Ionicons name="calculator" size={16} color={colors.accent} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      24 Game
+                    </Text>
+                  </ScalePress>
+                </View>
+              </View>
 
         <ScalePress
           onPress={() => handleNavigate("/tip-archive")}
@@ -810,12 +831,15 @@ export default function HomeScreen() {
           </LinearGradient>
         </BreatheCard>
 
-        <BreatheCard index={HOME_MOTION_LEVELS.portal.breatheIndex} style={styles.atriumSection}>
+        <BreatheCard
+          index={HOME_MOTION_LEVELS.portal.breatheIndex}
+          style={[styles.atriumSection, styles.atriumSectionLast, { minHeight: panelMinHeight }]}
+        >
           <LinearGradient
             colors={HOME_PANEL_THEMES.portal.shell}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, styles.portalShell, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
+            style={[styles.atriumShell, styles.atriumShellStretch, styles.portalShell, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowPortal]} />
@@ -843,6 +867,11 @@ export default function HomeScreen() {
             <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
               The website portal is staged for a later route; Pro and Learn stay tappable now.
             </Text>
+            <View pointerEvents="none" style={styles.panelProgressRail}>
+              <View style={styles.panelProgressDot} />
+              <View style={styles.panelProgressDot} />
+              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
+            </View>
 
         <View style={styles.grid}>
           <ScalePress
@@ -1101,12 +1130,24 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
   },
-  atriumSection: { marginBottom: spacing.lg },
+  atriumSection: {
+    marginBottom: spacing.xl,
+  },
+  atriumSectionFirst: {
+    marginBottom: spacing.md,
+  },
+  atriumSectionLast: {
+    marginBottom: spacing.xl,
+  },
   atriumShell: {
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.base,
     overflow: "hidden",
+  },
+  atriumShellStretch: {
+    flex: 1,
+    justifyContent: "space-between",
   },
   vaultShell: {
     shadowColor: "#97b4a2",
@@ -1202,7 +1243,24 @@ const styles = StyleSheet.create({
     ...text.helperRegular,
     lineHeight: 20,
     marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+    maxWidth: 320,
+  },
+  panelProgressRail: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     marginBottom: spacing.base,
+  },
+  panelProgressDot: {
+    width: 18,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: "rgba(255,255,255,0.16)",
+  },
+  panelProgressDotActive: {
+    width: 34,
+    backgroundColor: "rgba(255,255,255,0.44)",
   },
   atriumGrid: {
     flexDirection: "row",
@@ -1314,6 +1372,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     backgroundColor: "rgba(21, 16, 42, 0.82)",
+    marginTop: spacing.sm,
   },
   gameRoomObject: {
     shadowColor: "#9b7ae8",
@@ -1356,7 +1415,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
   },
-  quickActions: { flexDirection: "row", gap: spacing.md, marginBottom: 20 },
+  interPanelUtility: {
+    marginBottom: spacing.xl,
+    paddingHorizontal: 2,
+    opacity: 0.94,
+  },
+  quickActions: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.md },
   quickAction: {
     flex: 1,
     flexDirection: "row",
@@ -1379,7 +1443,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   streakBest: { fontSize: 12, fontWeight: "500" },
-  statsRow: { flexDirection: "row", gap: spacing.base, marginBottom: 20 },
+  statsRow: { flexDirection: "row", gap: spacing.base },
   statCard: {
     flex: 1,
     padding: spacing.base,
@@ -1402,6 +1466,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.14,
     shadowRadius: 14,
     elevation: 4,
+    marginTop: spacing.md,
   },
   boostGradient: {
     padding: spacing.base,
