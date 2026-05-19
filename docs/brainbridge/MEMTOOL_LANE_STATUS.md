@@ -11,10 +11,10 @@ Latest shared hub commit:
 
 ## Current Lane
 
-LANE 27S-E - Home Memory Atrium V1 Build
+APP HOME - Safe V1 Doorway Structure
 
 Current next stage:
-- Stage 4 - Motion / Snap Feel / Spacing / Visual Hierarchy Tuning
+- Small review/tuning of the narrowed V1 doorway structure
 
 ## Completed Checkpoints
 
@@ -32,6 +32,14 @@ Home Stage 2:
 Home Stage 3:
 - `669528b feat: polish home atrium foreground objects`
 - Result: Polished foreground destination objects for Quick Capture, MeMChat, Daily Recap, Archive, Games, Daily Boost, Website, Upgrade, Learn, and FAQ/About.
+
+Home Atrium superseded broad pass:
+- `71b9b11 feat: polish home atrium premium object identity`
+- Result: Historical overbuilt Home Atrium state. Do not treat as final Home V1 truth.
+
+Home Atrium current curated checkpoint:
+- `4649d57 fix: narrow home atrium to v1 doorways`
+- Result: Narrowed Home back to a safe V1 doorway structure. Current Home direction is compact Memory Atrium doorways, not 3-panel snap-scroll.
 
 Shared Brain Hub:
 - `6966826 docs: add MemTool shared brain hub`
@@ -57,15 +65,15 @@ Product vision specs:
 
 ## Next Home Stage
 
-Stage 4 - Motion / Snap Feel / Spacing / Visual Hierarchy Tuning
+Small V1 Doorway Review / Tuning
 
 Focus:
-- Panel breathing room.
-- Snap/scroll feel.
+- Readability and touch targets.
 - Safe-area and tab-bar spacing.
 - Visual hierarchy.
-- Motion feel without twitchiness.
-- Screenshot/runtime tuning when Steve is ready.
+- Route preservation.
+- Keep Quick Capture strongest.
+- Do not re-expand to 3-panel snap-scroll unless Steve explicitly opens a later immersive Home lane.
 
 ## Parked Lanes
 
@@ -107,9 +115,9 @@ git status --short --branch
 git log -1 --oneline
 ```
 
-Expected after Stage 3:
+Expected after Home Atrium narrowing:
 
 ```text
 ## mobile-app...origin/mobile-app
-669528b feat: polish home atrium foreground objects
+4649d57 fix: narrow home atrium to v1 doorways
 ```

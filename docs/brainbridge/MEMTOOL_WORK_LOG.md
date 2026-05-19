@@ -148,10 +148,63 @@ What was deferred:
 No app code, AI prompt implementation, storage model, visual generation, Home Stage 4 tuning, or MeMChat redesign.
 
 Contradictions found:
-None blocking. Active build lane remains Home Memory Atrium Stage 4.
+Curated 2026-05-19: this entry predated the Home narrowing cleanup. Active Home checkpoint is now `4649d57`; Stage 4 snap/spacing work is superseded unless Steve opens a later immersive Home lane.
 
 Brain docs updated:
 Yes.
 
 Next action:
 Validate docs diff, then Steve can review and decide whether to commit.
+
+## 2026-05-19 - Home Atrium narrowed to safe V1 doorways
+
+Status:
+CURRENT
+
+Related lane:
+APP HOME - Narrow Atrium to V1 Doorways
+
+Related commits:
+- `4649d57 fix: narrow home atrium to v1 doorways`
+
+Related files:
+- `app/(app)/(tabs)/index.tsx`
+- `docs/brainbridge/MEMTOOL_HOME_ATRIUM_SOT.md`
+- `docs/brainbridge/MEMTOOL_LANE_STATUS.md`
+- `docs/brainbridge/MEMTOOL_MASTER_BRAIN_BLOCK.md`
+- `docs/brainbridge/MEMTOOL_WORK_LOG.md`
+
+Related screenshots/assets:
+- None
+
+Agent/tool:
+- Codex
+- PowerShell
+- Git
+
+What was discussed:
+The prior Home Atrium implementation had become too broad for the requested small V1 Home patch.
+
+What was done:
+Narrowed Home from the overbuilt 3-panel snap-scroll direction back to one compact V1 Memory Atrium doorway section.
+
+What changed:
+Home now treats `4649d57` as the current pushed checkpoint. The `71b9b11` premium object identity state is curated as superseded historical work, not final Home V1 truth.
+
+Validation/proof:
+- `npm.cmd run typecheck` PASS
+- `npx.cmd jest --runTestsByPath "app/(app)/(tabs)/index.test.tsx" --runInBand` PASS, 7 tests passed
+- `git diff --check` PASS
+- Push aligned `mobile-app` with origin at `4649d57`
+
+What was deferred:
+No visual assets, MeMChat internals, voice, native config, backend, packages, EAS, crypto, or Dify work.
+
+Contradictions found:
+BrainHub docs still described Home as a 3 soft snap-scroll Memory Atrium; this docs sync curates that as superseded.
+
+Brain docs updated:
+Yes.
+
+Next action:
+Future Home work should be small review/tuning against the V1 doorway structure, not re-expansion to 3-panel snap-scroll unless Steve opens a later immersive Home lane.
