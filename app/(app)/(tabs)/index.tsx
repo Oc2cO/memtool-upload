@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, View, Text, StyleSheet, Pressable, useWindowDimensions } from "react-native";
+import { Alert, View, Text, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,68 +49,9 @@ const CATEGORY_ICON: Record<string, keyof typeof Ionicons.glyphMap> = {
   motivation: "sparkles",
 };
 
-const HOME_ATRIUM_PALETTE = {
-  cosmicBlack: "rgba(5, 4, 14, 0.98)",
-  deepViolet: "rgba(29, 18, 64, 0.96)",
-  quasarBlue: "rgba(0, 229, 255, 0.24)",
-  memoryGold: "rgba(255, 183, 77, 0.24)",
-  chromeSage: "rgba(151, 180, 162, 0.20)",
-  portalCyan: "rgba(0, 229, 255, 0.32)",
-  portalRose: "rgba(244, 114, 182, 0.18)",
-  glassEdge: "rgba(255, 255, 255, 0.14)",
-  emberGlass: "rgba(255, 183, 77, 0.10)",
-  starlight: "rgba(255, 255, 255, 0.52)",
-};
-
-const HOME_PANEL_THEMES = {
-  core: {
-    shell: [
-      "rgba(3, 3, 12, 0.99)",
-      "rgba(22, 12, 52, 0.97)",
-      "rgba(1, 13, 32, 0.95)",
-    ] as [string, string, string],
-    wash: HOME_ATRIUM_PALETTE.quasarBlue,
-    dust: "rgba(255, 255, 255, 0.10)",
-    edge: "rgba(0, 229, 255, 0.18)",
-  },
-  vault: {
-    shell: [
-      "rgba(12, 18, 42, 0.97)",
-      "rgba(38, 32, 78, 0.94)",
-      "rgba(23, 40, 50, 0.93)",
-    ] as [string, string, string],
-    wash: HOME_ATRIUM_PALETTE.memoryGold,
-    dust: "rgba(151, 180, 162, 0.12)",
-    edge: HOME_ATRIUM_PALETTE.chromeSage,
-  },
-  portal: {
-    shell: [
-      "rgba(18, 38, 64, 0.95)",
-      "rgba(45, 42, 94, 0.90)",
-      "rgba(8, 70, 88, 0.86)",
-    ] as [string, string, string],
-    wash: HOME_ATRIUM_PALETTE.portalCyan,
-    dust: "rgba(255, 255, 255, 0.18)",
-    edge: HOME_ATRIUM_PALETTE.portalRose,
-  },
-};
-
-const HOME_MOTION_LEVELS = {
-  core: { breatheIndex: 0, dustOpacity: 0.34 },
-  vault: { breatheIndex: 1, dustOpacity: 0.48 },
-  portal: { breatheIndex: 2, dustOpacity: 0.68 },
-};
-
-const HOME_HAPTIC_WEIGHTS = {
-  primary: Haptics.ImpactFeedbackStyle.Medium,
-  secondary: Haptics.ImpactFeedbackStyle.Light,
-  portal: Haptics.ImpactFeedbackStyle.Light,
-};
-
 export default function HomeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { height: windowHeight } = useWindowDimensions();
   const router = useRouter();
   const { user } = useAuth();
   const {
@@ -189,11 +130,8 @@ export default function HomeScreen() {
     isPro,
   );
 
-  const handleNavigate = (
-    route: string,
-    hapticWeight: keyof typeof HOME_HAPTIC_WEIGHTS = "secondary",
-  ) => {
-    Haptics.impactAsync(HOME_HAPTIC_WEIGHTS[hapticWeight]);
+  const handleNavigate = (route: string) => {
+    Haptics.selectionAsync();
     router.push(route as any);
   };
 
@@ -262,7 +200,6 @@ export default function HomeScreen() {
   // off the JS thread by `useAnimatedScrollHandler` so the BlurView
   // ramp stays smooth even while the rest of the screen is busy.
   const scrollY = useSharedValue(0);
-  const panelMinHeight = Math.max(560, Math.min(720, windowHeight - insets.top - insets.bottom - 124));
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   });
@@ -288,14 +225,24 @@ export default function HomeScreen() {
       accessibilityLabel: "MeMChat, talk with Memora",
     },
     {
-      title: "Daily Recap",
+      title: "Daily Chapter",
       subtitle: "Review today",
       route: "/recap",
       icon: "today",
       iconColor: "#f472b6",
       badgeColor: "rgba(244, 114, 182, 0.14)",
       gradient: ["rgba(244, 114, 182, 0.17)", "rgba(21, 16, 42, 0.88)"],
-      accessibilityLabel: "Daily Recap, review today",
+      accessibilityLabel: "Daily Chapter, review today",
+    },
+    {
+      title: "Memory Book",
+      subtitle: "Browse archive",
+      route: "/archive",
+      icon: "book",
+      iconColor: "#ffb74d",
+      badgeColor: "rgba(255, 183, 77, 0.14)",
+      gradient: ["rgba(255, 183, 77, 0.16)", "rgba(21, 16, 42, 0.88)"],
+      accessibilityLabel: "Memory Book, browse archive",
     },
   ];
 
@@ -303,8 +250,6 @@ export default function HomeScreen() {
     <SettleOnMount style={[styles.container, { backgroundColor: colors.background }]}>
       <Animated.ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 104 }]}
-        decelerationRate="fast"
-        snapToAlignment="start"
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
@@ -352,35 +297,111 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <BreatheCard
-          index={HOME_MOTION_LEVELS.core.breatheIndex}
-          style={[styles.atriumSection, styles.atriumSectionFirst, { minHeight: panelMinHeight }]}
+        <AliveButton
+          onPress={handleCapture}
+          style={[
+            styles.captureContainer,
+            { shadowColor: colors.primaryAction },
+          ]}
+          glowColor={colors.primaryAction}
+          glowIntensity={1}
+          rippleColor="rgba(255, 255, 255, 0.42)"
+          fillColor={colors.primaryAction}
+          pressedFillColor={colors.primaryActionPressed}
+          colorDurationMs={200}
+          glowInDurationMs={300}
+          glowOutDurationMs={300}
+          // Tiny squish on press, then a Reanimated 4 spring bounces
+          // back through SPRINGS.lift inside AliveButton. Pairs with
+          // the "capture" AHAP so the button feels physical, not flat.
+          pressScale={0.97}
+          screenKey="home"
+          accessibilityLabel="Quick Capture"
         >
+          <View style={styles.captureGradient}>
+            <View style={styles.captureIconBgActive}>
+              <Ionicons name="add" size={32} color="#ffffff" />
+            </View>
+            <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
+              Quick Capture
+            </Text>
+            <Text
+              style={[
+                styles.captureSubtitle,
+                { color: "rgba(255, 255, 255, 0.78)" },
+              ]}
+            >
+              Capture a fleeting memory
+            </Text>
+          </View>
+        </AliveButton>
+
+        {illustrationQuota.visible && (
+          <ScalePress
+            onPress={
+              illustrationQuota.atLimit
+                ? () => handleNavigate("/subscription")
+                : undefined
+            }
+            disabled={!illustrationQuota.atLimit}
+            style={[
+              styles.illustrationQuotaRow,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+              },
+            ]}
+            accessibilityLabel={
+              illustrationQuota.atLimit
+                ? illustrationQuota.upsellLabel
+                : illustrationQuota.label
+            }
+          >
+            <Ionicons
+              name={illustrationQuota.atLimit ? "lock-closed" : "sparkles"}
+              size={16}
+              color={
+                illustrationQuota.atLimit ? colors.mutedForeground : colors.primary
+              }
+            />
+            <Text
+              style={[
+                styles.illustrationQuotaText,
+                {
+                  color: illustrationQuota.atLimit
+                    ? colors.mutedForeground
+                    : colors.foreground,
+                },
+              ]}
+            >
+              {illustrationQuota.atLimit
+                ? illustrationQuota.upsellLabel
+                : illustrationQuota.label}
+            </Text>
+            {illustrationQuota.atLimit && (
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={colors.mutedForeground}
+              />
+            )}
+          </ScalePress>
+        )}
+
+        <BreatheCard index={0} style={styles.atriumSection}>
           <LinearGradient
-            colors={HOME_PANEL_THEMES.core.shell}
+            colors={["rgba(155, 122, 232, 0.18)", "rgba(0, 229, 255, 0.10)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, styles.atriumShellStretch, { borderColor: HOME_PANEL_THEMES.core.edge }]}
+            style={[styles.atriumShell, { borderColor: colors.border }]}
           >
-            <View pointerEvents="none" style={styles.panelDepthLayer}>
-              <View style={[styles.panelGlowWash, styles.panelGlowCore]} />
-              <View style={[styles.panelMemorySpark, styles.sparkCoreA]} />
-              <View style={[styles.panelMemorySpark, styles.sparkCoreB]} />
-              <View
-                style={[
-                  styles.panelDust,
-                  styles.panelDustCore,
-                  { opacity: HOME_MOTION_LEVELS.core.dustOpacity },
-                ]}
-              />
-            </View>
             <View style={styles.atriumHeader}>
               <View style={styles.atriumHeaderCopy}>
                 <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
-                  Panel 1 · Core Memory
+                  Memory Atrium
                 </Text>
                 <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
-                  Memora’s Atrium
+                  Choose a doorway
                 </Text>
               </View>
               <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
@@ -388,110 +409,14 @@ export default function HomeScreen() {
               </View>
             </View>
             <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
-              Talk with Memora, capture a spark, or open today’s glowing chapter.
+              Memora and Sagous are making room for your living memory world.
             </Text>
-            <View pointerEvents="none" style={styles.panelProgressRail}>
-              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
-              <View style={styles.panelProgressDot} />
-              <View style={styles.panelProgressDot} />
-            </View>
-
-            <AliveButton
-              onPress={handleCapture}
-              style={[
-                styles.captureContainer,
-                styles.captureObject,
-                { shadowColor: colors.primaryAction },
-              ]}
-              glowColor={colors.primaryAction}
-              glowIntensity={1}
-              rippleColor="rgba(255, 255, 255, 0.42)"
-              fillColor={colors.primaryAction}
-              pressedFillColor={colors.primaryActionPressed}
-              colorDurationMs={200}
-              glowInDurationMs={300}
-              glowOutDurationMs={300}
-              pressScale={0.97}
-              screenKey="home"
-              accessibilityLabel="Quick Capture"
-            >
-              <View style={[styles.captureGradient, styles.captureObjectSurface]}>
-                <View pointerEvents="none" style={styles.captureMirrorRing} />
-                <View pointerEvents="none" style={styles.captureMirrorShard} />
-                <View style={[styles.captureIconBgActive, styles.captureObjectIcon]}>
-                  <Ionicons name="add" size={32} color="#ffffff" />
-                </View>
-                <Text style={[styles.captureTitle, { color: "#ffffff" }]}>
-                  Quick Capture
-                </Text>
-                <Text
-                  style={[
-                    styles.captureSubtitle,
-                    { color: "rgba(255, 255, 255, 0.78)" },
-                  ]}
-                >
-                  A bright mirror for fleeting memories
-                </Text>
-              </View>
-            </AliveButton>
-
-            {illustrationQuota.visible && (
-              <ScalePress
-                onPress={
-                  illustrationQuota.atLimit
-                    ? () => handleNavigate("/subscription")
-                    : undefined
-                }
-                disabled={!illustrationQuota.atLimit}
-                style={[
-                  styles.illustrationQuotaRow,
-                  {
-                    backgroundColor: "rgba(255, 255, 255, 0.06)",
-                    borderColor: colors.border,
-                  },
-                ]}
-                accessibilityLabel={
-                  illustrationQuota.atLimit
-                    ? illustrationQuota.upsellLabel
-                    : illustrationQuota.label
-                }
-              >
-                <Ionicons
-                  name={illustrationQuota.atLimit ? "lock-closed" : "sparkles"}
-                  size={16}
-                  color={
-                    illustrationQuota.atLimit ? colors.mutedForeground : colors.primary
-                  }
-                />
-                <Text
-                  style={[
-                    styles.illustrationQuotaText,
-                    {
-                      color: illustrationQuota.atLimit
-                        ? colors.mutedForeground
-                        : colors.foreground,
-                    },
-                  ]}
-                >
-                  {illustrationQuota.atLimit
-                    ? illustrationQuota.upsellLabel
-                    : illustrationQuota.label}
-                </Text>
-                {illustrationQuota.atLimit && (
-                  <Ionicons
-                    name="chevron-forward"
-                    size={16}
-                    color={colors.mutedForeground}
-                  />
-                )}
-              </ScalePress>
-            )}
 
             <View style={styles.atriumGrid}>
               {atriumDoorways.map((doorway) => (
                 <ScalePress
                   key={doorway.route}
-                  onPress={() => handleNavigate(doorway.route, "primary")}
+                  onPress={() => handleNavigate(doorway.route)}
                   style={styles.atriumDoor}
                   accessibilityLabel={doorway.accessibilityLabel}
                 >
@@ -499,38 +424,9 @@ export default function HomeScreen() {
                     colors={doorway.gradient}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={[
-                      styles.atriumDoorSurface,
-                      styles.atriumObjectSurface,
-                      styles.coreDoorSurface,
-                      doorway.title === "MeMChat"
-                        ? styles.memoraDoorSurface
-                        : styles.journalObjectSurface,
-                      { borderColor: colors.border },
-                    ]}
+                    style={[styles.atriumDoorSurface, { borderColor: colors.border }]}
                   >
-                    {doorway.title === "MeMChat" ? (
-                      <View
-                        pointerEvents="none"
-                        accessibilityElementsHidden
-                        importantForAccessibility="no-hide-descendants"
-                        style={styles.avatarButtonFrame}
-                      >
-                        <BrandHero variant="memora-head" size={36} decorative />
-                      </View>
-                    ) : (
-                      <View pointerEvents="none" style={styles.journalCornerFold} />
-                    )}
-                    <View
-                      style={[
-                        styles.atriumIconBadge,
-                        styles.atriumObjectIcon,
-                        doorway.title === "MeMChat"
-                          ? styles.memoraObjectIcon
-                          : styles.journalObjectIcon,
-                        { backgroundColor: doorway.badgeColor },
-                      ]}
-                    >
+                    <View style={[styles.atriumIconBadge, { backgroundColor: doorway.badgeColor }]}>
                       <Ionicons name={doorway.icon} size={20} color={doorway.iconColor} />
                     </View>
                     <View style={styles.atriumDoorCopy}>
@@ -545,11 +441,47 @@ export default function HomeScreen() {
                 </ScalePress>
               ))}
 
+              <View style={[styles.gameRoomDoor, { borderColor: colors.border }]}>
+                <View style={styles.gameRoomHeader}>
+                  <View style={[styles.atriumIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
+                    <Ionicons name="game-controller" size={20} color={colors.primary} />
+                  </View>
+                  <View style={styles.atriumDoorCopy}>
+                    <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
+                      Game Room
+                    </Text>
+                    <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
+                      Train your mind
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.gameRoomActions}>
+                  <ScalePress
+                    onPress={() => handleNavigate("/memory-match")}
+                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="Memory Match"
+                  >
+                    <Ionicons name="apps" size={16} color={colors.primary} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      Memory Match
+                    </Text>
+                  </ScalePress>
+                  <ScalePress
+                    onPress={() => handleNavigate("/game-24")}
+                    style={[styles.gameRoomAction, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    accessibilityLabel="24 Game"
+                  >
+                    <Ionicons name="calculator" size={16} color={colors.accent} />
+                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
+                      24 Game
+                    </Text>
+                  </ScalePress>
+                </View>
+              </View>
             </View>
           </LinearGradient>
         </BreatheCard>
 
-        <View style={styles.interPanelUtility}>
         <View style={styles.quickActions}>
           <ScalePress
             onPress={handleLogCall}
@@ -640,148 +572,24 @@ export default function HomeScreen() {
             <Text style={[styles.statValue, { color: colors.foreground }]}>{todayMemories.length}</Text>
           </View>
         </View>
-        </View>
 
         <StreakMilestoneOverlay
           milestone={celebratedMilestone}
           onDismiss={() => setCelebratedMilestone(null)}
         />
 
-        <BreatheCard
-          index={HOME_MOTION_LEVELS.vault.breatheIndex}
-          style={[styles.atriumSection, { minHeight: panelMinHeight }]}
-        >
-          <LinearGradient
-            colors={HOME_PANEL_THEMES.vault.shell}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, styles.atriumShellStretch, styles.vaultShell, { borderColor: HOME_PANEL_THEMES.vault.edge }]}
-          >
-            <View pointerEvents="none" style={styles.panelDepthLayer}>
-              <View style={[styles.panelGlowWash, styles.panelGlowVault]} />
-              <View style={[styles.panelMemorySpark, styles.sparkVaultA]} />
-              <View style={[styles.panelMemorySpark, styles.sparkVaultB]} />
-              <View
-                style={[
-                  styles.panelDust,
-                  styles.panelDustVault,
-                  { opacity: HOME_MOTION_LEVELS.vault.dustOpacity },
-                ]}
-              />
-            </View>
-            <View style={styles.atriumHeader}>
-              <View style={styles.atriumHeaderCopy}>
-                <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
-                  Panel 2 · Vault / Games / Guidance
-                </Text>
-                <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
-                  Sagous’ Memory Vault
-                </Text>
-              </View>
-              <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
-                <Ionicons name="library" size={20} color="#ffb74d" />
-              </View>
-            </View>
-            <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
-              Browse the book-vault, train in the game room, or take today’s curated signal.
-            </Text>
-            <View pointerEvents="none" style={styles.panelProgressRail}>
-              <View style={styles.panelProgressDot} />
-              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
-              <View style={styles.panelProgressDot} />
-            </View>
-
-            <ScalePress
-              onPress={() => handleNavigate("/archive", "secondary")}
-              style={[styles.vaultDoor, styles.vaultObject]}
-              accessibilityLabel="Archive"
-            >
-              <LinearGradient
-                colors={["rgba(255, 183, 77, 0.18)", "rgba(21, 16, 42, 0.88)"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[
-                  styles.vaultDoorSurface,
-                  styles.atriumObjectSurface,
-                  styles.vaultObjectSurface,
-                  { borderColor: HOME_PANEL_THEMES.vault.edge },
-                ]}
-              >
-                <View pointerEvents="none" style={styles.vaultBookRidges}>
-                  <View style={styles.vaultBookRidge} />
-                  <View style={styles.vaultBookRidge} />
-                  <View style={styles.vaultBookRidge} />
-                </View>
-                <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.vaultObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
-                  <Ionicons name="book" size={20} color="#ffb74d" />
-                </View>
-                <View style={styles.atriumDoorCopy}>
-                  <Text style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
-                    Archive
-                  </Text>
-                  <Text style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
-                    Open the memory book-vault
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-              </LinearGradient>
-            </ScalePress>
-
-              <View style={[styles.gameRoomDoor, styles.gameRoomObject, { borderColor: colors.border }]}>
-                <View pointerEvents="none" style={styles.gameRoomConstellation}>
-                  <View style={styles.gameRoomPixel} />
-                  <View style={[styles.gameRoomPixel, styles.gameRoomPixelHot]} />
-                  <View style={styles.gameRoomPixel} />
-                </View>
-                <View style={styles.gameRoomHeader}>
-                  <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.gameObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
-                    <Ionicons name="game-controller" size={20} color={colors.primary} />
-                  </View>
-                  <View style={styles.atriumDoorCopy}>
-                    <Text numberOfLines={1} style={[styles.atriumDoorTitle, { color: colors.foreground }]}>
-                      Game Room
-                    </Text>
-                    <Text numberOfLines={1} style={[styles.atriumDoorSubtitle, { color: colors.mutedForeground }]}>
-                      Train your mind
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.gameRoomActions}>
-                  <ScalePress
-                    onPress={() => handleNavigate("/memory-match")}
-                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
-                    accessibilityLabel="Memory Match"
-                  >
-                    <Ionicons name="apps" size={16} color={colors.primary} />
-                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
-                      Memory Match
-                    </Text>
-                  </ScalePress>
-                  <ScalePress
-                    onPress={() => handleNavigate("/game-24")}
-                    style={[styles.gameRoomAction, styles.gameActionObject, { backgroundColor: colors.card, borderColor: colors.border }]}
-                    accessibilityLabel="24 Game"
-                  >
-                    <Ionicons name="calculator" size={16} color={colors.accent} />
-                    <Text numberOfLines={1} style={[styles.gameRoomActionText, { color: colors.foreground }]}>
-                      24 Game
-                    </Text>
-                  </ScalePress>
-                </View>
-              </View>
-
+        <BreatheCard index={0} style={styles.boostCard}>
         <ScalePress
           onPress={() => handleNavigate("/tip-archive")}
-          style={[styles.boostCardInner, styles.signalObject]}
+          style={styles.boostCardInner}
           accessibilityLabel={`Daily Boost: ${todayTip.text}`}
         >
           <LinearGradient
             colors={["rgba(155, 122, 232, 0.20)", "rgba(0, 229, 255, 0.14)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.boostGradient, styles.signalObjectSurface, { borderColor: colors.border }]}
+            style={[styles.boostGradient, { borderColor: colors.border }]}
           >
-            <View pointerEvents="none" style={styles.signalOrbMark} />
             <View style={styles.boostHeader}>
               <View style={styles.boostHeaderLeft}>
                 <Ionicons
@@ -811,14 +619,17 @@ export default function HomeScreen() {
             <Text style={[styles.boostText, { color: colors.foreground }]}>{todayTip.text}</Text>
           </LinearGradient>
         </ScalePress>
+        </BreatheCard>
 
-          <View style={[styles.factCard, styles.signalFactObject, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <BreatheCard index={1}>
+          <View style={[styles.factCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.boostHeaderLeft}>
               <Ionicons name="school" size={16} color={colors.accent} />
               <Text style={[styles.boostLabel, { color: colors.mutedForeground }]}>Did You Know?</Text>
             </View>
             <Text style={[styles.factText, { color: colors.foreground }]}>{todayFact.text}</Text>
           </View>
+        </BreatheCard>
 
         <MemNoticedCard />
 
@@ -859,177 +670,106 @@ export default function HomeScreen() {
             ))}
           </View>
         )}
-          </LinearGradient>
-        </BreatheCard>
 
-        <BreatheCard
-          index={HOME_MOTION_LEVELS.portal.breatheIndex}
-          style={[styles.atriumSection, styles.atriumSectionLast, { minHeight: panelMinHeight }]}
-        >
-          <LinearGradient
-            colors={HOME_PANEL_THEMES.portal.shell}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.atriumShell, styles.atriumShellStretch, styles.portalShell, { borderColor: HOME_PANEL_THEMES.portal.edge }]}
-          >
-            <View pointerEvents="none" style={styles.panelDepthLayer}>
-              <View style={[styles.panelGlowWash, styles.panelGlowPortal]} />
-              <View style={[styles.panelMemorySpark, styles.sparkPortalA]} />
-              <View style={[styles.panelMemorySpark, styles.sparkPortalB]} />
-              <View style={[styles.panelMemorySpark, styles.sparkPortalC]} />
-              <View
-                style={[
-                  styles.panelDust,
-                  styles.panelDustPortal,
-                  { opacity: HOME_MOTION_LEVELS.portal.dustOpacity },
-                ]}
-              />
-            </View>
-            <View style={styles.atriumHeader}>
-              <View style={styles.atriumHeaderCopy}>
-                <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
-                  Panel 3 · Oc2cO / Upgrade / Learn
-                </Text>
-                <Text style={[styles.atriumTitle, { color: colors.foreground }]}>
-                  Portal & Learning Theater
-                </Text>
-              </View>
-              <View style={[styles.atriumCompanionOrb, { borderColor: colors.border }]}>
-                <Ionicons name="planet" size={20} color={colors.accent} />
-              </View>
-            </View>
-            <Text style={[styles.atriumSubtitle, { color: colors.mutedForeground }]}>
-              The website portal is staged for a later route; Pro and Learn stay tappable now.
-            </Text>
-            <View pointerEvents="none" style={styles.panelProgressRail}>
-              <View style={styles.panelProgressDot} />
-              <View style={styles.panelProgressDot} />
-              <View style={[styles.panelProgressDot, styles.panelProgressDotActive]} />
-            </View>
+        <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Train Your Mind</Text>
 
         <View style={styles.grid}>
           <ScalePress
-            disabled
+            onPress={() => handleNavigate("/memory-match")}
             style={styles.navCard}
-            accessibilityLabel="Oc2cO Website, coming soon"
+            accessibilityLabel="Memory Match"
           >
             <LinearGradient
-              colors={["rgba(0, 229, 255, 0.18)", "rgba(21, 16, 42, 0.88)"]}
+              colors={["rgba(155, 122, 232, 0.18)", "rgba(21, 16, 42, 0.96)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[
-                styles.navCardSurface,
-                styles.portalNavSurface,
-                styles.portalObjectSurface,
-                { borderColor: HOME_PANEL_THEMES.portal.edge },
-              ]}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
             >
-              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.portalObjectIcon, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
-                  <Ionicons name="globe" size={22} color={colors.accent} />
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(155, 122, 232, 0.18)" }]}>
+                  <Ionicons name="apps" size={22} color={colors.primary} />
                 </View>
-                <Text style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Soon</Text>
+                <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Oc2cO Website</Text>
-                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Portal doorway</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Memory Match</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Train recall</Text>
               </View>
             </LinearGradient>
           </ScalePress>
 
           <ScalePress
-            onPress={() => handleNavigate("/subscription", "portal")}
+            onPress={() => handleNavigate("/game-24")}
             style={styles.navCard}
-            accessibilityLabel={isPro ? "Manage Pro" : "Upgrade to Pro"}
+            accessibilityLabel="24 Game"
           >
             <LinearGradient
-              colors={["rgba(255, 183, 77, 0.18)", "rgba(21, 16, 42, 0.90)"]}
+              colors={["rgba(0, 229, 255, 0.16)", "rgba(21, 16, 42, 0.96)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[
-                styles.navCardSurface,
-                styles.portalNavSurface,
-                styles.passObjectSurface,
-                { borderColor: HOME_PANEL_THEMES.portal.edge },
-              ]}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
             >
-              <View pointerEvents="none" style={styles.passCrystalFacet} />
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.passObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
-                  <Ionicons name="diamond" size={22} color="#ffb74d" />
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
+                  <Ionicons name="calculator" size={22} color={colors.accent} />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>{isPro ? "Manage Pro" : "Upgrade / Pro"}</Text>
-                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Premium pass</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>24 Game</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mental math</Text>
               </View>
             </LinearGradient>
           </ScalePress>
 
           <ScalePress
-            onPress={() => handleNavigate("/support", "portal")}
+            onPress={() => handleNavigate("/recap")}
             style={styles.navCard}
-            accessibilityLabel="Learn MeMTool"
+            accessibilityLabel="Daily Recap"
           >
             <LinearGradient
-              colors={["rgba(155, 122, 232, 0.18)", "rgba(21, 16, 42, 0.90)"]}
+              colors={["rgba(244, 114, 182, 0.16)", "rgba(21, 16, 42, 0.96)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[
-                styles.navCardSurface,
-                styles.portalNavSurface,
-                styles.theaterObjectSurface,
-                { borderColor: HOME_PANEL_THEMES.portal.edge },
-              ]}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
             >
-              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.theaterObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
-                  <Ionicons name="school" size={22} color={colors.primary} />
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(244, 114, 182, 0.14)" }]}>
+                  <Ionicons name="sparkles" size={22} color="#f472b6" />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Learn MeMTool</Text>
-                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Mini theater</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Daily Recap</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Daily summary</Text>
               </View>
             </LinearGradient>
           </ScalePress>
 
           <ScalePress
-            onPress={() => handleNavigate("/about", "portal")}
+            onPress={() => handleNavigate("/tip-archive")}
             style={styles.navCard}
-            accessibilityLabel="About Oc2cO"
+            accessibilityLabel="Boost Archive"
           >
             <LinearGradient
-              colors={["rgba(244, 114, 182, 0.14)", "rgba(21, 16, 42, 0.90)"]}
+              colors={["rgba(255, 183, 77, 0.15)", "rgba(21, 16, 42, 0.96)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[
-                styles.navCardSurface,
-                styles.portalNavSurface,
-                styles.helpObjectSurface,
-                { borderColor: HOME_PANEL_THEMES.portal.edge },
-              ]}
+              style={[styles.navCardSurface, { borderColor: colors.border }]}
             >
-              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
-                <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.helpObjectIcon, { backgroundColor: "rgba(244, 114, 182, 0.12)" }]}>
-                  <Ionicons name="help-circle" size={22} color="#f472b6" />
+                <View style={[styles.navIconBadge, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
+                  <Ionicons name="library" size={22} color={colors.primary} />
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
               </View>
               <View>
-                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>FAQ / About</Text>
-                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Help object</Text>
+                <Text numberOfLines={1} style={[styles.navCardTitle, { color: colors.foreground }]}>Boost Archive</Text>
+                <Text numberOfLines={1} style={[styles.navCardSubtitle, { color: colors.mutedForeground }]}>Saved boosts</Text>
               </View>
             </LinearGradient>
           </ScalePress>
         </View>
-          </LinearGradient>
-        </BreatheCard>
       </Animated.ScrollView>
     </SettleOnMount>
   );
@@ -1100,41 +840,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
-  captureObject: {
-    shadowOpacity: 0.28,
-    shadowRadius: 22,
-    elevation: 10,
-  },
-  captureGradient: {
-    padding: spacing.lg,
-    position: "relative",
-    overflow: "hidden",
-  },
-  captureObjectSurface: {
-    minHeight: 132,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
-  },
-  captureMirrorRing: {
-    position: "absolute",
-    right: -28,
-    top: -32,
-    width: 118,
-    height: 118,
-    borderRadius: 59,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.28)",
-    backgroundColor: "rgba(255,255,255,0.045)",
-  },
-  captureMirrorShard: {
-    position: "absolute",
-    right: 30,
-    bottom: 28,
-    width: 56,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: "rgba(255,255,255,0.26)",
-  },
+  captureGradient: { padding: spacing.lg },
   captureIconBg: {
     width: 48,
     height: 48,
@@ -1152,13 +858,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.base,
-  },
-  captureObjectIcon: {
-    shadowColor: "#ffffff",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.42,
-    shadowRadius: 14,
-    elevation: 6,
   },
   captureTitle: {
     ...text.cardTitle,
@@ -1192,137 +891,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
   },
-  atriumSection: {
-    marginBottom: spacing.xl,
-  },
-  atriumSectionFirst: {
-    marginBottom: spacing.md,
-  },
-  atriumSectionLast: {
-    marginBottom: spacing.xl,
-  },
+  atriumSection: { marginBottom: spacing.lg },
   atriumShell: {
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.base,
     overflow: "hidden",
-  },
-  atriumShellStretch: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  vaultShell: {
-    shadowColor: "#97b4a2",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    elevation: 5,
-  },
-  portalShell: {
-    shadowColor: "#00e5ff",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.16,
-    shadowRadius: 22,
-    elevation: 6,
-  },
-  panelDepthLayer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  panelGlowWash: {
-    position: "absolute",
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-  },
-  panelGlowCore: {
-    top: -92,
-    right: -78,
-    backgroundColor: HOME_PANEL_THEMES.core.wash,
-  },
-  panelGlowVault: {
-    top: 72,
-    left: -112,
-    backgroundColor: HOME_PANEL_THEMES.vault.wash,
-  },
-  panelGlowPortal: {
-    right: -74,
-    bottom: -82,
-    backgroundColor: HOME_PANEL_THEMES.portal.wash,
-  },
-  panelDust: {
-    position: "absolute",
-    width: 92,
-    height: 92,
-    borderRadius: 46,
-    borderWidth: 1,
-  },
-  panelDustCore: {
-    right: 22,
-    top: 104,
-    borderColor: HOME_PANEL_THEMES.core.dust,
-    backgroundColor: "rgba(255,255,255,0.025)",
-  },
-  panelDustVault: {
-    right: 38,
-    bottom: 118,
-    borderColor: HOME_PANEL_THEMES.vault.dust,
-    backgroundColor: "rgba(151,180,162,0.035)",
-  },
-  panelDustPortal: {
-    left: 24,
-    bottom: 64,
-    borderColor: HOME_PANEL_THEMES.portal.dust,
-    backgroundColor: "rgba(0,229,255,0.04)",
-  },
-  panelMemorySpark: {
-    position: "absolute",
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: HOME_ATRIUM_PALETTE.starlight,
-    shadowColor: "#ffffff",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.28,
-    shadowRadius: 8,
-  },
-  sparkCoreA: {
-    top: 70,
-    left: 34,
-    opacity: 0.32,
-  },
-  sparkCoreB: {
-    top: 186,
-    right: 52,
-    opacity: 0.22,
-  },
-  sparkVaultA: {
-    top: 120,
-    right: 34,
-    opacity: 0.38,
-    backgroundColor: "rgba(255, 183, 77, 0.58)",
-  },
-  sparkVaultB: {
-    bottom: 178,
-    left: 58,
-    opacity: 0.28,
-    backgroundColor: "rgba(151, 180, 162, 0.55)",
-  },
-  sparkPortalA: {
-    top: 82,
-    right: 42,
-    opacity: 0.48,
-    backgroundColor: "rgba(0, 229, 255, 0.62)",
-  },
-  sparkPortalB: {
-    bottom: 154,
-    left: 36,
-    opacity: 0.36,
-    backgroundColor: "rgba(244, 114, 182, 0.52)",
-  },
-  sparkPortalC: {
-    bottom: 64,
-    right: 106,
-    opacity: 0.30,
   },
   atriumHeader: {
     flexDirection: "row",
@@ -1355,24 +929,7 @@ const styles = StyleSheet.create({
     ...text.helperRegular,
     lineHeight: 20,
     marginTop: spacing.xs,
-    marginBottom: spacing.sm,
-    maxWidth: 320,
-  },
-  panelProgressRail: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
     marginBottom: spacing.base,
-  },
-  panelProgressDot: {
-    width: 18,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: "rgba(255,255,255,0.16)",
-  },
-  panelProgressDotActive: {
-    width: 34,
-    backgroundColor: "rgba(255,255,255,0.44)",
   },
   atriumGrid: {
     flexDirection: "row",
@@ -1391,124 +948,12 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     justifyContent: "space-between",
   },
-  atriumObjectSurface: {
-    borderColor: HOME_ATRIUM_PALETTE.glassEdge,
-    backgroundColor: "rgba(255,255,255,0.035)",
-  },
-  coreDoorSurface: {
-    shadowColor: "#00e5ff",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 14,
-    elevation: 4,
-  },
-  memoraDoorSurface: {
-    minHeight: 132,
-    shadowOpacity: 0.2,
-    shadowRadius: 18,
-    position: "relative",
-    overflow: "hidden",
-  },
-  journalObjectSurface: {
-    borderColor: "rgba(244, 114, 182, 0.22)",
-    shadowColor: "#f472b6",
-    position: "relative",
-    overflow: "hidden",
-  },
-  avatarButtonFrame: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 229, 255, 0.10)",
-    borderWidth: 1,
-    borderColor: "rgba(0, 229, 255, 0.18)",
-  },
-  journalCornerFold: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    width: 38,
-    height: 38,
-    borderLeftWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "rgba(244, 114, 182, 0.16)",
-    backgroundColor: "rgba(244, 114, 182, 0.06)",
-  },
-  vaultDoor: {
-    width: "100%",
-    borderRadius: radius.md,
-  },
-  vaultObject: {
-    shadowColor: "#ffb74d",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    elevation: 6,
-  },
-  vaultDoorSurface: {
-    minHeight: 104,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    padding: spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    position: "relative",
-    overflow: "hidden",
-  },
-  vaultObjectSurface: {
-    minHeight: 118,
-    backgroundColor: "rgba(255, 183, 77, 0.035)",
-  },
-  vaultBookRidges: {
-    position: "absolute",
-    right: 18,
-    top: 18,
-    bottom: 18,
-    width: 20,
-    justifyContent: "space-between",
-    opacity: 0.5,
-  },
-  vaultBookRidge: {
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: "rgba(255, 183, 77, 0.28)",
-  },
   atriumIconBadge: {
     width: 36,
     height: 36,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-  },
-  atriumObjectIcon: {
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.13)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  memoraObjectIcon: {
-    shadowColor: "#00e5ff",
-    borderColor: "rgba(0, 229, 255, 0.22)",
-  },
-  journalObjectIcon: {
-    shadowColor: "#f472b6",
-    borderColor: "rgba(244, 114, 182, 0.22)",
-  },
-  vaultObjectIcon: {
-    shadowColor: "#ffb74d",
-    borderColor: "rgba(255, 183, 77, 0.24)",
-  },
-  gameObjectIcon: {
-    shadowColor: "#9b7ae8",
-    borderColor: "rgba(155, 122, 232, 0.22)",
   },
   atriumDoorCopy: { flex: 1, justifyContent: "flex-end" },
   atriumDoorTitle: {
@@ -1528,16 +973,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     backgroundColor: "rgba(21, 16, 42, 0.82)",
-    marginTop: spacing.sm,
-    position: "relative",
-    overflow: "hidden",
-  },
-  gameRoomObject: {
-    shadowColor: "#9b7ae8",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 14,
-    elevation: 4,
   },
   gameRoomHeader: {
     flexDirection: "row",
@@ -1548,23 +983,6 @@ const styles = StyleSheet.create({
   gameRoomActions: {
     flexDirection: "row",
     gap: spacing.sm,
-  },
-  gameRoomConstellation: {
-    position: "absolute",
-    top: 14,
-    right: 16,
-    flexDirection: "row",
-    gap: 5,
-    opacity: 0.66,
-  },
-  gameRoomPixel: {
-    width: 5,
-    height: 5,
-    borderRadius: 2,
-    backgroundColor: "rgba(155, 122, 232, 0.44)",
-  },
-  gameRoomPixelHot: {
-    backgroundColor: "rgba(0, 229, 255, 0.54)",
   },
   gameRoomAction: {
     flex: 1,
@@ -1577,25 +995,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.xs,
   },
-  gameActionObject: {
-    borderColor: "rgba(255,255,255,0.14)",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 3,
-  },
   gameRoomActionText: {
     ...text.caption,
     fontWeight: "600",
     fontFamily: "Inter_600SemiBold",
   },
-  interPanelUtility: {
-    marginBottom: spacing.xl,
-    paddingHorizontal: 2,
-    opacity: 0.94,
-  },
-  quickActions: { flexDirection: "row", gap: spacing.md, marginBottom: spacing.md },
+  quickActions: { flexDirection: "row", gap: spacing.md, marginBottom: 20 },
   quickAction: {
     flex: 1,
     flexDirection: "row",
@@ -1618,7 +1023,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   streakBest: { fontSize: 12, fontWeight: "500" },
-  statsRow: { flexDirection: "row", gap: spacing.base },
+  statsRow: { flexDirection: "row", gap: spacing.base, marginBottom: 20 },
   statCard: {
     flex: 1,
     padding: spacing.base,
@@ -1635,35 +1040,10 @@ const styles = StyleSheet.create({
   statValue: { ...text.screenTitle },
   boostCard: { marginBottom: spacing.md },
   boostCardInner: { borderRadius: radius.md, overflow: "hidden" },
-  signalObject: {
-    shadowColor: "#00e5ff",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 14,
-    elevation: 4,
-    marginTop: spacing.md,
-  },
   boostGradient: {
     padding: spacing.base,
     borderRadius: radius.md,
     borderWidth: 1,
-    position: "relative",
-    overflow: "hidden",
-  },
-  signalObjectSurface: {
-    borderColor: "rgba(0, 229, 255, 0.16)",
-    backgroundColor: "rgba(0, 229, 255, 0.035)",
-  },
-  signalOrbMark: {
-    position: "absolute",
-    right: -18,
-    top: -18,
-    width: 78,
-    height: 78,
-    borderRadius: 39,
-    borderWidth: 1,
-    borderColor: "rgba(0, 229, 255, 0.20)",
-    backgroundColor: "rgba(0, 229, 255, 0.055)",
   },
   boostHeader: {
     flexDirection: "row",
@@ -1695,10 +1075,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: spacing.lg,
     gap: spacing.sm,
-  },
-  signalFactObject: {
-    borderColor: "rgba(151, 180, 162, 0.16)",
-    backgroundColor: "rgba(151, 180, 162, 0.055)",
   },
   factText: { ...text.helperRegular, lineHeight: 20 },
   sectionTitle: {
@@ -1754,51 +1130,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     justifyContent: "space-between",
-    position: "relative",
-    overflow: "hidden",
-  },
-  portalNavSurface: {
-    shadowColor: "#00e5ff",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    elevation: 4,
-  },
-  portalObjectSurface: {
-    backgroundColor: "rgba(0, 229, 255, 0.04)",
-    opacity: 0.86,
-  },
-  passObjectSurface: {
-    backgroundColor: "rgba(255, 183, 77, 0.045)",
-    shadowColor: "#ffb74d",
-  },
-  theaterObjectSurface: {
-    backgroundColor: "rgba(155, 122, 232, 0.045)",
-    shadowColor: "#9b7ae8",
-  },
-  helpObjectSurface: {
-    backgroundColor: "rgba(244, 114, 182, 0.035)",
-    shadowColor: "#f472b6",
-  },
-  portalObjectGleam: {
-    position: "absolute",
-    right: 12,
-    bottom: 12,
-    width: 24,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: "rgba(255,255,255,0.18)",
-  },
-  passCrystalFacet: {
-    position: "absolute",
-    right: 12,
-    bottom: 10,
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255, 183, 77, 0.26)",
-    backgroundColor: "rgba(255, 183, 77, 0.07)",
   },
   navCardTop: {
     flexDirection: "row",
@@ -1812,22 +1143,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-  },
-  portalObjectIcon: {
-    shadowColor: "#00e5ff",
-    borderColor: "rgba(0, 229, 255, 0.22)",
-  },
-  passObjectIcon: {
-    shadowColor: "#ffb74d",
-    borderColor: "rgba(255, 183, 77, 0.24)",
-  },
-  theaterObjectIcon: {
-    shadowColor: "#9b7ae8",
-    borderColor: "rgba(155, 122, 232, 0.22)",
-  },
-  helpObjectIcon: {
-    shadowColor: "#f472b6",
-    borderColor: "rgba(244, 114, 182, 0.22)",
   },
   navCardTitle: {
     ...text.bodyMedium,
