@@ -73,6 +73,14 @@ Do not rely on chat memory alone.
 - Mark stale entries `SUPERSEDED`, `PARKED`, `HISTORY ONLY`, `NEEDS PROOF`, or `DO NOT USE FOR CURRENT WORK` when needed.
 - Stop and report conflicts instead of guessing.
 
+## Important Work Quality Rule
+
+For foundation AI systems, game creation, avatar/persona systems, major visual design, product-identity UI, memory synthesis, and core app functions, use High or Extra High reasoning/settings when available.
+
+These lanes require deep product/design judgment, not shallow mechanical edits. Prompts should be detailed and should consider hierarchy, spacing, motion feel, visual rhythm, touch targets, emotional tone, system fit, future extensibility, and user-facing quality.
+
+Routine checks, docs, and simple validation may use Low or Medium reasoning/settings, but important product-defining work should not be treated lazily or shallowly.
+
 ## Exit Rules
 
 Before closing, every agent must run the EXIT GATE in:

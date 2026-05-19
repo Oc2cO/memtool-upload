@@ -52,20 +52,22 @@ const CATEGORY_ICON: Record<string, keyof typeof Ionicons.glyphMap> = {
 const HOME_ATRIUM_PALETTE = {
   cosmicBlack: "rgba(5, 4, 14, 0.98)",
   deepViolet: "rgba(29, 18, 64, 0.96)",
-  quasarBlue: "rgba(0, 229, 255, 0.22)",
-  memoryGold: "rgba(255, 183, 77, 0.20)",
-  chromeSage: "rgba(151, 180, 162, 0.18)",
-  portalCyan: "rgba(0, 229, 255, 0.28)",
+  quasarBlue: "rgba(0, 229, 255, 0.24)",
+  memoryGold: "rgba(255, 183, 77, 0.24)",
+  chromeSage: "rgba(151, 180, 162, 0.20)",
+  portalCyan: "rgba(0, 229, 255, 0.32)",
   portalRose: "rgba(244, 114, 182, 0.18)",
   glassEdge: "rgba(255, 255, 255, 0.14)",
+  emberGlass: "rgba(255, 183, 77, 0.10)",
+  starlight: "rgba(255, 255, 255, 0.52)",
 };
 
 const HOME_PANEL_THEMES = {
   core: {
     shell: [
-      HOME_ATRIUM_PALETTE.cosmicBlack,
-      HOME_ATRIUM_PALETTE.deepViolet,
-      "rgba(2, 12, 28, 0.94)",
+      "rgba(3, 3, 12, 0.99)",
+      "rgba(22, 12, 52, 0.97)",
+      "rgba(1, 13, 32, 0.95)",
     ] as [string, string, string],
     wash: HOME_ATRIUM_PALETTE.quasarBlue,
     dust: "rgba(255, 255, 255, 0.10)",
@@ -73,9 +75,9 @@ const HOME_PANEL_THEMES = {
   },
   vault: {
     shell: [
-      "rgba(16, 18, 42, 0.96)",
-      "rgba(41, 31, 78, 0.92)",
-      "rgba(18, 32, 46, 0.92)",
+      "rgba(12, 18, 42, 0.97)",
+      "rgba(38, 32, 78, 0.94)",
+      "rgba(23, 40, 50, 0.93)",
     ] as [string, string, string],
     wash: HOME_ATRIUM_PALETTE.memoryGold,
     dust: "rgba(151, 180, 162, 0.12)",
@@ -83,9 +85,9 @@ const HOME_PANEL_THEMES = {
   },
   portal: {
     shell: [
-      "rgba(18, 32, 54, 0.94)",
-      "rgba(41, 38, 86, 0.88)",
-      "rgba(9, 58, 76, 0.84)",
+      "rgba(18, 38, 64, 0.95)",
+      "rgba(45, 42, 94, 0.90)",
+      "rgba(8, 70, 88, 0.86)",
     ] as [string, string, string],
     wash: HOME_ATRIUM_PALETTE.portalCyan,
     dust: "rgba(255, 255, 255, 0.18)",
@@ -362,6 +364,8 @@ export default function HomeScreen() {
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowCore]} />
+              <View style={[styles.panelMemorySpark, styles.sparkCoreA]} />
+              <View style={[styles.panelMemorySpark, styles.sparkCoreB]} />
               <View
                 style={[
                   styles.panelDust,
@@ -412,6 +416,8 @@ export default function HomeScreen() {
               accessibilityLabel="Quick Capture"
             >
               <View style={[styles.captureGradient, styles.captureObjectSurface]}>
+                <View pointerEvents="none" style={styles.captureMirrorRing} />
+                <View pointerEvents="none" style={styles.captureMirrorShard} />
                 <View style={[styles.captureIconBgActive, styles.captureObjectIcon]}>
                   <Ionicons name="add" size={32} color="#ffffff" />
                 </View>
@@ -503,6 +509,18 @@ export default function HomeScreen() {
                       { borderColor: colors.border },
                     ]}
                   >
+                    {doorway.title === "MeMChat" ? (
+                      <View
+                        pointerEvents="none"
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                        style={styles.avatarButtonFrame}
+                      >
+                        <BrandHero variant="memora-head" size={36} decorative />
+                      </View>
+                    ) : (
+                      <View pointerEvents="none" style={styles.journalCornerFold} />
+                    )}
                     <View
                       style={[
                         styles.atriumIconBadge,
@@ -641,6 +659,8 @@ export default function HomeScreen() {
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowVault]} />
+              <View style={[styles.panelMemorySpark, styles.sparkVaultA]} />
+              <View style={[styles.panelMemorySpark, styles.sparkVaultB]} />
               <View
                 style={[
                   styles.panelDust,
@@ -687,6 +707,11 @@ export default function HomeScreen() {
                   { borderColor: HOME_PANEL_THEMES.vault.edge },
                 ]}
               >
+                <View pointerEvents="none" style={styles.vaultBookRidges}>
+                  <View style={styles.vaultBookRidge} />
+                  <View style={styles.vaultBookRidge} />
+                  <View style={styles.vaultBookRidge} />
+                </View>
                 <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.vaultObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
                   <Ionicons name="book" size={20} color="#ffb74d" />
                 </View>
@@ -703,6 +728,11 @@ export default function HomeScreen() {
             </ScalePress>
 
               <View style={[styles.gameRoomDoor, styles.gameRoomObject, { borderColor: colors.border }]}>
+                <View pointerEvents="none" style={styles.gameRoomConstellation}>
+                  <View style={styles.gameRoomPixel} />
+                  <View style={[styles.gameRoomPixel, styles.gameRoomPixelHot]} />
+                  <View style={styles.gameRoomPixel} />
+                </View>
                 <View style={styles.gameRoomHeader}>
                   <View style={[styles.atriumIconBadge, styles.atriumObjectIcon, styles.gameObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
                     <Ionicons name="game-controller" size={20} color={colors.primary} />
@@ -751,6 +781,7 @@ export default function HomeScreen() {
             end={{ x: 1, y: 1 }}
             style={[styles.boostGradient, styles.signalObjectSurface, { borderColor: colors.border }]}
           >
+            <View pointerEvents="none" style={styles.signalOrbMark} />
             <View style={styles.boostHeader}>
               <View style={styles.boostHeaderLeft}>
                 <Ionicons
@@ -843,6 +874,9 @@ export default function HomeScreen() {
           >
             <View pointerEvents="none" style={styles.panelDepthLayer}>
               <View style={[styles.panelGlowWash, styles.panelGlowPortal]} />
+              <View style={[styles.panelMemorySpark, styles.sparkPortalA]} />
+              <View style={[styles.panelMemorySpark, styles.sparkPortalB]} />
+              <View style={[styles.panelMemorySpark, styles.sparkPortalC]} />
               <View
                 style={[
                   styles.panelDust,
@@ -890,6 +924,7 @@ export default function HomeScreen() {
                 { borderColor: HOME_PANEL_THEMES.portal.edge },
               ]}
             >
+              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
                 <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.portalObjectIcon, { backgroundColor: "rgba(0, 229, 255, 0.14)" }]}>
                   <Ionicons name="globe" size={22} color={colors.accent} />
@@ -919,6 +954,7 @@ export default function HomeScreen() {
                 { borderColor: HOME_PANEL_THEMES.portal.edge },
               ]}
             >
+              <View pointerEvents="none" style={styles.passCrystalFacet} />
               <View style={styles.navCardTop}>
                 <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.passObjectIcon, { backgroundColor: "rgba(255, 183, 77, 0.14)" }]}>
                   <Ionicons name="diamond" size={22} color="#ffb74d" />
@@ -948,6 +984,7 @@ export default function HomeScreen() {
                 { borderColor: HOME_PANEL_THEMES.portal.edge },
               ]}
             >
+              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
                 <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.theaterObjectIcon, { backgroundColor: "rgba(155, 122, 232, 0.16)" }]}>
                   <Ionicons name="school" size={22} color={colors.primary} />
@@ -977,6 +1014,7 @@ export default function HomeScreen() {
                 { borderColor: HOME_PANEL_THEMES.portal.edge },
               ]}
             >
+              <View pointerEvents="none" style={styles.portalObjectGleam} />
               <View style={styles.navCardTop}>
                 <View style={[styles.navIconBadge, styles.atriumObjectIcon, styles.helpObjectIcon, { backgroundColor: "rgba(244, 114, 182, 0.12)" }]}>
                   <Ionicons name="help-circle" size={22} color="#f472b6" />
@@ -1067,11 +1105,35 @@ const styles = StyleSheet.create({
     shadowRadius: 22,
     elevation: 10,
   },
-  captureGradient: { padding: spacing.lg },
+  captureGradient: {
+    padding: spacing.lg,
+    position: "relative",
+    overflow: "hidden",
+  },
   captureObjectSurface: {
     minHeight: 132,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.18)",
+  },
+  captureMirrorRing: {
+    position: "absolute",
+    right: -28,
+    top: -32,
+    width: 118,
+    height: 118,
+    borderRadius: 59,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.28)",
+    backgroundColor: "rgba(255,255,255,0.045)",
+  },
+  captureMirrorShard: {
+    position: "absolute",
+    right: 30,
+    bottom: 28,
+    width: 56,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: "rgba(255,255,255,0.26)",
   },
   captureIconBg: {
     width: 48,
@@ -1212,6 +1274,56 @@ const styles = StyleSheet.create({
     borderColor: HOME_PANEL_THEMES.portal.dust,
     backgroundColor: "rgba(0,229,255,0.04)",
   },
+  panelMemorySpark: {
+    position: "absolute",
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: HOME_ATRIUM_PALETTE.starlight,
+    shadowColor: "#ffffff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.28,
+    shadowRadius: 8,
+  },
+  sparkCoreA: {
+    top: 70,
+    left: 34,
+    opacity: 0.32,
+  },
+  sparkCoreB: {
+    top: 186,
+    right: 52,
+    opacity: 0.22,
+  },
+  sparkVaultA: {
+    top: 120,
+    right: 34,
+    opacity: 0.38,
+    backgroundColor: "rgba(255, 183, 77, 0.58)",
+  },
+  sparkVaultB: {
+    bottom: 178,
+    left: 58,
+    opacity: 0.28,
+    backgroundColor: "rgba(151, 180, 162, 0.55)",
+  },
+  sparkPortalA: {
+    top: 82,
+    right: 42,
+    opacity: 0.48,
+    backgroundColor: "rgba(0, 229, 255, 0.62)",
+  },
+  sparkPortalB: {
+    bottom: 154,
+    left: 36,
+    opacity: 0.36,
+    backgroundColor: "rgba(244, 114, 182, 0.52)",
+  },
+  sparkPortalC: {
+    bottom: 64,
+    right: 106,
+    opacity: 0.30,
+  },
   atriumHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -1294,10 +1406,38 @@ const styles = StyleSheet.create({
     minHeight: 132,
     shadowOpacity: 0.2,
     shadowRadius: 18,
+    position: "relative",
+    overflow: "hidden",
   },
   journalObjectSurface: {
     borderColor: "rgba(244, 114, 182, 0.22)",
     shadowColor: "#f472b6",
+    position: "relative",
+    overflow: "hidden",
+  },
+  avatarButtonFrame: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 229, 255, 0.10)",
+    borderWidth: 1,
+    borderColor: "rgba(0, 229, 255, 0.18)",
+  },
+  journalCornerFold: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    width: 38,
+    height: 38,
+    borderLeftWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "rgba(244, 114, 182, 0.16)",
+    backgroundColor: "rgba(244, 114, 182, 0.06)",
   },
   vaultDoor: {
     width: "100%",
@@ -1318,10 +1458,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
+    position: "relative",
+    overflow: "hidden",
   },
   vaultObjectSurface: {
     minHeight: 118,
     backgroundColor: "rgba(255, 183, 77, 0.035)",
+  },
+  vaultBookRidges: {
+    position: "absolute",
+    right: 18,
+    top: 18,
+    bottom: 18,
+    width: 20,
+    justifyContent: "space-between",
+    opacity: 0.5,
+  },
+  vaultBookRidge: {
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: "rgba(255, 183, 77, 0.28)",
   },
   atriumIconBadge: {
     width: 36,
@@ -1373,6 +1529,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     backgroundColor: "rgba(21, 16, 42, 0.82)",
     marginTop: spacing.sm,
+    position: "relative",
+    overflow: "hidden",
   },
   gameRoomObject: {
     shadowColor: "#9b7ae8",
@@ -1390,6 +1548,23 @@ const styles = StyleSheet.create({
   gameRoomActions: {
     flexDirection: "row",
     gap: spacing.sm,
+  },
+  gameRoomConstellation: {
+    position: "absolute",
+    top: 14,
+    right: 16,
+    flexDirection: "row",
+    gap: 5,
+    opacity: 0.66,
+  },
+  gameRoomPixel: {
+    width: 5,
+    height: 5,
+    borderRadius: 2,
+    backgroundColor: "rgba(155, 122, 232, 0.44)",
+  },
+  gameRoomPixelHot: {
+    backgroundColor: "rgba(0, 229, 255, 0.54)",
   },
   gameRoomAction: {
     flex: 1,
@@ -1472,10 +1647,23 @@ const styles = StyleSheet.create({
     padding: spacing.base,
     borderRadius: radius.md,
     borderWidth: 1,
+    position: "relative",
+    overflow: "hidden",
   },
   signalObjectSurface: {
     borderColor: "rgba(0, 229, 255, 0.16)",
     backgroundColor: "rgba(0, 229, 255, 0.035)",
+  },
+  signalOrbMark: {
+    position: "absolute",
+    right: -18,
+    top: -18,
+    width: 78,
+    height: 78,
+    borderRadius: 39,
+    borderWidth: 1,
+    borderColor: "rgba(0, 229, 255, 0.20)",
+    backgroundColor: "rgba(0, 229, 255, 0.055)",
   },
   boostHeader: {
     flexDirection: "row",
@@ -1566,6 +1754,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     justifyContent: "space-between",
+    position: "relative",
+    overflow: "hidden",
   },
   portalNavSurface: {
     shadowColor: "#00e5ff",
@@ -1589,6 +1779,26 @@ const styles = StyleSheet.create({
   helpObjectSurface: {
     backgroundColor: "rgba(244, 114, 182, 0.035)",
     shadowColor: "#f472b6",
+  },
+  portalObjectGleam: {
+    position: "absolute",
+    right: 12,
+    bottom: 12,
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: "rgba(255,255,255,0.18)",
+  },
+  passCrystalFacet: {
+    position: "absolute",
+    right: 12,
+    bottom: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 183, 77, 0.26)",
+    backgroundColor: "rgba(255, 183, 77, 0.07)",
   },
   navCardTop: {
     flexDirection: "row",
