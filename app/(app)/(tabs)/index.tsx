@@ -248,8 +248,9 @@ export default function HomeScreen() {
 
   return (
     <SettleOnMount style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* V1 doorway tuning: +120 bottom for safe-area + tab-bar breathing room */}
       <Animated.ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 104 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 120 }]}
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
