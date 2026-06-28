@@ -31,6 +31,7 @@ import {
 import { PRO_MONTHLY_FREEZES } from "@/lib/subscription";
 import { MemorySyncStatus, type SyncStatus } from "@/components/MemorySyncStatus";
 import { BrandHero } from "@/components/BrandHero";
+import { HomeAtriumVisualLayer } from "@/components/home/HomeAtriumVisualLayer";
 import { useColors } from "@/hooks/useColors";
 import { useMemories } from "@/context/MemoriesContext";
 import { useGameStats } from "@/context/GameStatsContext";
@@ -396,6 +397,7 @@ export default function HomeScreen() {
             end={{ x: 1, y: 1 }}
             style={[styles.atriumShell, { borderColor: colors.border }]}
           >
+            <HomeAtriumVisualLayer />
             <View style={styles.atriumHeader}>
               <View style={styles.atriumHeaderCopy}>
                 <Text style={[styles.atriumEyebrow, { color: colors.mutedForeground }]}>
