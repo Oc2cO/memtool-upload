@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Oc2cO Store</title>
+  <meta name="theme-color" content="#020509">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://oc2co.com/analytics.js" defer></script>
+
+  <style>
+    /* =============================================
+       AMBIENT BACKGROUND — fixed, pointer-events:none
+       ============================================= */
+    .ambient-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .ambient-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, #02050F 0%, #030810 40%, #020509 100%);
+      z-index: 0;
+    }
+
+    /* Nebula swirl layers */
+    .cosmic-swirl {
+      position: absolute;
+      inset: -15%;
+      animation: cosmicBreath 12s ease-in-out infinite, cosmicRotate 60s linear infinite;
+      transform-origin: center center;
+    }
+    @keyframes cosmicBreath {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      50%      { transform: scale(1.03) rotate(180deg); }
+    }
+    @keyframes cosmicRotate {
+      from { transform: rotate(0deg) scale(1); }
+      to   { transform: rotate(360deg) scale(1); }
+    }
+    .swirl-teal {
+      background: conic-gradient(from 0deg at 60% 45%, transparent 0deg, rgba(0,80,100,0.18) 60deg, rgba(0,140,160,0.12) 120deg, rgba(0,200,200,0.08) 180deg, rgba(0,100,140,0.15) 240deg, transparent 300deg, rgba(0,160,180,0.10) 340deg, transparent 360deg);
+      filter: blur(80px);
+    }
+    .swirl-blue {
+      background: conic-gradient(from 120deg at 35% 60%, transparent 0deg, rgba(10,30,80,0.25) 40deg, rgba(20,60,140,0.15) 100deg, rgba(0,40,100,0.20) 160deg, rgba(10,20,70,0.18) 220deg, transparent 280deg, rgba(15,45,110,0.12) 320deg, transparent 360deg);
+      filter: blur(100px);
+      animation: cosmicBreath 18s ease-in-out infinite reverse, cosmicRotate 90s linear infinite reverse;
+    }
+    .swirl-purple {
+      background: conic-gradient(from 240deg at 75% 30%, transparent 0deg, rgba(60,20,80,0.15) 50deg, rgba(80,30,120,0.10) 110deg, rgba(40,10,60,0.12) 170deg, rgba(70,20,100,0.08) 230deg, transparent 290deg, rgba(50,15,75,0.10) 340deg, transparent 360deg);
+      filter: blur(90px);
+      animation: cosmicBreath 14s ease-in-out infinite, cosmicRotate 45s linear infinite;
+    }
+
+    /* Amber orb */
+    .orb-amber {
+      position: absolute;
+      right: 18%; top: 35%;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,200,80,0.45) 0%, rgba(255,160,40,0.25) 30%, rgba(255,130,20,0.12) 55%, rgba(200,100,20,0.06) 75%, transparent 100%);
+      filter: blur(60px);
+      animation: orbPulse 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes orbPulse {
+      0%,100% { transform: scale(1); opacity: 0.85; }
+      50%      { transform: scale(1.08); opacity: 1; }
+    }
+
+    /* Teal halo */
+    .orb-teal-halo {
+      position: absolute;
+      right: 22%; top: 42%;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,255,0.20) 0%, rgba(0,160,220,0.10) 40%, transparent 70%);
+      filter: blur(40px);
+      animation: orbPulse 7s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    /* Cosmic dust */
+    .cosmic-dust { position: absolute; inset: 0; pointer-events: none; }
+    .dust-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,230,255,0.8) 0%, rgba(100,180,255,0.3) 50%, transparent 100%);
+      animation: dustTwinkle var(--d-dur, 4s) ease-in-out infinite;
+      animation-delay: var(--d-delay, 0s);
+      box-shadow: 0 0 4px rgba(180,220,255,0.4), 0 0 8px rgba(180,220,255,0.2);
+    }
+    @keyframes dustTwinkle {
+      0%,100% { opacity: var(--d-base, 0.3); transform: scale(1); }
+      50%      { opacity: var(--d-peak, 0.85); transform: scale(1.5); }
+    }
+
+    /* Hue ambient */
+    .hue-ambient {
+      position: absolute; inset: 0;
+      background: conic-gradient(from 0deg at 50% 50%, rgba(0,200,255,0.03) 0deg, rgba(100,0,180,0.03) 90deg, rgba(0,80,160,0.03) 180deg, rgba(0,180,140,0.03) 270deg, rgba(0,200,255,0.03) 360deg);
+      animation: hueShift 20s linear infinite;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      filter: blur(120px);
+    }
+    @keyframes hueShift {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* =============================================
+       PARALLAX CONTAINER — desktop only
+       ============================================= */
+    .parallax-scene {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* =============================================
+       ELECTRIC GLASS CAPSULE BUTTON
+       ============================================= */
+    .btn-electric {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      border: 1px solid rgba(0,200,255,0.4);
+      background: rgba(0,229,255,0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
+      overflow: visible;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow:
+        0 0 12px rgba(0,229,255,0.20),
+        0 0 28px rgba(0,229,255,0.12),
+        0 0 55px rgba(0,180,255,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 rgba(0,229,255,0.06);
+    }
+    .btn-electric:hover {
+      border-color: rgba(0,229,255,0.70);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 0 18px rgba(0,229,255,0.35),
+        0 0 40px rgba(0,229,255,0.25),
+        0 0 70px rgba(0,229,255,0.15),
+        0 0 100px rgba(0,180,255,0.10),
+        0 0 140px rgba(0,160,255,0.07),
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(0,229,255,0.10);
+    }
+    .btn-electric:active {
+      transform: scale(0.98);
+      transition-duration: 0.1s;
+    }
+    .btn-electric::before, .btn-electric::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: calc(100% + 12px);
+      height: calc(100% + 12px);
+      transform: translate(-50%, -50%);
+      border-radius: 50px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .btn-electric::before {
+      border: 2px solid transparent;
+      box-shadow: 0 0 8px rgba(0,229,255,0.6), 0 0 16px rgba(0,229,255,0.4), 0 0 30px rgba(0,200,255,0.3);
+      animation: arcSpin 2s linear infinite;
+    }
+    .btn-electric::after {
+      border: 1px solid transparent;
+      box-shadow: 0 0 5px rgba(80,255,238,0.5), 0 0 12px rgba(80,255,238,0.3);
+      animation: arcSpin 3s linear infinite reverse;
+    }
+    .btn-electric:hover::before, .btn-electric:hover::after { opacity: 1; }
+
+    @keyframes arcSpin {
+      0%   { clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%); transform: translate(-50%,-50%) rotate(0deg); }
+      25%  { clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%); transform: translate(-50%,-50%) rotate(90deg); }
+      50%  { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); transform: translate(-50%,-50%) rotate(180deg); }
+      75%  { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); transform: translate(-50%,-50%) rotate(270deg); }
+      100% { clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%); transform: translate(-50%,-50%) rotate(360deg); }
+    }
+
+    .btn-electric .spark {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(0,229,255,1);
+      box-shadow: 0 0 6px rgba(0,229,255,0.8), 0 0 12px rgba(80,255,238,0.6);
+      top: 50%; left: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .btn-electric:hover .spark { opacity: 1; }
+    .btn-electric .spark:nth-child(1) { animation: sparkOrbit 1.5s linear infinite; }
+    .btn-electric .spark:nth-child(2) { animation: sparkOrbit 1.5s linear infinite 0.5s; }
+    .btn-electric .spark:nth-child(3) { animation: sparkOrbit 1.5s linear infinite 1s; }
+    @keyframes sparkOrbit {
+      0%   { transform: translate(-50%,-50%) rotate(0deg) translateX(calc(50% + 6px)) rotate(0deg); opacity: 1; }
+      50%  { opacity: 0.6; }
+      100% { transform: translate(-50%,-50%) rotate(360deg) translateX(calc(50% + 6px)) rotate(-360deg); opacity: 1; }
+    }
+
+    .btn-label {
+      display: block;
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255,255,255,0.5), 0 0 18px rgba(0,229,255,0.4);
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-loading {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,229,255,0.08);
+      backdrop-filter: blur(4px);
+      border-radius: 50px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      gap: 0.5rem;
+    }
+    .btn-loading.active { display: flex; }
+    .btn-spinner {
+      width: 22px; height: 22px;
+      border: 2px solid rgba(0,229,255,0.15);
+      border-top-color: #00E5FF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-loading-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      color: rgba(200,230,240,0.7);
+      letter-spacing: 0.08em;
+    }
+
+    /* =============================================
+       NEON TEXT SYSTEM
+       ============================================= */
+    .text-neon {
+      color: #00E5FF;
+      text-shadow:
+        0 0 6px rgba(0,229,255,0.9),
+        0 0 16px rgba(0,229,255,0.55),
+        0 0 36px rgba(0,229,255,0.25),
+        0 0 70px rgba(0,180,255,0.12);
+      background: linear-gradient(135deg, #00E5FF 0%, #80FFEE 18%, #00D4F0 36%, #00E5FF 55%, #60FFDD 72%, #00E5FF 90%, #00B8FF 100%);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: neonPulse 3s ease-in-out infinite;
+    }
+    @keyframes neonPulse {
+      0%,100% {
+        text-shadow: 0 0 6px rgba(0,229,255,0.9), 0 0 16px rgba(0,229,255,0.55), 0 0 36px rgba(0,229,255,0.25), 0 0 70px rgba(0,180,255,0.12);
+      }
+      50% {
+        text-shadow: 0 0 10px rgba(0,229,255,1), 0 0 24px rgba(0,229,255,0.7), 0 0 50px rgba(0,229,255,0.4), 0 0 90px rgba(0,200,255,0.18);
+      }
+    }
+
+    /* =============================================
+       UI LAYER — z-index 10, above all backgrounds
+       ============================================= */
+    .ui-layer {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 0;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(2,5,14,0.82);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,229,255,0.06);
+      pointer-events: all;
+    }
+    nav::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.10), transparent);
+    }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .home-back-link {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: rgba(200,210,230,0.7);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid rgba(0,229,255,0.12);
+      background: rgba(0,229,255,0.04);
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+    }
+    .home-back-link:hover {
+      color: #00E5FF;
+      background: rgba(0,229,255,0.1);
+      border-color: rgba(0,229,255,0.3);
+      box-shadow: 0 0 12px rgba(0,229,255,0.15);
+    }
+    .nav-links { display: flex; align-items: center; gap: 0.2rem; }
+    .nav-link {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5A6478;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .nav-link:hover { color: #00E5FF; background: rgba(0,229,255,0.07); }
+
+    /* Checkout card — liquid glass morphic */
+    .checkout-card {
+      margin-top: 5.5rem;
+      width: 100%;
+      max-width: 520px;
+      background: rgba(10,20,40,0.55);
+      backdrop-filter: blur(28px) saturate(1.4);
+      -webkit-backdrop-filter: blur(28px) saturate(1.4);
+      border: 1px solid rgba(0,229,255,0.14);
+      border-radius: 24px;
+      padding: 2rem 2.25rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,229,255,0.05), 0 8px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+      animation: cardFloat 6s ease-in-out infinite;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    @keyframes cardFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-5px); }
+    }
+    .checkout-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(circle, rgba(0,229,255,0.06) 0.5px, transparent 0.5px),
+        radial-gradient(circle, rgba(0,229,255,0.03) 0.5px, transparent 0.5px);
+      background-size: 18px 18px, 36px 36px;
+      background-position: 0 0, 9px 9px;
+      pointer-events: none;
+      border-radius: inherit;
+    }
+    .checkout-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.2), transparent);
+    }
+    .checkout-card:hover {
+      border-color: rgba(0,229,255,0.25);
+      box-shadow:
+        0 0 50px rgba(0,229,255,0.1),
+        0 12px 80px rgba(0,0,0,0.55),
+        0 20px 40px rgba(0,50,80,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    /* Page title */
+    .checkout-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #E8ECF4;
+      margin-bottom: 1.75rem;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    /* Product block */
+    .product-block {
+      background: rgba(5,12,28,0.7);
+      border: 1px solid rgba(0,229,255,0.08);
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .product-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+      display: inline-block;
+    }
+    .product-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFD54F, #FFB300);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .product-desc {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      color: #8892A8;
+      margin-top: 0.3rem;
+      line-height: 1.5;
+    }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(0,229,255,0.04) 25%, rgba(0,229,255,0.10) 50%, rgba(0,229,255,0.04) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .sk-text { height: 14px; margin-bottom: 8px; width: 60%; border-radius: 4px; }
+    .sk-price { height: 24px; width: 40%; margin-bottom: 8px; border-radius: 4px; }
+    .sk-line  { height: 12px; margin-bottom: 6px; width: 80%; border-radius: 4px; }
+    .sk-line:last-child { width: 55%; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.12), transparent);
+      margin: 1.25rem 0;
+    }
+
+    /* Order summary */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      font-family: 'Outfit', sans-serif;
+    }
+    .summary-label { font-size: 0.82rem; color: #8892A8; font-weight: 400; }
+    .summary-val   { font-size: 0.82rem; color: #E8ECF4; font-weight: 500; }
+    .summary-total {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #E8ECF4;
+    }
+    .summary-row.total-row {
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(0,229,255,0.08);
+    }
+    .summary-row.total-row .summary-label { color: #E8ECF4; font-weight: 500; }
+    .summary-row.total-row .summary-val {
+      background: linear-gradient(135deg, #FFD54F, #FFB300);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #checkoutBtnWrap { margin-top: 1.75rem; }
+
+    .secondary-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+    }
+    .secondary-links a {
+      color: #5A6478;
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .secondary-links a:hover { color: #00E5FF; }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      color: #5A6478;
+      letter-spacing: 0.05em;
+    }
+    .secure-icon { width: 12px; height: 12px; opacity: 0.6; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(5,12,28,0.96);
+      border: 1px solid rgba(0,229,255,0.2);
+      color: #E8ECF4;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.65rem 1.5rem;
+      border-radius: 100px;
+      z-index: 900;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* =============================================
+       GLASSMORPHIC FOOTER — pinned to page bottom
+       ============================================= */
+    .store-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 20;
+      padding: 0.9rem 2rem;
+      background: rgba(5,10,20,0.82);
+      backdrop-filter: blur(15px) saturate(1.3);
+      -webkit-backdrop-filter: blur(15px) saturate(1.3);
+      border-top: 1px solid rgba(0,229,255,0.08);
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.3), 0 -1px 0 rgba(0,229,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: #5A6478;
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      color: #5A6478;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #00E5FF; }
+    .footer-sep { color: rgba(0,229,255,0.12); font-size: 0.65rem; }
+    .footer-copy {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.68rem;
+      color: #3A4458;
+    }
+    .footer-stripe {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.68rem;
+      color: #3A4458;
+    }
+    .footer-stripe span { color: #5A6478; }
+
+    /* =============================================
+       RESPONSIVE
+       ============================================= */
+    @media (max-width: 767px) {
+      .checkout-card {
+        margin-top: 5rem;
+        padding: 1.5rem 1.25rem;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px;
+      }
+      .checkout-title { font-size: 1.2rem; }
+      .product-name   { font-size: 0.95rem; }
+      .product-price  { font-size: 1.2rem; }
+      .product-desc   { font-size: 0.78rem; }
+      nav { padding: 0.7rem 1rem; }
+      .nav-link { font-size: 0.55rem; padding: 0.35rem 0.6rem; }
+      .orb-amber { width: 200px; height: 200px; right: 5%; top: 28%; }
+      .orb-teal-halo { width: 110px; height: 110px; right: 8%; top: 35%; }
+      .parallax-scene { display: none !important; }
+      .store-footer { padding: 0.75rem 1rem; gap: 0.75rem; }
+      .footer-brand { font-size: 0.65rem; }
+      .footer-copy, .footer-stripe { font-size: 0.6rem; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .checkout-card { margin-top: 5.5rem; max-width: 580px; padding: 1.75rem 2rem; }
+      .checkout-title { font-size: 1.35rem; }
+    }
+
+    @media (min-width: 1025px) {
+      .checkout-card { max-width: 520px; }
+    }
+
+    @media (max-width: 374px) {
+      .checkout-card { padding: 1.25rem 1rem; border-radius: 16px; }
+      .checkout-title { font-size: 1rem; }
+      .product-name { font-size: 0.88rem; }
+      .product-price { font-size: 1.1rem; }
+      nav { padding: 0.6rem 0.8rem; }
+    }
+
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body>
+
+<!-- AMBIENT BACKGROUND (z-index 0) -->
+<div class="ambient-bg" id="cosmicBg">
+  <div class="cosmic-swirl swirl-blue"></div>
+  <div class="cosmic-swirl swirl-teal"></div>
+  <div class="cosmic-swirl swirl-purple"></div>
+  <div class="orb-amber"></div>
+  <div class="orb-teal-halo"></div>
+  <div class="hue-ambient"></div>
+  <div class="cosmic-dust" id="cosmicDust"></div>
+</div>
+
+<!-- PARALLAX CONTAINER (desktop only, z-index 1) -->
+<div class="parallax-scene" id="parallaxScene" style="display:none;">
+  <div class="parallax-sky-layer" id="plSky"></div>
+  <div class="parallax-swirl-layer" id="plSwirl"></div>
+  <div class="parallax-orb-layer" id="plOrb"></div>
+  <div class="parallax-ambient-layer" id="plAmbient"></div>
+  <div class="parallax-dust-layer" id="plDust"></div>
+</div>
+
+<!-- UI LAYER (z-index 10) -->
+<div class="ui-layer">
+
+  <nav>
+    <div class="nav-left">
+      <a href="/store" class="home-back-link">&#8592; Back to Store</a>
+    </div>
+    <div class="nav-links">
+      <a href="https://www.oc2co.com" class="nav-link">Home</a>
+      <a href="/store" class="nav-link">Store</a>
+      <a href="/games.html" class="nav-link">Arcade</a>
+      <a href="/chat" class="nav-link">Community</a>
+    </div>
+  </nav>
+
+  <!-- CHECKOUT CARD -->
+  <div class="checkout-card" id="checkoutCard">
+    <h1 class="checkout-title">Complete Your Order</h1>
+
+    <!-- Product block — dynamically filled -->
+    <div class="product-block" id="productBlock">
+      <div class="skeleton sk-text"></div>
+      <div class="skeleton sk-price"></div>
+      <div class="skeleton sk-line"></div>
+      <div class="skeleton sk-line"></div>
+    </div>
+
+    <div class="divider" id="cardDivider" style="display:none;"></div>
+
+    <!-- Order summary — dynamically filled -->
+    <div class="summary-row" id="summaryBlock" style="display:none;">
+      <span class="summary-label">Subtotal</span>
+      <span class="summary-val" id="subtotal">—</span>
+    </div>
+    <div class="summary-row" id="shippingRow" style="display:none;">
+      <span class="summary-label">Shipping</span>
+      <span class="summary-val" id="shipping">—</span>
+    </div>
+    <div class="summary-row total-row" id="totalRow" style="display:none;">
+      <span class="summary-label">Total</span>
+      <span class="summary-val summary-total" id="totalPrice">—</span>
+    </div>
+
+    <!-- Electric Glass Capsule Button -->
+    <div id="checkoutBtnWrap" style="display:none;">
+      <button class="btn-electric" id="checkoutBtn" onclick="handleCheckout()">
+        <span class="btn-label">Secure Checkout</span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <span class="spark"></span>
+        <div class="btn-loading" id="btnLoading">
+          <div class="btn-spinner"></div>
+          <div class="btn-loading-text">Redirecting to payment...</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Secondary links -->
+    <div class="secondary-links">
+      <a href="/store">&#8592; Back to Store</a>
+    </div>
+
+    <!-- Secure badge -->
+    <div class="secure-badge">
+      <svg class="secure-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L4 6V12C4 16.5 7.5 20.5 12 22C16.5 20.5 20 16.5 20 12V6L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      256-bit SSL Encrypted &middot; Payments secured by Stripe
+    </div>
+  </div>
+
+  <!-- Spacer for footer -->
+  <div style="height:5rem;"></div>
+</div>
+
+<!-- GLASSMORPHIC FOOTER (z-index 20, fixed bottom) -->
+<div class="store-footer">
+  <div class="footer-brand">Oc2cO LLC (DBA DashnDeals) &middot; New Jersey, USA</div>
+  <div class="footer-links">
+    <a href="https://www.oc2co.com">Website</a>
+    <a href="/">Home</a>
+    <a href="/store">Store</a>
+    <a href="/games.html">Arcade</a>
+    <a href="/chat">Community</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:0.2rem;align-items:flex-end;">
+    <div class="footer-copy">&copy; 2026 Oc2cO LLC. All rights reserved.</div>
+    <div class="footer-stripe">Payments secured by <span>Stripe</span></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =============================================
+   BUILD COSMIC DUST PARTICLES
+   ============================================= */
+function buildCosmicDust() {
+  const container = document.getElementById('cosmicDust');
+  const count = 75;
+  for (let i = 0; i < count; i++) {
+    const seed = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+    const px = (seed - Math.floor(seed)) * 100;
+    const seed2 = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+    const py = (seed2 - Math.floor(seed2)) * 100;
+    const el = document.createElement('div');
+    el.className = 'dust-particle';
+    const size = 0.8 + (Math.abs(Math.sin(i * 31.7 + 7.1)) * 0.5 + 0.5) * 4.0;
+    el.style.cssText = `
+      left: ${px.toFixed(2)}%;
+      top: ${py.toFixed(2)}%;
+      width: ${size.toFixed(1)}px;
+      height: ${size.toFixed(1)}px;
+      --d-base: ${(0.2 + Math.abs(Math.sin(i * 17.3)) * 0.2).toFixed(2)};
+      --d-peak: ${(0.7 + Math.abs(Math.sin(i * 23.1)) * 0.25).toFixed(2)};
+      --d-dur: ${(2.5 + Math.abs(Math.sin(i * 11.7)) * 3.5).toFixed(1)}s;
+      --d-delay: ${(Math.abs(Math.sin(i * 43.1)) * 6).toFixed(1)}s;
+    `;
+    container.appendChild(el);
+  }
+}
+
+/* =============================================
+   PARALLAX — 5-layer mouse depth (desktop only)
+   ============================================= */
+function initParallax() {
+  if ('ontouchstart' in window || window.matchMedia('(max-width: 767px)').matches) {
+    document.getElementById('cosmicBg').classList.add('ambient-mode');
+    return;
+  }
+
+  const scene = document.getElementById('parallaxScene');
+  const skyEl   = document.getElementById('plSky');
+  const swirlEl = document.getElementById('plSwirl');
+  const orbEl   = document.getElementById('plOrb');
+  const ambEl   = document.getElementById('plAmbient');
+  const dustEl  = document.getElementById('plDust');
+  const bgEl    = document.getElementById('cosmicBg');
+
+  scene.style.display = 'block';
+  scene.appendChild(bgEl.cloneNode(true));
+  bgEl.style.display = 'none';
+
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  const LERP = 0.06;
+  const speeds = { sky: 0.06, swirl: 0.12, orb: 0.18, ambient: 0.08, dust: 0.22 };
+
+  document.addEventListener('mousemove', (e) => {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    targetX = ((e.clientX - cx) / cx) * 20;
+    targetY = ((e.clientY - cy) / cy) * 14;
+  }, { passive: true });
+
+  function animate() {
+    currentX += (targetX - currentX) * LERP;
+    currentY += (targetY - currentY) * LERP;
+    skyEl.style.transform   = `translate(${currentX * speeds.sky}px, ${currentY * speeds.sky}px)`;
+    swirlEl.style.transform  = `translate(${currentX * speeds.swirl}px, ${currentY * speeds.swirl}px)`;
+    orbEl.style.transform    = `translate(${currentX * speeds.orb}px, ${currentY * speeds.orb}px)`;
+    ambEl.style.transform    = `translate(${currentX * speeds.ambient}px, ${currentY * speeds.ambient}px)`;
+    dustEl.style.transform   = `translate(${currentX * speeds.dust}px, ${currentY * speeds.dust}px)`;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* =============================================
+   CARD 3D TILT — cursor-tracking (desktop only)
+   ============================================= */
+function initCardTilt() {
+  if ('ontouchstart' in window || window.matchMedia('(max-width: 767px)').matches) return;
+
+  const card = document.getElementById('checkoutCard');
+  if (!card) return;
+
+  let targetRX = 0, targetRY = 0;
+  let currentRX = 0, currentRY = 0;
+  const LERP_TILT = 0.12;
+  const MAX_ROT = 8;
+
+  document.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    targetRX = ((e.clientY - cy) / (rect.height / 2)) * -MAX_ROT;
+    targetRY = ((e.clientX - cx) / (rect.width / 2)) * MAX_ROT;
+  }, { passive: true });
+
+  function animate() {
+    currentRX += (targetRX - currentRX) * LERP_TILT;
+    currentRY += (targetRY - currentRY) * LERP_TILT;
+    const lift = Math.sqrt(currentRX * currentRX + currentRY * currentRY) * 0.3;
+    card.style.transform = `perspective(1000px) rotateX(${currentRX.toFixed(2)}deg) rotateY(${currentRY.toFixed(2)}deg) translateZ(${lift.toFixed(1)}px)`;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* =============================================
+   DYNAMIC PRODUCT LOADING — real API data
+   ============================================= */
+function formatPrice(n) {
+  return '$' + (typeof n === 'number' ? n.toFixed(2) : parseFloat(n).toFixed(2));
+}
+
+function showErrorState(msg) {
+  const block = document.getElementById('productBlock');
+  block.innerHTML = `
+    <div style="font-family:'Outfit',sans-serif; font-size:0.88rem; color:#8892A8; text-align:center; padding:0.5rem;">
+      ${msg}
+    </div>
+  `;
+}
+
+async function loadProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('product') || params.get('slug') || 'general-order-test';
+
+  try {
+    const res = await fetch(`/api/store/product/${encodeURIComponent(slug)}`);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 400) {
+        showErrorState(data.error || 'Checkout not available for this product.');
+      } else {
+        showErrorState('Product not found.');
+      }
+      return;
+    }
+
+    const product = await res.json();
+
+    // Fill product block
+    const block = document.getElementById('productBlock');
+    block.innerHTML = `
+      <div class="product-name text-neon">${product.title}</div>
+      <div class="product-price">${formatPrice(product.price)}</div>
+      <div class="product-desc">${product.description}</div>
+    `;
+
+    // Show order summary
+    document.getElementById('cardDivider').style.display = 'block';
+    document.getElementById('summaryBlock').style.display = 'flex';
+    document.getElementById('shippingRow').style.display = 'flex';
+    document.getElementById('totalRow').style.display = 'flex';
+
+    // Fill order summary — real dynamic values
+    document.getElementById('subtotal').textContent = formatPrice(product.price);
+    document.getElementById('shipping').textContent = product.fulfillment_type === 'digital'
+      ? 'Digital — no shipping'
+      : '$4.90';
+    document.getElementById('totalPrice').textContent = formatPrice(
+      product.fulfillment_type === 'digital'
+        ? product.price
+        : product.price + 4.90
+    );
+
+    // Show checkout button
+    document.getElementById('checkoutBtnWrap').style.display = 'block';
+
+    // If product has a direct payment link, update button behavior
+    if (product.stripe_payment_link) {
+      window.__STRIPE_PAYMENT_LINK__ = product.stripe_payment_link;
+    }
+    window.__CHECKOUT_SLUG__ = slug;
+
+  } catch (err) {
+    console.error('Failed to load product:', err);
+    showErrorState('Failed to load product. Please try again.');
+  }
+}
+
+/* =============================================
+   CHECKOUT HANDLER
+   ============================================= */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+async function handleCheckout() {
+  const slug = window.__CHECKOUT_SLUG__ || new URLSearchParams(window.location.search).get('product') || 'general-order-test';
+  const paymentLink = window.__STRIPE_PAYMENT_LINK__;
+
+  // Direct payment link takes priority
+  if (paymentLink) {
+    window.location.href = paymentLink;
+    return;
+  }
+
+  const btn = document.getElementById('checkoutBtn');
+  const overlay = document.getElementById('btnLoading');
+  const label = btn.querySelector('.btn-label');
+
+  btn.disabled = true;
+  label.textContent = 'Preparing...';
+  overlay.classList.add('active');
+
+  try {
+    const res = await fetch('/api/store/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: [{ slug, quantity: 1 }], customer_email: null })
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Checkout failed');
+    }
+
+    const data = await res.json();
+    if (data.url) {
+      label.textContent = 'Redirecting...';
+      window.location.href = data.url;
+    } else {
+      throw new Error('No checkout URL received');
+    }
+  } catch (err) {
+    overlay.classList.remove('active');
+    btn.disabled = false;
+    label.textContent = 'Secure Checkout';
+    showToast(err.message || 'Checkout failed. Please try again.');
+  }
+}
+
+/* =============================================
+   INIT
+   ============================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  buildCosmicDust();
+  initParallax();
+  initCardTilt();
+  loadProduct();
+});
+</script>
+</body>
+</html>

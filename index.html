@@ -1,0 +1,4087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>MemTool — Your Mind, Organized</title>
+  <meta name="description" content="Capture thoughts, track wellness, train your brain. MemTool by Oc2cO.">
+  <meta name="theme-color" content="#0A0F1E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MemTool">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_75561/images/c4f72662-1fa0-4281-b174-8b5213d623f9.png">
+  <!-- oc2co Analytics -->
+  <script>window.__OC2CO_SLUG='';</script>
+  <script src="https://app.oc2co.com/analytics.js" defer></script>
+  <script src="/lib/analytics.js"></script>
+  <script src="/lib/site-links.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/common.css">
+  <style>
+    /* ========================================
+       MEMTOOL — DARK QUASAR THEME
+    ======================================== */
+    :root {
+      --bg-deep: #060A14;
+      --bg-navy: #0A0F1E;
+      --bg-card: rgba(13,20,40,0.85);
+      --bg-card-solid: #0D1428;
+      --bg-modal: #0C1322;
+      --cyan: #00E5FF;
+      --cyan-dim: #00B8D4;
+      --teal: #00D4AA;
+      --purple: #7B61FF;
+      --purple-dim: #5B4BD4;
+      --coral: #FF6B8A;
+      --amber: #FFB300;
+      --green: #00E676;
+      --border: rgba(100,120,200,0.12);
+      --border-purple: rgba(123,97,255,0.25);
+      --border-cyan: rgba(0,229,255,0.2);
+      --glow-purple: rgba(123,97,255,0.15);
+      --glow-cyan: rgba(0,229,255,0.12);
+      --text-primary: #EEF2FF;
+      --text-secondary: #8892AA;
+      --text-muted: #4A5470;
+      --nav-h: 72px;
+      --status-h: env(safe-area-inset-top, 0px);
+      --bottom-safe: env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%; width: 100%; overflow: hidden;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { pointer-events: none; }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-purple); border-radius: 2px; }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slideInRight { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes pulse { 0%,100% { opacity:.8; } 50% { opacity:1; } }
+    @keyframes shimmer { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
+    @keyframes spin { from { transform:rotate(0); } to { transform:rotate(360deg); } }
+    @keyframes floatY { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+    @keyframes glow-pulse { 0%,100% { box-shadow:0 0 20px rgba(123,97,255,0.15); } 50% { box-shadow:0 0 40px rgba(123,97,255,0.3); } }
+
+    /* ========================================
+       APP LAYOUT
+    ======================================== */
+    #app {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ========================================
+       AUTH SCREEN
+    ======================================== */
+    #auth-screen {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #060A14 0%, #0A0F1E 50%, #0D1428 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 24px;
+      z-index: 1000;
+      animation: fadeIn 0.4s ease;
+    }
+    #auth-screen.hidden { display: none; }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .auth-logo-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #1A2540 0%, #243060 100%);
+      border-radius: 20px;
+      border: 1.5px solid var(--border-cyan);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      box-shadow: 0 0 40px var(--glow-cyan), 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .auth-logo h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px; font-weight: 700;
+      background: linear-gradient(135deg, #00E5FF, #7B61FF);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .auth-logo p {
+      color: var(--text-secondary); font-size: 13px; margin-top: 6px;
+    }
+
+    .auth-card {
+      width: 100%; max-width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 20px;
+      padding: 28px 24px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px var(--glow-purple);
+    }
+
+    .auth-tabs {
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px; padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1; padding: 8px;
+      text-align: center; font-size: 13px; font-weight: 600;
+      border-radius: 9px; cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      border: none; background: none;
+    }
+    .auth-tab.active {
+      background: var(--purple);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(123,97,255,0.4);
+    }
+
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+    .auth-form.hidden { display: none; }
+    .auth-input {
+      width: 100%; padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-purple);
+      border-radius: 12px;
+      color: var(--text-primary); font-size: 15px;
+      outline: none; transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .auth-input:focus { border-color: var(--cyan); }
+    .auth-input::placeholder { color: var(--text-muted); }
+    .auth-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan-dim));
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+      min-height: 50px;
+      font-family: inherit;
+    }
+    .auth-btn:active { transform: scale(0.98); opacity: 0.9; }
+    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-error {
+      color: #FF6B8A; font-size: 13px; text-align: center;
+      padding: 8px; border-radius: 8px;
+      background: rgba(255,107,138,0.1);
+    }
+    .auth-error.hidden { display: none; }
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--text-muted); font-size: 12px; margin: 4px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .guest-btn {
+      width: 100%; padding: 13px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px; color: var(--text-secondary);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+      font-family: inherit;
+      min-height: 48px;
+    }
+    .guest-btn:hover { border-color: var(--border-purple); color: var(--text-primary); }
+
+    /* ========================================
+       MAIN APP SHELL
+    ======================================== */
+    #main-app {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    #main-app.hidden { display: none; }
+
+    /* TOP STATUS BAR PADDING */
+    .app-status-bar {
+      height: var(--status-h);
+      background: var(--bg-deep);
+      flex-shrink: 0;
+    }
+
+    /* TAB CONTENT AREA */
+    .tab-content-area {
+      flex: 1; overflow: hidden; position: relative;
+      padding-bottom: calc(var(--nav-h) + var(--bottom-safe));
+    }
+
+    .tab-screen {
+      position: absolute; inset: 0;
+      overflow-y: auto; overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 0;
+    }
+    .tab-screen.active {
+      opacity: 1; pointer-events: all;
+    }
+
+    /* SCREEN INNER */
+    .screen-inner {
+      padding: 20px 16px 20px;
+      min-height: 100%;
+    }
+
+    /* ========================================
+       HOME SCREEN
+    ======================================== */
+    .home-greeting {
+      margin-bottom: 20px;
+      padding: 4px 0;
+    }
+    .home-greeting .welcome-back {
+      font-size: 13px; color: var(--text-secondary); font-weight: 400;
+      margin-bottom: 2px;
+    }
+    .home-greeting .username-line {
+      font-size: 22px; font-weight: 700; color: var(--text-primary);
+    }
+    .home-greeting .username-line span {
+      color: var(--cyan);
+    }
+    .home-greeting .date-line {
+      font-size: 12px; color: var(--text-muted); margin-top: 2px;
+    }
+
+    /* QUICK CAPTURE CARD */
+    .quick-capture-card {
+      width: 100%;
+      background: linear-gradient(135deg, #111830 0%, #0D2235 40%, #063340 70%, #044545 100%);
+      border: 1px solid rgba(0,220,200,0.2);
+      border-radius: 18px;
+      padding: 22px 20px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 110px;
+      display: flex; align-items: center; gap: 16px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 8px 32px rgba(0,100,100,0.2), 0 0 0 1px rgba(0,200,200,0.08);
+    }
+    .quick-capture-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .quick-capture-card::after {
+      content: '';
+      position: absolute; right: 20px; top: 50%;
+      transform: translateY(-50%);
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,180,160,0.12) 0%, transparent 70%);
+    }
+    .quick-capture-card:active { transform: scale(0.98); }
+    .qc-icon {
+      width: 52px; height: 52px; min-width: 52px;
+      background: linear-gradient(135deg, rgba(0,180,160,0.25), rgba(0,229,255,0.15));
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,180,160,0.2);
+    }
+    .qc-text { flex: 1; position: relative; z-index: 1; }
+    .qc-text h3 {
+      font-size: 18px; font-weight: 700; color: #fff;
+      margin-bottom: 4px;
+    }
+    .qc-text p {
+      font-size: 13px; color: rgba(200,240,240,0.65);
+      font-weight: 400;
+    }
+    .qc-badge {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      color: rgba(0,229,255,0.7);
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 6px;
+      padding: 2px 7px;
+      text-transform: uppercase;
+    }
+
+    /* ACTION BUTTONS ROW */
+    .action-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 14px;
+    }
+    .action-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      padding: 18px 14px;
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+      transition: transform 0.15s, border-color 0.2s;
+      min-height: 90px;
+      backdrop-filter: blur(10px);
+      position: relative; overflow: hidden;
+    }
+    .action-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 15px;
+      background: var(--glow-purple);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .action-btn:active { transform: scale(0.97); }
+    .action-btn:active::before { opacity: 1; }
+    .ab-icon {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .ab-icon.phone { background: rgba(123,97,255,0.2); border: 1px solid rgba(123,97,255,0.3); }
+    .ab-icon.wellness { background: rgba(255,107,138,0.15); border: 1px solid rgba(255,107,138,0.25); }
+    .ab-label {
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .ab-sublabel {
+      font-size: 11px; color: var(--text-muted);
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 14px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      padding: 16px 14px;
+      backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; gap: 4px;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; bottom: 0; right: 0;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      opacity: 0.06;
+    }
+    .stat-card.streak::before { background: var(--coral); }
+    .stat-card.today::before { background: var(--purple); }
+    .stat-top {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .stat-icon { font-size: 20px; }
+    .stat-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .stat-value {
+      font-size: 32px; font-weight: 800; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-card.streak .stat-value { color: var(--coral); }
+    .stat-card.today .stat-value { color: var(--purple); }
+    .stat-desc { font-size: 11px; color: var(--text-muted); }
+
+    /* CONTENT CARDS */
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+      animation: slideUp 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .content-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123,97,255,0.3), transparent);
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .card-label.purple { color: var(--purple); }
+    .card-label.teal { color: var(--teal); }
+    .card-label.cyan { color: var(--cyan); }
+    .card-label.coral { color: var(--coral); }
+    .card-label-icon { font-size: 14px; }
+    .card-body { font-size: 15px; font-weight: 400; color: var(--text-primary); line-height: 1.65; }
+    .card-action {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; padding: 4px;
+      transition: transform 0.15s;
+      min-width: 44px; min-height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+    }
+    .card-action:active { transform: scale(0.85); }
+    .card-action.faved { filter: none; }
+
+    /* AI INSIGHT */
+    .ai-insight-card {
+      background: linear-gradient(135deg, rgba(13,20,40,0.9) 0%, rgba(10,15,30,0.95) 100%);
+      border: 1px solid rgba(0,229,255,0.15);
+    }
+    .ai-insight-card::after {
+      content: '';
+      position: absolute; bottom: -20px; right: -20px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,97,255,0.12) 0%, transparent 70%);
+    }
+    .ai-loading {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-muted); font-size: 13px;
+    }
+    .ai-loading .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan); opacity: 0.5;
+      animation: pulse 1.2s infinite;
+    }
+    .ai-loading .dot:nth-child(2) { animation-delay: 0.2s; }
+    .ai-loading .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    /* BRAIN GAMES BUTTON on home */
+    .brain-games-btn {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .brain-games-btn:active { transform: scale(0.98); }
+    .brain-games-btn:hover { border-color: rgba(123,97,255,0.5); }
+    .bgb-left { display: flex; align-items: center; gap: 14px; }
+    .bgb-icon {
+      width: 44px; height: 44px; border-radius: 13px;
+      background: linear-gradient(135deg, rgba(123,97,255,0.25), rgba(0,180,160,0.15));
+      border: 1px solid rgba(123,97,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .bgb-text h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .bgb-text p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .bgb-arrow { color: var(--text-muted); font-size: 16px; }
+
+    /* ========================================
+       ARCHIVE SCREEN
+    ======================================== */
+    .screen-header {
+      padding: 20px 16px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .screen-title { font-size: 22px; font-weight: 800; color: var(--text-primary); }
+    .screen-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    .search-bar {
+      margin: 0 16px 16px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%; padding: 13px 16px 13px 44px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 12px;
+      color: var(--text-primary); font-size: 15px;
+      outline: none; transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .search-input:focus { border-color: var(--cyan); }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted); font-size: 16px; pointer-events: none;
+    }
+
+    .filter-chips {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding: 0 16px 14px; scrollbar-width: none;
+    }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 7px 14px; border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      color: var(--text-secondary);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      transition: all 0.2s; min-height: 34px;
+    }
+    .chip.active {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+
+    .thoughts-list { padding: 0 16px; }
+    .thought-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      position: relative;
+    }
+    .thought-card:active { transform: scale(0.99); border-color: var(--border-purple); }
+    .thought-card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .thought-cat {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: 6px;
+    }
+    .thought-cat.idea { background: rgba(255,179,0,0.15); color: var(--amber); }
+    .thought-cat.note { background: rgba(0,229,255,0.1); color: var(--cyan); }
+    .thought-cat.memory { background: rgba(123,97,255,0.15); color: var(--purple); }
+    .thought-cat.task { background: rgba(0,230,118,0.12); color: var(--green); }
+    .thought-cat.random { background: rgba(255,107,138,0.12); color: var(--coral); }
+    .thought-time { font-size: 11px; color: var(--text-muted); }
+    .thought-content { font-size: 14px; line-height: 1.55; color: var(--text-primary); }
+    .thought-actions {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .thought-action-btn {
+      padding: 5px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 11px; color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s; min-height: 30px;
+      font-family: inherit;
+    }
+    .thought-action-btn:hover { border-color: var(--border-purple); color: var(--text-secondary); }
+    .thought-action-btn.del:hover { border-color: rgba(255,107,138,0.3); color: var(--coral); }
+    .thought-action-btn.star-active { color: var(--amber); border-color: rgba(255,179,0,0.3); }
+
+    .empty-state {
+      text-align: center; padding: 48px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; line-height: 1.5; }
+
+    /* ========================================
+       PROGRESS SCREEN
+    ======================================== */
+
+    /* BRAIN SCORE CARD */
+    .brain-score-card {
+      margin: 0 16px 16px;
+      background: linear-gradient(135deg, rgba(13,20,40,0.95) 0%, rgba(15,10,35,0.95) 100%);
+      border: 1px solid rgba(123,97,255,0.35);
+      border-radius: 20px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(123,97,255,0.1);
+    }
+    .brain-score-card::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,97,255,0.2) 0%, transparent 70%);
+    }
+    .brain-score-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .brain-score-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--purple);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .brain-score-tier {
+      font-size: 11px; font-weight: 700; padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(123,97,255,0.15);
+      border: 1px solid rgba(123,97,255,0.3);
+      color: var(--purple);
+    }
+    .brain-score-main {
+      display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px;
+    }
+    .brain-score-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 52px; font-weight: 700; line-height: 1;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .brain-score-max {
+      font-size: 18px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;
+    }
+    .brain-score-bar-wrap {
+      width: 100%; height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px; overflow: hidden;
+    }
+    .brain-score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple-dim), var(--cyan));
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+    .brain-score-breakdown {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px; margin-top: 12px;
+    }
+    .breakdown-item {
+      text-align: center;
+    }
+    .breakdown-val { font-size: 14px; font-weight: 700; color: var(--cyan); }
+    .breakdown-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+
+    .progress-summary-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px; padding: 0 16px 16px;
+    }
+    .prog-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .prog-value { font-size: 26px; font-weight: 800; }
+    .prog-value.cyan { color: var(--cyan); }
+    .prog-value.coral { color: var(--coral); }
+    .prog-value.purple { color: var(--purple); }
+    .prog-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+
+    .section-label {
+      padding: 0 16px; margin-bottom: 10px;
+      font-size: 13px; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* AI RECOMMENDATIONS CARD */
+    .ai-rec-card {
+      margin: 0 16px 12px;
+      background: linear-gradient(135deg, rgba(10,15,30,0.95), rgba(8,12,28,0.95));
+      border: 1px solid rgba(0,229,255,0.18);
+      border-radius: 18px;
+      padding: 18px 16px;
+      position: relative; overflow: hidden;
+    }
+    .ai-rec-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.3), transparent);
+    }
+    .ai-rec-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 14px; padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .ai-rec-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .ai-rec-icon {
+      width: 36px; height: 36px; min-width: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .ai-rec-icon.game { background: rgba(123,97,255,0.2); border: 1px solid rgba(123,97,255,0.3); }
+    .ai-rec-icon.insight { background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.2); }
+    .ai-rec-icon.tip { background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.2); }
+    .ai-rec-content { flex: 1; }
+    .ai-rec-label { font-size: 9px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; margin-bottom: 4px; }
+    .ai-rec-label.game { color: var(--purple); }
+    .ai-rec-label.insight { color: var(--cyan); }
+    .ai-rec-label.tip { color: var(--teal); }
+    .ai-rec-text { font-size: 13px; color: var(--text-primary); line-height: 1.55; }
+
+    .game-stat-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin: 0 16px 10px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .game-stat-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .game-stat-icon.g1 { background: rgba(123,97,255,0.15); }
+    .game-stat-icon.g2 { background: rgba(0,229,255,0.1); }
+    .game-stat-icon.g3 { background: rgba(0,230,118,0.1); }
+    .game-stat-icon.g4 { background: rgba(255,179,0,0.1); }
+    .game-stat-icon.g5 { background: rgba(255,107,138,0.12); }
+    .game-stat-info { flex: 1; }
+    .game-stat-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .game-stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .game-stat-score { text-align: right; }
+    .game-stat-score-val { font-size: 18px; font-weight: 700; color: var(--cyan); }
+    .game-stat-score-label { font-size: 10px; color: var(--text-muted); }
+
+    .play-now-btn-wrap { padding: 0 16px 20px; }
+    .play-now-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--purple-dim), var(--cyan-dim));
+      border: none; border-radius: 14px;
+      color: #fff; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+      font-family: inherit;
+    }
+    .play-now-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+    /* ========================================
+       SETTINGS SCREEN
+    ======================================== */
+    .profile-header {
+      padding: 24px 16px 20px;
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--border-cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      background: linear-gradient(135deg, var(--bg-card-solid), #1A2540);
+      margin: 0 auto 12px;
+      cursor: pointer;
+      box-shadow: 0 0 24px var(--glow-cyan);
+    }
+    .profile-name {
+      font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;
+    }
+    .profile-email {
+      font-size: 13px; color: var(--text-muted);
+    }
+
+    .settings-section {
+      padding: 0 16px; margin-bottom: 24px;
+    }
+    .settings-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--text-muted);
+      margin-bottom: 10px; padding: 0 2px;
+    }
+    .settings-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .settings-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 15px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid var(--border);
+      min-height: 56px;
+    }
+    .settings-item:last-child { border-bottom: none; }
+    .settings-item:active { background: rgba(255,255,255,0.03); }
+    .settings-item-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .si-purple { background: rgba(123,97,255,0.15); }
+    .si-cyan { background: rgba(0,229,255,0.1); }
+    .si-coral { background: rgba(255,107,138,0.12); }
+    .si-amber { background: rgba(255,179,0,0.1); }
+    .si-green { background: rgba(0,230,118,0.1); }
+    .settings-item-text { flex: 1; }
+    .settings-item-label { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+    .settings-item-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .settings-item-arrow { color: var(--text-muted); font-size: 14px; }
+
+    .settings-input {
+      width: 100%; padding: 12px 14px;
+      background: transparent;
+      border: none; border-bottom: 1px solid var(--border);
+      color: var(--text-primary); font-size: 14px;
+      outline: none; font-family: inherit;
+    }
+    .settings-input:focus { border-bottom-color: var(--cyan); }
+    .settings-input::placeholder { color: var(--text-muted); }
+
+    .logout-btn {
+      margin: 0 16px 40px;
+      width: calc(100% - 32px);
+      padding: 14px;
+      background: rgba(255,107,138,0.08);
+      border: 1px solid rgba(255,107,138,0.2);
+      border-radius: 14px;
+      color: var(--coral); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .logout-btn:hover { background: rgba(255,107,138,0.15); }
+
+    /* ========================================
+       BOTTOM NAV
+    ======================================== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: calc(var(--nav-h) + var(--bottom-safe));
+      background: rgba(6,10,20,0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid var(--border-purple);
+      display: flex; align-items: flex-start;
+      justify-content: space-around;
+      padding: 8px 8px 0;
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      padding: 8px 4px;
+      cursor: pointer;
+      transition: transform 0.15s;
+      min-height: 56px;
+      border: none; background: none;
+      font-family: inherit;
+    }
+    .nav-item:active { transform: scale(0.92); }
+    .nav-icon {
+      font-size: 22px; line-height: 1;
+      filter: grayscale(60%) opacity(50%);
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .nav-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.2px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .nav-item.active .nav-icon {
+      filter: none;
+      transform: scale(1.1);
+    }
+    .nav-item.active .nav-label {
+      color: var(--cyan);
+    }
+    .nav-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--cyan);
+      margin-top: 2px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav-item.active .nav-dot { opacity: 1; }
+
+    /* ========================================
+       MODALS
+    ======================================== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(4,8,18,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex; align-items: flex-end;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal-overlay.top-center {
+      align-items: flex-start;
+      padding-top: calc(var(--status-h) + 20px);
+    }
+
+    .modal-sheet {
+      width: 100%;
+      background: var(--bg-modal);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      border-top: 1px solid var(--border-purple);
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      animation: slideUp 0.3s ease;
+      padding-bottom: calc(var(--bottom-safe) + 20px);
+    }
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      margin: 12px auto 20px;
+    }
+    .modal-title {
+      padding: 0 20px 20px;
+      font-size: 20px; font-weight: 800;
+      color: var(--text-primary);
+    }
+    .modal-body { padding: 0 20px; }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .modal-input {
+      width: 100%; padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-purple);
+      border-radius: 14px;
+      color: var(--text-primary); font-size: 15px;
+      outline: none; resize: none;
+      font-family: inherit; line-height: 1.5;
+      transition: border-color 0.2s;
+      min-height: 48px;
+    }
+    .modal-input:focus { border-color: var(--cyan); }
+    .modal-input::placeholder { color: var(--text-muted); }
+    textarea.modal-input { min-height: 120px; }
+
+    .modal-label {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      color: var(--text-muted); margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .modal-field { margin-bottom: 16px; }
+
+    .category-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px; margin-bottom: 16px;
+    }
+    .cat-btn {
+      padding: 10px 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; text-align: center;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      font-family: inherit;
+      min-height: 44px;
+    }
+    .cat-btn.active {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+
+    .modal-save-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan-dim));
+      border: none; border-radius: 14px;
+      color: #fff; font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-top: 8px;
+      transition: transform 0.15s, opacity 0.15s;
+      font-family: inherit;
+    }
+    .modal-save-btn:active { transform: scale(0.98); opacity: 0.9; }
+    .modal-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* UPGRADE MODAL */
+    .upgrade-feature {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0;
+      font-size: 0.875rem;
+      color: #C4CBDF;
+    }
+    .upgrade-feature:not(:last-child) { border-bottom: 1px solid rgba(100,120,200,0.08); }
+
+    /* WELLNESS SLIDERS */
+    .wellness-row {
+      margin-bottom: 20px;
+    }
+    .wellness-row-header {
+      display: flex; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .wellness-row-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .wellness-row-val { font-size: 14px; font-weight: 700; color: var(--cyan); }
+    .wellness-btns {
+      display: flex; gap: 8px;
+    }
+    .well-btn {
+      flex: 1; padding: 12px 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 18px; cursor: pointer;
+      transition: all 0.15s;
+      min-height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+    }
+    .well-btn.active {
+      background: rgba(123,97,255,0.2);
+      border-color: var(--purple);
+      transform: scale(1.05);
+    }
+
+    /* BRAIN GAMES MODAL */
+    .games-grid {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 0 0 8px;
+    }
+    .game-card-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      min-height: 72px;
+    }
+    .game-card-item:active { transform: scale(0.98); border-color: var(--border-purple); }
+    @media (hover: hover) {
+      .game-card-item:hover {
+        border-color: rgba(123,97,255,0.45);
+        background: rgba(123,97,255,0.06);
+        transform: translateY(-1px);
+      }
+    }
+    .game-card-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .game-card-info { flex: 1; }
+    .game-card-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .game-card-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .game-card-best { font-size: 12px; color: var(--cyan); font-weight: 600; }
+    .game-card-arrow { color: var(--text-muted); font-size: 14px; }
+
+    /* GAME OVERLAY */
+    #game-overlay {
+      position: fixed; inset: 0;
+      background: var(--bg-deep);
+      z-index: 500;
+      display: flex; flex-direction: column;
+    }
+    #game-overlay.hidden { display: none; }
+    .game-overlay-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .game-back-btn {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; color: var(--text-primary);
+    }
+    .game-overlay-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    #game-iframe {
+      flex: 1; border: none;
+      width: 100%; height: 100%;
+    }
+
+    /* TOAST NOTIFICATION */
+    #toast {
+      position: fixed; top: calc(var(--status-h) + 16px); left: 50%; transform: translateX(-50%);
+      background: rgba(20,30,55,0.95);
+      border: 1px solid var(--border-purple);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      z-index: 999;
+      white-space: nowrap;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      transition: opacity 0.3s, transform 0.3s;
+      opacity: 0; pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
+    /* SPINNER */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+    }
+
+    /* SPLASH SCREEN */
+    @keyframes splashLogoIn {
+      from { opacity: 0; transform: scale(0.8) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes splashTaglineIn {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes splashGlow {
+      0%,100% { box-shadow: 0 0 40px rgba(0,229,255,0.18), 0 0 80px rgba(123,97,255,0.10); }
+      50%      { box-shadow: 0 0 70px rgba(0,229,255,0.32), 0 0 140px rgba(123,97,255,0.22); }
+    }
+    @keyframes dotPulse {
+      0%,100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.4); }
+    }
+    #loading-screen {
+      position: fixed; inset: 0;
+      background: #0A0F1E;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 2000;
+      gap: 0;
+    }
+    #loading-screen.hidden { display: none; }
+    .splash-logo-wrap {
+      animation: splashLogoIn 0.75s cubic-bezier(0.23,1,0.32,1) forwards;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+    .splash-logo-icon {
+      width: 108px; height: 108px;
+      background: linear-gradient(145deg, #1A2540 0%, #1E2E60 100%);
+      border-radius: 30px;
+      border: 1.5px solid rgba(0,229,255,0.28);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px;
+      font-size: 56px;
+      animation: splashGlow 2.6s ease-in-out infinite;
+    }
+    .splash-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 34px; font-weight: 700;
+      background: linear-gradient(135deg, #00E5FF 0%, #7B61FF 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+    .splash-tagline {
+      color: rgba(136,146,170,0.75);
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: splashTaglineIn 0.7s 0.55s cubic-bezier(0.23,1,0.32,1) both;
+      margin-top: 12px;
+    }
+    .splash-dots {
+      display: flex; gap: 6px;
+      margin-top: 56px;
+      animation: splashTaglineIn 0.7s 0.9s cubic-bezier(0.23,1,0.32,1) both;
+    }
+    .splash-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--cyan);
+    }
+    .splash-dot:nth-child(1) { animation: dotPulse 1.2s 0s   ease-in-out infinite; }
+    .splash-dot:nth-child(2) { animation: dotPulse 1.2s 0.2s ease-in-out infinite; }
+    .splash-dot:nth-child(3) { animation: dotPulse 1.2s 0.4s ease-in-out infinite; }
+    .splash-byline {
+      position: absolute; bottom: max(40px, env(safe-area-inset-bottom, 40px));
+      color: rgba(74,84,112,0.6);
+      font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      animation: splashTaglineIn 0.7s 0.9s cubic-bezier(0.23,1,0.32,1) both;
+    }
+
+    /* ONBOARDING */
+    #onboarding-overlay {
+      position: fixed; inset: 0;
+      background: #0A0F1E;
+      z-index: 1500;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 28px;
+    }
+    #onboarding-overlay.hidden { display: none !important; }
+    .ob-slides-wrap { width: 100%; max-width: 380px; flex: 1; display: flex; align-items: center; }
+    .ob-step { width: 100%; animation: fadeIn 0.35s ease; }
+    .ob-step.hidden { display: none; }
+    .ob-icon-ring {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0,229,255,0.08) 0%, rgba(123,97,255,0.12) 100%);
+      border: 1.5px solid rgba(0,229,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      margin: 0 auto 28px;
+      box-shadow: 0 0 40px rgba(0,229,255,0.08), 0 0 80px rgba(123,97,255,0.06);
+      animation: floatY 3s ease-in-out infinite;
+    }
+    .ob-slide-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px; font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #00E5FF 20%, #7B61FF 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+      line-height: 1.3;
+    }
+    .ob-slide-desc {
+      color: var(--text-secondary);
+      font-size: 15px; line-height: 1.7;
+      text-align: center;
+    }
+    .ob-footer { width: 100%; max-width: 380px; padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)); }
+    .ob-dots {
+      display: flex; justify-content: center; gap: 8px;
+      margin-bottom: 28px;
+    }
+    .ob-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      cursor: pointer; transition: all 0.25s ease;
+    }
+    .ob-dot.active {
+      background: var(--cyan);
+      width: 26px; border-radius: 4px;
+    }
+    .ob-btn-row { display: flex; gap: 10px; align-items: center; }
+    .ob-skip-btn {
+      flex: 0 0 auto;
+      padding: 14px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .ob-skip-btn:active { opacity: 0.7; }
+    .ob-next-btn {
+      flex: 1;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan-dim));
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+      font-family: inherit;
+    }
+    .ob-next-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+    /* AVATAR GRID */
+    .avatar-option {
+      width: 100%; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 52px;
+    }
+    .avatar-option.selected {
+      border-color: var(--cyan);
+      background: rgba(0,229,255,0.1);
+      transform: scale(1.05);
+    }
+
+    /* FIRST-CAPTURE NUDGE */
+    .first-capture-nudge {
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 2;
+      border: 2px solid var(--cyan);
+      animation: nudgePulse 1.6s ease-in-out infinite;
+    }
+    .first-capture-nudge-label {
+      position: absolute;
+      bottom: -34px; left: 50%; transform: translateX(-50%);
+      white-space: nowrap;
+      background: var(--cyan);
+      color: #060A14;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      pointer-events: none;
+      animation: nudgePulse 1.6s ease-in-out infinite;
+    }
+    .first-capture-nudge-label::before {
+      content: '';
+      position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid var(--cyan);
+    }
+    @keyframes nudgePulse {
+      0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
+      50% { opacity: 0.75; box-shadow: 0 0 0 8px rgba(0,229,255,0); }
+    }
+    .quick-capture-card { position: relative; }
+
+    /* ========================================
+       FTUE WALKTHROUGH OVERLAY
+    ======================================== */
+    #ftue-overlay {
+      position: fixed; inset: 0;
+      z-index: 1400;
+      pointer-events: all;
+    }
+    #ftue-overlay.hidden { display: none !important; }
+    #ftue-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(6,10,20,0.82);
+      backdrop-filter: blur(2px);
+    }
+    /* Spotlight cutout — a glowing ring around the target element */
+    #ftue-spotlight {
+      position: absolute;
+      border-radius: 18px;
+      box-shadow: 0 0 0 9999px rgba(6,10,20,0.82);
+      border: 2px solid var(--cyan);
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      animation: ftueRing 2s ease-in-out infinite;
+    }
+    @keyframes ftueRing {
+      0%,100% { box-shadow: 0 0 0 9999px rgba(6,10,20,0.82), 0 0 0 0 rgba(0,229,255,0.5); }
+      50%      { box-shadow: 0 0 0 9999px rgba(6,10,20,0.82), 0 0 0 8px rgba(0,229,255,0); }
+    }
+    #ftue-tooltip {
+      position: absolute;
+      background: #0D1428;
+      border: 1px solid rgba(0,229,255,0.3);
+      border-radius: 18px;
+      padding: 20px 20px 16px;
+      max-width: 300px; min-width: 240px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,229,255,0.08);
+      left: 50%; transform: translateX(-50%);
+      transition: top 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    /* Arrow pointing from tooltip toward the spotlight */
+    #ftue-tooltip::before {
+      content: '';
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      width: 0; height: 0;
+    }
+    #ftue-tooltip.arrow-down::before {
+      bottom: -8px;
+      border-top: 8px solid rgba(0,229,255,0.3);
+    }
+    #ftue-tooltip.arrow-up::before {
+      top: -8px;
+      border-bottom: 8px solid rgba(0,229,255,0.3);
+    }
+    .ftue-step-num {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 6px;
+    }
+    .ftue-title {
+      font-size: 17px; font-weight: 800; color: var(--text-primary);
+      margin-bottom: 8px; line-height: 1.3;
+    }
+    .ftue-desc {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .ftue-btn-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .ftue-skip {
+      font-size: 12px; color: var(--text-muted); cursor: pointer;
+      background: none; border: none; padding: 6px 4px; font-family: inherit;
+      text-decoration: underline;
+    }
+    .ftue-next {
+      padding: 10px 22px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan-dim));
+      border: none; border-radius: 10px;
+      color: #fff; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 4px 16px rgba(123,97,255,0.35);
+    }
+    .ftue-dots {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .ftue-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border-purple);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .ftue-dot.active { background: var(--cyan); transform: scale(1.3); }
+
+    /* RESPONSIVE: make sure cards don't get too wide on desktop */
+    @media (min-width: 480px) {
+      .screen-inner, .search-bar, .filter-chips, .thoughts-list,
+      .progress-summary-row, .section-label, .play-now-btn-wrap,
+      .settings-section, .profile-header, .logout-btn {
+        max-width: 480px; margin-left: auto; margin-right: auto;
+      }
+      .modal-sheet { max-width: 480px; margin: 0 auto; border-radius: 24px 24px 0 0; }
+    }
+
+    /* ========================================
+       ENHANCED PROGRESS + LEADERBOARD STYLES
+    ======================================== */
+
+    /* Stats Grid (2x2) — matches screenshot */
+    .stats-grid-2x2 {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 0 16px 16px;
+    }
+    .stat-card-2x2 {
+      background: var(--bg-card);
+      border: 1px solid var(--border-purple);
+      border-radius: 18px;
+      padding: 18px 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; gap: 4px;
+      min-height: 100px;
+      position: relative; overflow: hidden;
+    }
+    .stat-card-2x2::before {
+      content:''; position:absolute; top:-20px; right:-20px;
+      width:70px; height:70px; border-radius:50%;
+      opacity:0.12;
+    }
+    .stat-card-2x2.c-memories::before { background:radial-gradient(circle,var(--purple) 0%,transparent 70%); }
+    .stat-card-2x2.c-streak::before   { background:radial-gradient(circle,#FF6B8A 0%,transparent 70%); }
+    .stat-card-2x2.c-best::before     { background:radial-gradient(circle,var(--amber) 0%,transparent 70%); }
+    .stat-card-2x2.c-games::before    { background:radial-gradient(circle,var(--teal) 0%,transparent 70%); }
+    .stat-card-icon { font-size: 22px; margin-bottom: 4px; }
+    .stat-card-val {
+      font-size: 36px; font-weight: 800; line-height: 1;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .stat-card-val.c-memories { color: var(--purple); }
+    .stat-card-val.c-streak   { color: var(--coral); }
+    .stat-card-val.c-best     { color: var(--amber); }
+    .stat-card-val.c-games    { color: var(--teal); }
+    .stat-card-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+
+    /* Weekly bar chart */
+    .weekly-chart-wrap {
+      margin: 0 16px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 16px 12px;
+    }
+    .weekly-chart-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .weekly-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+    .weekly-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .weekly-bar {
+      width: 100%; border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--purple-dim) 0%, rgba(91,75,212,0.3) 100%);
+      min-height: 4px;
+      transition: height 0.6s ease;
+    }
+    .weekly-bar.has-data { background: linear-gradient(180deg, var(--cyan) 0%, var(--purple-dim) 100%); }
+    .weekly-bar-label { font-size: 9px; color: var(--text-muted); }
+
+    /* Period filter tabs */
+    .period-tabs {
+      display: flex; gap: 4px; padding: 0 16px 12px;
+    }
+    .period-tab {
+      flex: 1; padding: 8px 4px; text-align: center;
+      font-size: 11px; font-weight: 600;
+      border-radius: 8px; cursor: pointer;
+      color: var(--text-secondary);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .period-tab.active {
+      background: rgba(0,229,255,0.12);
+      border-color: rgba(0,229,255,0.25);
+      color: var(--cyan);
+    }
+
+    /* Game stats enhanced cards */
+    .game-stats-section { padding: 0 16px 8px; }
+    .game-stat-row {
+      display: flex; align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .gsr-icon { font-size: 20px; width: 36px; flex-shrink: 0; }
+    .gsr-info { flex: 1; min-width: 0; }
+    .gsr-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+    .gsr-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .gsr-stats { display: flex; gap: 12px; flex-shrink: 0; text-align: right; }
+    .gsr-stat { }
+    .gsr-stat-val { font-size: 14px; font-weight: 800; color: var(--cyan); }
+    .gsr-stat-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+
+    /* Game Rank tier card */
+    .game-rank-card {
+      margin: 0 16px 16px;
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid rgba(0,229,255,0.2);
+    }
+    .game-rank-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .game-rank-tier-name { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+    .game-rank-emoji { font-size: 28px; }
+    .game-rank-score { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .game-rank-bar-wrap { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+    .game-rank-bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
+    .game-rank-tiers-row { display: flex; justify-content: space-between; }
+    .game-rank-tier-label { font-size: 9px; color: var(--text-muted); }
+    .game-rank-next { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 8px; }
+
+    /* Achievement badges */
+    .achievements-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px; padding: 0 16px 16px;
+    }
+    .achievement-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .achievement-badge.unlocked {
+      border-color: rgba(0,229,255,0.25);
+      background: rgba(0,229,255,0.05);
+    }
+    .achievement-badge.locked { opacity: 0.4; filter: grayscale(1); }
+    .ach-emoji { font-size: 24px; margin-bottom: 6px; }
+    .ach-name { font-size: 10px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+    .ach-desc { font-size: 9px; color: var(--text-muted); line-height: 1.3; }
+
+    /* Leaderboard button */
+    .lb-open-btn {
+      display: block; margin: 0 16px 16px;
+      background: linear-gradient(135deg, rgba(0,229,255,0.12) 0%, rgba(123,97,255,0.12) 100%);
+      border: 1px solid rgba(0,229,255,0.3);
+      border-radius: 16px; padding: 16px;
+      text-align: center; cursor: pointer;
+      color: var(--cyan); font-weight: 700; font-size: 15px;
+      transition: all 0.2s;
+    }
+    .lb-open-btn:active { transform: scale(0.98); opacity: 0.85; }
+
+    /* ===========================================
+       LEADERBOARD OVERLAY
+    =========================================== */
+    .lb-overlay {
+      position: fixed; inset: 0; z-index: 900;
+      background: var(--bg-deep);
+      display: flex; flex-direction: column;
+      animation: slideUp 0.3s ease;
+    }
+    .lb-overlay.hidden { display: none; }
+    .lb-header {
+      padding: calc(var(--status-h) + 14px) 16px 12px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .lb-back-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px; border: none;
+      color: var(--text-primary); font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .lb-title { font-size: 18px; font-weight: 800; color: var(--text-primary); flex: 1; }
+
+    /* Game selector chips */
+    .lb-game-scroll {
+      display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .lb-game-scroll::-webkit-scrollbar { display: none; }
+    .lb-game-chip {
+      flex-shrink: 0; padding: 6px 14px;
+      border-radius: 20px; font-size: 12px; font-weight: 600;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer;
+      white-space: nowrap; transition: all 0.2s;
+    }
+    .lb-game-chip.active {
+      background: rgba(0,229,255,0.12);
+      border-color: rgba(0,229,255,0.3);
+      color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0,229,255,0.1);
+    }
+    .lb-game-chip:hover:not(.active) {
+      border-color: rgba(0,229,255,0.22);
+      color: var(--text-primary);
+    }
+
+    /* Period filter */
+    .lb-period-row {
+      display: flex; gap: 4px; padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .lb-period-btn {
+      flex: 1; padding: 7px 4px; text-align: center;
+      font-size: 11px; font-weight: 600;
+      border-radius: 8px; border: 1px solid transparent;
+      background: rgba(255,255,255,0.03);
+      color: var(--text-secondary); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lb-period-btn.active {
+      background: rgba(123,97,255,0.15);
+      border-color: rgba(123,97,255,0.3);
+      color: var(--purple);
+    }
+
+    /* Leaderboard list */
+    .lb-list-wrap {
+      flex: 1; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .lb-list { padding: 8px 16px; }
+    .lb-entry {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 6px;
+      transition: all 0.15s;
+    }
+    .lb-entry.is-me {
+      border-color: rgba(0,229,255,0.3);
+      background: rgba(0,229,255,0.05);
+    }
+    .lb-rank-num {
+      font-size: 13px; font-weight: 800;
+      width: 28px; text-align: center; flex-shrink: 0;
+      color: var(--text-muted);
+    }
+    .lb-rank-num.top1 { color: #FFD700; font-size: 16px; }
+    .lb-rank-num.top2 { color: #C0C0C0; }
+    .lb-rank-num.top3 { color: #CD7F32; }
+    .lb-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .lb-score-block { text-align: right; }
+    .lb-score-val { font-size: 15px; font-weight: 800; color: var(--cyan); }
+    .lb-score-sub { font-size: 10px; color: var(--text-muted); }
+    .lb-me-badge {
+      font-size: 9px; color: var(--cyan);
+      background: rgba(0,229,255,0.12);
+      border-radius: 4px; padding: 2px 5px;
+      font-weight: 700; margin-left: 4px;
+    }
+
+    .lb-your-pos {
+      margin: 8px 16px;
+      padding: 12px 14px;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .lb-empty { text-align: center; padding: 48px 16px; color: var(--text-muted); font-size: 14px; }
+
+    /* Leaderboard chat */
+    .lb-chat-section {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      max-height: 220px;
+    }
+    .lb-chat-title {
+      padding: 8px 16px 4px;
+      font-size: 11px; font-weight: 700;
+      color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .lb-chat-messages {
+      flex: 1; overflow-y: auto; padding: 0 16px 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .lb-chat-msg {
+      margin-bottom: 6px;
+      font-size: 12px; line-height: 1.4;
+    }
+    .lb-chat-msg-user { font-weight: 700; color: var(--cyan); margin-right: 5px; }
+    .lb-chat-msg-text { color: var(--text-secondary); }
+    .lb-chat-input-row {
+      display: flex; gap: 8px; padding: 8px 16px;
+      padding-bottom: calc(8px + var(--bottom-safe));
+    }
+    .lb-chat-input {
+      flex: 1; padding: 10px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-purple);
+      border-radius: 20px; color: var(--text-primary);
+      font-size: 13px; outline: none;
+      font-family: inherit;
+    }
+    .lb-chat-send {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan-dim));
+      border: none; border-radius: 50%;
+      color: #fff; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lb-loading { padding: 24px 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="loading-screen">
+  <div class="splash-logo-wrap">
+    <div class="splash-logo-icon">🧠</div>
+    <div class="splash-title">MemTool</div>
+  </div>
+  <div class="splash-tagline">Organize Chaos 2 Chaos Organizer</div>
+  <div class="splash-dots">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+  </div>
+  <div class="splash-byline">by Oc2cO</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="hidden">
+  <div class="auth-logo">
+    <div class="auth-logo-icon">🧠</div>
+    <h1>MemTool</h1>
+    <p>by Oc2cO · Organize Your Mind</p>
+  </div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Sign Up</button>
+    </div>
+    <!-- LOGIN -->
+    <div id="login-form" class="auth-form">
+      <input type="email" class="auth-input" id="login-email" placeholder="Email address" autocomplete="email">
+      <input type="password" class="auth-input" id="login-password" placeholder="Password" autocomplete="current-password">
+      <div id="login-error" class="auth-error hidden"></div>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+    </div>
+    <!-- REGISTER -->
+    <div id="register-form" class="auth-form hidden">
+      <input type="text" class="auth-input" id="reg-username" placeholder="Your name (e.g. Alex)" autocomplete="name">
+      <input type="email" class="auth-input" id="reg-email" placeholder="Email address" autocomplete="email">
+      <input type="password" class="auth-input" id="reg-password" placeholder="Password (6+ characters)" autocomplete="new-password">
+      <div id="reg-error" class="auth-error hidden"></div>
+      <button class="auth-btn" id="reg-btn" onclick="doRegister()">Create Account</button>
+    </div>
+    <div class="auth-divider">or continue as</div>
+    <button class="guest-btn" onclick="doGuest()">👻 Guest Mode — Try First</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" class="hidden">
+  <div class="app-status-bar"></div>
+  <div class="tab-content-area">
+
+    <!-- HOME TAB -->
+    <div id="tab-home" class="tab-screen active">
+      <div class="screen-inner">
+        <div class="home-greeting">
+          <div class="welcome-back">Welcome back,</div>
+          <div class="username-line"><span id="home-username">Explorer</span> 👋</div>
+          <div class="date-line" id="home-date"></div>
+          <a href="/store" style="display:inline-block;margin-top:10px;font-family:'Orbitron',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0A0F1E;background:linear-gradient(135deg,#FFD54F,#FFB300);padding:0.4rem 1rem;border-radius:7px;text-decoration:none;box-shadow:0 2px 12px rgba(255,179,0,0.3);transition:all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg,#00E5FF,#00B8D4)'" onmouseout="this.style.background='linear-gradient(135deg,#FFD54F,#FFB300)'">Shop Oc2cO Store →</a>
+        </div>
+
+        <!-- QUICK CAPTURE -->
+        <div class="quick-capture-card" onclick="openCapture()">
+          <div class="qc-badge">QUICK CAPTURE</div>
+          <div id="daily-capture-badge" style="display:none;position:absolute;bottom:10px;right:14px;font-size:10px;font-weight:700;color:rgba(0,229,255,0.75);background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.15);border-radius:6px;padding:2px 8px;letter-spacing:0.3px;z-index:3"></div>
+          <div class="qc-icon">+</div>
+          <div class="qc-text">
+            <h3>Quick Capture</h3>
+            <p>Record a fleeting thought</p>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-row">
+          <div class="action-btn" onclick="openCallLog()">
+            <div class="ab-icon phone">📞</div>
+            <div>
+              <div class="ab-label">Log a Call</div>
+              <div class="ab-sublabel">Capture conversation</div>
+            </div>
+          </div>
+          <div class="action-btn" onclick="openWellness()">
+            <div class="ab-icon wellness">💗</div>
+            <div>
+              <div class="ab-label">Wellness</div>
+              <div class="ab-sublabel">Track your state</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card streak">
+            <div class="stat-top">
+              <span class="stat-icon">🔥</span>
+              <span class="stat-label">Streak</span>
+            </div>
+            <div class="stat-value" id="streak-val">—</div>
+            <div class="stat-desc">consecutive days</div>
+          </div>
+          <div class="stat-card today">
+            <div class="stat-top">
+              <span class="stat-icon">📅</span>
+              <span class="stat-label">Today</span>
+            </div>
+            <div class="stat-value" id="today-val">—</div>
+            <div class="stat-desc">thoughts captured</div>
+          </div>
+        </div>
+
+        <!-- DAILY BOOST -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-label purple">
+              <span class="card-label-icon">✨</span>
+              Daily Boost · Motivation
+            </div>
+            <button class="card-action" id="boost-fav-btn" onclick="favBoost()" title="Favorite">🤍</button>
+          </div>
+          <div class="card-body" id="daily-boost-text">Loading inspiration...</div>
+        </div>
+
+        <!-- DID YOU KNOW -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-label teal">
+              <span class="card-label-icon">🎓</span>
+              Did You Know?
+            </div>
+          </div>
+          <div class="card-body" id="brain-fact-text">Loading brain science...</div>
+        </div>
+
+        <!-- AI INSIGHT -->
+        <div class="content-card ai-insight-card">
+          <div class="card-header">
+            <div class="card-label cyan">
+              <span class="card-label-icon">🤖</span>
+              AI Insight
+            </div>
+          </div>
+          <div class="card-body" id="ai-insight-text">
+            <div class="ai-loading">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+              <span style="margin-left:4px">Analyzing your patterns...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BRAIN GAMES -->
+        <div class="brain-games-btn" onclick="openGames()">
+          <div class="bgb-left">
+            <div class="bgb-icon">🎮</div>
+            <div class="bgb-text">
+              <h4>Brain Games</h4>
+              <p>Train your cognitive skills · 5 games</p>
+            </div>
+          </div>
+          <div class="bgb-arrow">›</div>
+        </div>
+
+        <!-- VIDEO INTRO PLACEHOLDER -->
+        <div class="content-card" id="video-intro-card" style="cursor:pointer;padding:0;overflow:hidden" onclick="showVideoPlaceholder()">
+          <div style="background:linear-gradient(135deg,rgba(10,15,30,0.95),rgba(6,10,20,0.98));padding:0;position:relative;min-height:100px;display:flex;align-items:center;gap:16px;padding:18px 16px">
+            <div style="width:52px;height:52px;min-width:52px;border-radius:16px;background:linear-gradient(135deg,rgba(123,97,255,0.25),rgba(0,180,160,0.15));border:1px solid rgba(123,97,255,0.3);display:flex;align-items:center;justify-content:center;font-size:24px">▶️</div>
+            <div style="flex:1">
+              <div style="font-size:11px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:var(--purple);margin-bottom:4px">Oc2cO Brand Video</div>
+              <div style="font-size:15px;font-weight:700;color:var(--text-primary)">Meet MemTool</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Coming soon · Intro video</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:14px">›</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ARCHIVE TAB -->
+    <div id="tab-archive" class="tab-screen">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Memory Archive</div>
+          <div class="screen-subtitle">All your captured thoughts</div>
+        </div>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="search" class="search-input" id="archive-search" placeholder="Search thoughts..." oninput="searchThoughts()">
+      </div>
+      <div class="filter-chips">
+        <div class="chip active" data-cat="all" onclick="filterThoughts(this, 'all')">All</div>
+        <div class="chip" data-cat="idea" onclick="filterThoughts(this, 'idea')">💡 Ideas</div>
+        <div class="chip" data-cat="note" onclick="filterThoughts(this, 'note')">📝 Notes</div>
+        <div class="chip" data-cat="memory" onclick="filterThoughts(this, 'memory')">🧠 Memories</div>
+        <div class="chip" data-cat="task" onclick="filterThoughts(this, 'task')">⚡ Tasks</div>
+        <div class="chip" data-cat="random" onclick="filterThoughts(this, 'random')">💭 Random</div>
+        <div class="chip" data-cat="starred" onclick="filterThoughts(this, 'starred')">⭐ Starred</div>
+      </div>
+      <div class="thoughts-list" id="thoughts-list">
+        <div class="empty-state">
+          <div class="empty-icon" style="animation:floatY 3s ease-in-out infinite;opacity:1;font-size:56px;margin-bottom:18px">🧠</div>
+          <h3 style="color:var(--text-primary);font-size:18px">Your first thought is waiting</h3>
+          <p style="margin-top:8px;line-height:1.6">What's on your mind? Head to Home<br>and tap Quick Capture to begin.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div id="tab-progress" class="tab-screen">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Progress</div>
+          <div class="screen-subtitle">Stats, rankings &amp; achievements</div>
+        </div>
+      </div>
+
+      <!-- TOP 4 STAT CARDS (2×2 grid, matching screenshot style) -->
+      <div class="stats-grid-2x2">
+        <div class="stat-card-2x2 c-memories">
+          <div class="stat-card-icon">📓</div>
+          <div class="stat-card-val c-memories" id="sc-total-memories">0</div>
+          <div class="stat-card-label">Total Memories</div>
+        </div>
+        <div class="stat-card-2x2 c-streak">
+          <div class="stat-card-icon">🔥</div>
+          <div class="stat-card-val c-streak" id="sc-current-streak">0</div>
+          <div class="stat-card-label">Current Streak</div>
+        </div>
+        <div class="stat-card-2x2 c-best">
+          <div class="stat-card-icon">🏆</div>
+          <div class="stat-card-val c-best" id="sc-longest-streak">0</div>
+          <div class="stat-card-label">Longest Streak</div>
+        </div>
+        <div class="stat-card-2x2 c-games">
+          <div class="stat-card-icon">🎮</div>
+          <div class="stat-card-val c-games" id="sc-games-played">0</div>
+          <div class="stat-card-label">Games Played</div>
+        </div>
+      </div>
+
+      <!-- BRAIN SCORE -->
+      <div class="brain-score-card" style="margin:0 16px 16px">
+        <div class="brain-score-top">
+          <div class="brain-score-label">🧠 Brain Score</div>
+          <div class="brain-score-tier" id="brain-tier">Loading...</div>
+        </div>
+        <div class="brain-score-main">
+          <div class="brain-score-num" id="brain-score-num">—</div>
+          <div class="brain-score-max">/ 100</div>
+        </div>
+        <div class="brain-score-bar-wrap">
+          <div class="brain-score-bar-fill" id="brain-score-bar" style="width:0%"></div>
+        </div>
+        <div class="brain-score-breakdown">
+          <div class="breakdown-item">
+            <div class="breakdown-val" id="bs-streak">—</div>
+            <div class="breakdown-lbl">Streak</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-val" id="bs-captures">—</div>
+            <div class="breakdown-lbl">Captures</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-val" id="bs-wellness">—</div>
+            <div class="breakdown-lbl">Wellness</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-val" id="bs-games">—</div>
+            <div class="breakdown-lbl">Games</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME RANK (Bronze→Master) -->
+      <div class="section-label" style="padding:0 16px;margin-bottom:8px">🏅 Game Rank</div>
+      <div class="game-rank-card" id="game-rank-card">
+        <div class="game-rank-header">
+          <div>
+            <div class="game-rank-tier-name" id="gr-tier-name">Bronze</div>
+            <div class="game-rank-score" id="gr-score-sub">0 pts · Play games to rank up</div>
+          </div>
+          <div class="game-rank-emoji" id="gr-emoji">🥉</div>
+        </div>
+        <div class="game-rank-bar-wrap">
+          <div class="game-rank-bar-fill" id="gr-bar" style="width:0%;background:linear-gradient(90deg,#CD7F32,#C0C0C0)"></div>
+        </div>
+        <div class="game-rank-tiers-row">
+          <span class="game-rank-tier-label">Bronze</span>
+          <span class="game-rank-tier-label">Silver</span>
+          <span class="game-rank-tier-label">Gold</span>
+          <span class="game-rank-tier-label">Platinum</span>
+          <span class="game-rank-tier-label">Diamond</span>
+          <span class="game-rank-tier-label">Master</span>
+        </div>
+        <div class="game-rank-next" id="gr-next-text"></div>
+      </div>
+
+      <!-- WEEKLY ACTIVITY CHART -->
+      <div class="section-label" style="padding:0 16px;margin-bottom:8px">📅 Weekly Activity</div>
+      <div class="weekly-chart-wrap">
+        <div class="weekly-bars" id="weekly-bars">
+          <!-- injected by JS -->
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px" id="weekly-bar-labels"></div>
+      </div>
+
+      <!-- GAME STATS WITH PERIOD TABS -->
+      <div class="section-label" style="padding:0 16px;margin-bottom:8px">🎮 Game Performance</div>
+      <div class="period-tabs">
+        <button class="period-tab active" data-period="daily"   onclick="selectStatsPeriod(this,'daily')">Today</button>
+        <button class="period-tab"        data-period="weekly"  onclick="selectStatsPeriod(this,'weekly')">Week</button>
+        <button class="period-tab"        data-period="monthly" onclick="selectStatsPeriod(this,'monthly')">Month</button>
+        <button class="period-tab"        data-period="alltime" onclick="selectStatsPeriod(this,'alltime')">All Time</button>
+      </div>
+      <div class="game-stats-section" id="enhanced-game-stats">
+        <!-- Populated by JS -->
+        <div style="text-align:center;padding:24px 0;color:var(--text-muted);font-size:13px">Loading...</div>
+      </div>
+
+      <!-- LEADERBOARD ACCESS -->
+      <button class="lb-open-btn" onclick="openLeaderboard()">🏆 View Global Leaderboards →</button>
+
+      <!-- AI RECOMMENDATIONS -->
+      <div class="section-label">🤖 AI Recommendations</div>
+      <div class="ai-rec-card" id="ai-recs-card">
+        <div class="ai-loading" style="padding:4px 0">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <span style="margin-left:6px;font-size:13px;color:var(--text-muted)">Analyzing your data...</span>
+        </div>
+      </div>
+
+      <!-- ACHIEVEMENTS -->
+      <div class="section-label" style="padding:0 16px 8px">🎖️ Achievements</div>
+      <div class="achievements-grid" id="achievements-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="play-now-btn-wrap">
+        <button class="play-now-btn" onclick="openGames()">🎮 Play Brain Games</button>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- LEADERBOARD OVERLAY -->
+    <div id="lb-overlay" class="lb-overlay hidden">
+      <div class="lb-header">
+        <button class="lb-back-btn" onclick="closeLeaderboard()">←</button>
+        <div class="lb-title">🏆 Leaderboards</div>
+        <div style="font-size:11px;color:var(--text-muted)" id="lb-my-rank-display"></div>
+      </div>
+
+      <!-- Game selector -->
+      <div class="lb-game-scroll">
+        <button class="lb-game-chip active" data-game="all"             onclick="selectLbGame(this,'all')">🌐 All Games</button>
+        <button class="lb-game-chip"        data-game="twenty-four"     onclick="selectLbGame(this,'twenty-four')">🔢 24 Game</button>
+        <button class="lb-game-chip"        data-game="memory-match"    onclick="selectLbGame(this,'memory-match')">🃏 Memory Match</button>
+        <button class="lb-game-chip"        data-game="picture-scramble" onclick="selectLbGame(this,'picture-scramble')">👁️ Neural Recall</button>
+        <button class="lb-game-chip"        data-game="simon-says"      onclick="selectLbGame(this,'simon-says')">🧩 Mind Sync</button>
+        <button class="lb-game-chip"        data-game="sudoku"          onclick="selectLbGame(this,'sudoku')">🔢 Cortex Grid</button>
+      </div>
+
+      <!-- Period filter -->
+      <div class="lb-period-row">
+        <button class="lb-period-btn active" data-period="daily"   onclick="selectLbPeriod(this,'daily')">Today</button>
+        <button class="lb-period-btn"        data-period="weekly"  onclick="selectLbPeriod(this,'weekly')">Week</button>
+        <button class="lb-period-btn"        data-period="monthly" onclick="selectLbPeriod(this,'monthly')">Month</button>
+        <button class="lb-period-btn"        data-period="alltime" onclick="selectLbPeriod(this,'alltime')">All Time</button>
+      </div>
+
+      <!-- List -->
+      <div class="lb-list-wrap" id="lb-list-wrap">
+        <div class="lb-loading">Loading leaderboard...</div>
+      </div>
+
+      <!-- Chat -->
+      <div class="lb-chat-section">
+        <div class="lb-chat-title">💬 Chat</div>
+        <div class="lb-chat-messages" id="lb-chat-messages">
+          <div style="text-align:center;padding:8px;color:var(--text-muted);font-size:12px">Say hi!</div>
+        </div>
+        <div class="lb-chat-input-row">
+          <input class="lb-chat-input" id="lb-chat-input" placeholder="Say something..." maxlength="200" onkeydown="if(event.key==='Enter')sendLbChat()">
+          <button class="lb-chat-send" onclick="sendLbChat()">↑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="tab-screen">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar" onclick="openAvatarPicker()">👤</div>
+        <div class="profile-name" id="profile-name">Explorer</div>
+        <div class="profile-email" id="profile-email">Guest Mode</div>
+        <!-- Ranking badge -->
+        <div id="profile-rank-badge" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px">
+          <div style="padding:4px 14px;border-radius:20px;background:rgba(123,97,255,0.12);border:1px solid rgba(123,97,255,0.25);font-size:11px;font-weight:700;color:var(--purple)" id="rank-tier-badge">Beginner</div>
+          <div style="font-size:11px;color:var(--text-muted)" id="rank-score-display">Score: 0/100</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Profile</div>
+        <div class="settings-card">
+          <div class="modal-field" style="padding:16px">
+            <div class="modal-label">Display Name</div>
+            <input type="text" class="settings-input" id="settings-username" placeholder="Your name" maxlength="80">
+          </div>
+          <div class="modal-field" style="padding:0 16px 16px">
+            <div class="modal-label">Birthday</div>
+            <input type="date" class="settings-input" id="settings-birthday" style="color-scheme:dark">
+          </div>
+          <div class="modal-field" style="padding:0 16px 16px">
+            <div class="modal-label">Bio</div>
+            <input type="text" class="settings-input" id="settings-bio" placeholder="A few words about you..." maxlength="200">
+          </div>
+          <div style="padding:0 16px 16px">
+            <button class="modal-save-btn" onclick="saveProfile()">Save Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Your Rank</div>
+        <div class="settings-card" style="padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="rank-tier-label">Beginner</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Brain Score: <span id="rank-score-label" style="color:var(--purple)">0</span> / 100</div>
+            </div>
+            <div style="font-size:32px" id="rank-emoji">🌱</div>
+          </div>
+          <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden">
+            <div id="rank-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--purple-dim),var(--cyan));border-radius:4px;transition:width 1s ease;width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px">
+            <span style="font-size:10px;color:var(--text-muted)">Beginner</span>
+            <span style="font-size:10px;color:var(--text-muted)">Master</span>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">
+            <div><div style="font-size:13px;font-weight:700;color:var(--cyan)" id="rs-streak">0</div><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;margin-top:2px">Streak</div></div>
+            <div><div style="font-size:13px;font-weight:700;color:var(--coral)" id="rs-captures">0</div><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;margin-top:2px">Captures</div></div>
+            <div><div style="font-size:13px;font-weight:700;color:var(--green)" id="rs-wellness">0</div><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;margin-top:2px">Wellness</div></div>
+            <div><div style="font-size:13px;font-weight:700;color:var(--purple)" id="rs-games">0</div><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;margin-top:2px">Games</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">App</div>
+        <div class="settings-card">
+          <div class="settings-item" onclick="openGames()">
+            <div class="settings-item-icon si-purple">🎮</div>
+            <div class="settings-item-text">
+              <div class="settings-item-label">Brain Games</div>
+              <div class="settings-item-sub">All 5 cognitive games</div>
+            </div>
+            <div class="settings-item-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="switchTab('archive')">
+            <div class="settings-item-icon si-cyan">📚</div>
+            <div class="settings-item-text">
+              <div class="settings-item-label">Memory Archive</div>
+              <div class="settings-item-sub">Browse all captures</div>
+            </div>
+            <div class="settings-item-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="showOnboarding(true)">
+            <div class="settings-item-icon si-amber">📖</div>
+            <div class="settings-item-text">
+              <div class="settings-item-label">App Tutorial</div>
+              <div class="settings-item-sub">Quick walkthrough of MemTool</div>
+            </div>
+            <div class="settings-item-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section" id="account-section">
+        <div class="settings-section-title">Account</div>
+        <div class="settings-card" id="guest-upgrade-card">
+          <div class="settings-item" onclick="switchAuthTab('register'); doLogout(true)">
+            <div class="settings-item-icon si-amber">✨</div>
+            <div class="settings-item-text">
+              <div class="settings-item-label">Create Free Account</div>
+              <div class="settings-item-sub">Save your data permanently</div>
+            </div>
+            <div class="settings-item-arrow">›</div>
+          </div>
+        </div>
+        <!-- Shown to logged-in free users only — hidden for guests and Pro users -->
+        <div class="settings-card" id="pro-upgrade-card" style="display:none">
+          <div class="settings-item" onclick="showUpgradeModal()" style="cursor:pointer">
+            <div class="settings-item-icon" style="background:rgba(123,97,255,0.12);color:#7B61FF">⚡</div>
+            <div class="settings-item-text">
+              <div class="settings-item-label" style="color:#C0B4FF">Upgrade to Pro — $4.99/mo</div>
+              <div class="settings-item-sub">Unlimited captures, all games, AI recaps</div>
+            </div>
+            <div class="settings-item-arrow" style="color:#7B61FF">›</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+
+  </div><!-- /tab-content-area -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item" data-tab="home" onclick="window.open('https://www.oc2co.com','_blank')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+      <span class="nav-dot"></span>
+    </button>
+    <button class="nav-item" data-tab="archive" onclick="switchTab('archive')">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">Archive</span>
+      <span class="nav-dot"></span>
+    </button>
+    <button class="nav-item" data-tab="progress" onclick="switchTab('progress')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-label">Progress</span>
+      <span class="nav-dot"></span>
+    </button>
+    <button class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Settings</span>
+      <span class="nav-dot"></span>
+    </button>
+    <button class="nav-item" data-tab="store" onclick="window.open('/store','_blank')">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Store</span>
+      <span class="nav-dot"></span>
+    </button>
+  </nav>
+</div><!-- /main-app -->
+
+<!-- QUICK CAPTURE MODAL -->
+<div id="modal-capture" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-capture')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Quick Capture</div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <div class="modal-label">What's on your mind?</div>
+        <textarea class="modal-input" id="capture-content" placeholder="Type your thought here..." rows="5"></textarea>
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">Category</div>
+        <div class="category-grid">
+          <button class="cat-btn" data-cat="idea" onclick="selectCat(this)">💡 Idea</button>
+          <button class="cat-btn active" data-cat="note" onclick="selectCat(this)">📝 Note</button>
+          <button class="cat-btn" data-cat="memory" onclick="selectCat(this)">🧠 Memory</button>
+          <button class="cat-btn" data-cat="task" onclick="selectCat(this)">⚡ Task</button>
+          <button class="cat-btn" data-cat="random" onclick="selectCat(this)">💭 Random</button>
+        </div>
+      </div>
+      <button class="modal-save-btn" id="capture-save-btn" onclick="saveThought()">Save Thought ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRO UPGRADE MODAL -->
+<div id="modal-upgrade" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-upgrade')">
+  <div class="modal-sheet" style="padding-bottom:calc(24px + var(--bottom-safe))">
+    <div class="modal-handle"></div>
+    <div class="modal-body" style="padding:20px 20px 8px">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:2.4rem;margin-bottom:10px">⚡</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.15rem;font-weight:700;color:#EEF2FF;margin-bottom:6px">Upgrade to Pro</div>
+        <div style="font-size:0.85rem;color:#8892AA;line-height:1.5">You've hit the 10 capture/day limit.<br>Go Pro for unlimited everything.</div>
+      </div>
+      <div style="background:rgba(13,20,40,0.85);border:1px solid rgba(123,97,255,0.25);border-radius:14px;padding:14px 16px;margin-bottom:18px">
+        <div class="upgrade-feature">🧠 <span>Unlimited daily captures</span></div>
+        <div class="upgrade-feature">🎮 <span>All 7 brain games</span></div>
+        <div class="upgrade-feature">✨ <span>AI-powered daily recaps</span></div>
+        <div class="upgrade-feature">📊 <span>Advanced stats &amp; streak tracking</span></div>
+        <div class="upgrade-feature">🚫 <span>No ads</span></div>
+      </div>
+      <div style="text-align:center;margin-bottom:12px">
+        <span style="font-size:1.6rem;font-weight:800;color:#EEF2FF">$4.99</span>
+        <span style="font-size:0.85rem;color:#8892AA"> / month</span>
+      </div>
+      <button class="modal-save-btn" id="upgrade-cta-btn" onclick="goUpgrade()" style="background:linear-gradient(135deg,#7B61FF,#5B4BD4);box-shadow:0 0 24px rgba(123,97,255,0.3)">
+        Upgrade to Pro ⚡
+      </button>
+      <button onclick="document.getElementById('modal-upgrade').classList.add('hidden')" style="width:100%;background:none;border:none;color:#4A5470;font-size:0.85rem;padding:12px;cursor:pointer;margin-top:4px">
+        Maybe later
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG A CALL MODAL -->
+<div id="modal-call" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-call')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📞 Log a Call</div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <div class="modal-label">Who did you talk to?</div>
+        <input type="text" class="modal-input" id="call-contact" placeholder="Name or description..." maxlength="100">
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">Key points from the call</div>
+        <textarea class="modal-input" id="call-points" placeholder="What was discussed? Any follow-ups?" rows="5"></textarea>
+      </div>
+      <button class="modal-save-btn" id="call-save-btn" onclick="saveCall()">Save Call Log ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- WELLNESS MODAL -->
+<div id="modal-wellness" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-wellness')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💗 Wellness Check-In</div>
+    <div class="modal-body">
+      <div class="wellness-row">
+        <div class="wellness-row-header">
+          <span class="wellness-row-label">😊 Mood</span>
+          <span class="wellness-row-val" id="mood-val">3</span>
+        </div>
+        <div class="wellness-btns" id="mood-btns">
+          <button class="well-btn" data-val="1" onclick="setWell('mood',1)">😞</button>
+          <button class="well-btn" data-val="2" onclick="setWell('mood',2)">😕</button>
+          <button class="well-btn active" data-val="3" onclick="setWell('mood',3)">😐</button>
+          <button class="well-btn" data-val="4" onclick="setWell('mood',4)">🙂</button>
+          <button class="well-btn" data-val="5" onclick="setWell('mood',5)">😄</button>
+        </div>
+      </div>
+      <div class="wellness-row">
+        <div class="wellness-row-header">
+          <span class="wellness-row-label">⚡ Energy</span>
+          <span class="wellness-row-val" id="energy-val">3</span>
+        </div>
+        <div class="wellness-btns" id="energy-btns">
+          <button class="well-btn" data-val="1" onclick="setWell('energy',1)">🪫</button>
+          <button class="well-btn" data-val="2" onclick="setWell('energy',2)">😴</button>
+          <button class="well-btn active" data-val="3" onclick="setWell('energy',3)">😑</button>
+          <button class="well-btn" data-val="4" onclick="setWell('energy',4)">⚡</button>
+          <button class="well-btn" data-val="5" onclick="setWell('energy',5)">🔥</button>
+        </div>
+      </div>
+      <div class="wellness-row">
+        <div class="wellness-row-header">
+          <span class="wellness-row-label">😤 Stress</span>
+          <span class="wellness-row-val" id="stress-val">3</span>
+        </div>
+        <div class="wellness-btns" id="stress-btns">
+          <button class="well-btn" data-val="1" onclick="setWell('stress',1)">😌</button>
+          <button class="well-btn" data-val="2" onclick="setWell('stress',2)">🧘</button>
+          <button class="well-btn active" data-val="3" onclick="setWell('stress',3)">😤</button>
+          <button class="well-btn" data-val="4" onclick="setWell('stress',4)">😰</button>
+          <button class="well-btn" data-val="5" onclick="setWell('stress',5)">🤯</button>
+        </div>
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">Optional note</div>
+        <input type="text" class="modal-input" id="wellness-note" placeholder="How are you feeling today?" maxlength="300">
+      </div>
+      <button class="modal-save-btn" id="wellness-save-btn" onclick="saveWellness()">Save Check-In ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- BRAIN GAMES MODAL -->
+<div id="modal-games" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-games')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🎮 Brain Games</div>
+    <div class="modal-body">
+      <div class="games-grid">
+        <div class="game-card-item" onclick="launchGame('Mind Sync', '/simon-says.html')">
+          <div class="game-card-icon g1">🧩</div>
+          <div class="game-card-info">
+            <div class="game-card-name">Mind Sync</div>
+            <div class="game-card-desc">Sequence memory · Attention</div>
+            <div class="game-card-best" id="gc-mind-sync">Not played yet</div>
+          </div>
+          <div class="game-card-arrow">›</div>
+        </div>
+        <div class="game-card-item" onclick="launchGame('Neural Recall', '/picture-scramble.html')">
+          <div class="game-card-icon g2">👁️</div>
+          <div class="game-card-info">
+            <div class="game-card-name">Neural Recall</div>
+            <div class="game-card-desc">Visual memory · Spatial awareness</div>
+            <div class="game-card-best" id="gc-neural-recall">Not played yet</div>
+          </div>
+          <div class="game-card-arrow">›</div>
+        </div>
+        <div class="game-card-item" onclick="launchGame('Cortex Grid', '/sudoku.html')">
+          <div class="game-card-icon g3">🔢</div>
+          <div class="game-card-info">
+            <div class="game-card-name">Cortex Grid</div>
+            <div class="game-card-desc">Logic · Problem-solving</div>
+            <div class="game-card-best" id="gc-cortex-grid">Not played yet</div>
+          </div>
+          <div class="game-card-arrow">›</div>
+        </div>
+        <div class="game-card-item" onclick="launchGame('24 Game', '/game-24.html')">
+          <div class="game-card-icon g4">🔢</div>
+          <div class="game-card-info">
+            <div class="game-card-name">24 Game</div>
+            <div class="game-card-desc">Mental math · Creative thinking</div>
+            <div class="game-card-best" id="gc-twenty-four">Not played yet</div>
+          </div>
+          <div class="game-card-arrow">›</div>
+        </div>
+        <div class="game-card-item" onclick="launchGame('Memory Match', '/memory-match.html')">
+          <div class="game-card-icon g5">🃏</div>
+          <div class="game-card-info">
+            <div class="game-card-name">Memory Match</div>
+            <div class="game-card-desc">Short-term recall · Pattern matching</div>
+            <div class="game-card-best" id="gc-memory-match">Not played yet</div>
+          </div>
+          <div class="game-card-arrow">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVERLAY (iframe) -->
+<div id="game-overlay" class="hidden">
+  <div class="game-overlay-header">
+    <div class="game-back-btn" onclick="closeGame()">‹</div>
+    <div class="game-overlay-title" id="game-overlay-title">Brain Game</div>
+  </div>
+  <iframe id="game-iframe" src="" allow="autoplay; fullscreen" title="Brain Game"></iframe>
+</div>
+
+<!-- AVATAR PICKER MODAL -->
+<div id="modal-avatar" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-avatar')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Choose Your Avatar</div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px" id="avatar-grid">
+      </div>
+      <button class="modal-save-btn" onclick="saveAvatar()">Set Avatar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING SCREEN -->
+<div id="onboarding-overlay" class="hidden">
+  <div class="ob-slides-wrap">
+    <!-- Slide 1: Capture Your Thoughts -->
+    <div class="ob-step" id="ob-step-0">
+      <div class="ob-icon-ring">✏️</div>
+      <div class="ob-slide-title">Capture Your Thoughts</div>
+      <p class="ob-slide-desc">Snap ideas before they vanish. One tap, five categories — thoughts saved in seconds. Your mind deserves a backup.</p>
+    </div>
+    <!-- Slide 2: Train Your Brain -->
+    <div class="ob-step hidden" id="ob-step-1">
+      <div class="ob-icon-ring">🎮</div>
+      <div class="ob-slide-title">Train Your Brain</div>
+      <p class="ob-slide-desc">Five cognitive games — Mind Sync, Neural Recall, Cortex Grid, 24 Game, Memory Match. Play daily to sharpen focus and climb the ranks.</p>
+    </div>
+    <!-- Slide 3: Track Your Progress -->
+    <div class="ob-step hidden" id="ob-step-2">
+      <div class="ob-icon-ring">📊</div>
+      <div class="ob-slide-title">Track Your Progress</div>
+      <p class="ob-slide-desc">Streaks, Brain Score, 13 achievements. Watch your cognitive journey unfold in the Progress tab — day by day, game by game.</p>
+    </div>
+  </div>
+  <!-- Footer: dots + buttons -->
+  <div class="ob-footer">
+    <div class="ob-dots" id="ob-dots">
+      <div class="ob-dot active" onclick="nextObStep(0)"></div>
+      <div class="ob-dot" onclick="nextObStep(1)"></div>
+      <div class="ob-dot" onclick="nextObStep(2)"></div>
+    </div>
+    <div class="ob-btn-row" id="ob-btn-row">
+      <button class="ob-skip-btn" onclick="closeOnboarding()">Skip</button>
+      <button class="ob-next-btn" id="ob-next-btn" onclick="obNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIRST-USE EXPERIENCE (FTUE) WALKTHROUGH OVERLAY -->
+<div id="ftue-overlay" class="hidden">
+  <div id="ftue-backdrop"></div>
+  <div id="ftue-spotlight"></div>
+  <div id="ftue-tooltip" class="arrow-down">
+    <div class="ftue-step-num" id="ftue-step-num">STEP 1 OF 3</div>
+    <div class="ftue-title" id="ftue-title">Capture Your First Thought</div>
+    <div class="ftue-desc" id="ftue-desc">Tap the Quick Capture card to record anything on your mind — ideas, notes, memories, tasks.</div>
+    <div class="ftue-btn-row">
+      <div class="ftue-dots" id="ftue-dots">
+        <div class="ftue-dot active"></div>
+        <div class="ftue-dot"></div>
+        <div class="ftue-dot"></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="ftue-skip" onclick="ftueSkip()">Skip tour</button>
+        <button class="ftue-next" id="ftue-next-btn" onclick="ftueNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT THOUGHT MODAL -->
+<div id="modal-edit-thought" class="modal-overlay hidden" onclick="closeOnOutside(event, 'modal-edit-thought')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Thought</div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <textarea class="modal-input" id="edit-content" rows="5"></textarea>
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">Category</div>
+        <div class="category-grid" id="edit-cat-grid">
+          <button class="cat-btn" data-cat="idea" onclick="selectEditCat(this)">💡 Idea</button>
+          <button class="cat-btn" data-cat="note" onclick="selectEditCat(this)">📝 Note</button>
+          <button class="cat-btn" data-cat="memory" onclick="selectEditCat(this)">🧠 Memory</button>
+          <button class="cat-btn" data-cat="task" onclick="selectEditCat(this)">⚡ Task</button>
+          <button class="cat-btn" data-cat="random" onclick="selectEditCat(this)">💭 Random</button>
+        </div>
+      </div>
+      <button class="modal-save-btn" id="edit-save-btn" onclick="saveEditThought()">Update Thought ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let currentUser = null;
+let authToken = null;
+let currentTab = 'home';
+let allThoughts = [];
+let currentFilter = 'all';
+let captureCategory = 'note';
+let editThoughtId = null;
+let editCategory = 'note';
+let wellnessState = { mood: 3, energy: 3, stress: 3 };
+let boostText = '';
+let gameStats = {};
+let selectedAvatar = null;
+let currentBrainScore = null;
+
+const AVATARS = ['🧠','🦁','🐺','🦊','🐯','🦅','🌙','⚡','🔥','💎','🎯','🚀','🌊','🌿','🎭','🤖','👾','🦋','🌟','🎮','🧬','🔮','🎨','🦄'];
+const TIER_EMOJIS = { 'Beginner': '🌱', 'Explorer': '🌿', 'Intermediate': '⚡', 'Advanced': '🔥', 'Master': '💎' };
+
+// ============================================
+// INIT
+// ============================================
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+
+  // Build avatar grid
+  const avatarGrid = document.getElementById('avatar-grid');
+  if (avatarGrid) {
+    avatarGrid.innerHTML = AVATARS.map(a => `<div class="avatar-option" onclick="selectAvatarOption(this, '${a}')">${a}</div>`).join('');
+  }
+
+  // Show splash for 2.5 seconds, then proceed
+  setTimeout(() => {
+    hideSplash(() => {
+      const hasSeenOnboarding = localStorage.getItem('mt_onboarded');
+      if (!hasSeenOnboarding) {
+        showOnboarding();
+      } else {
+        proceedToAuth();
+      }
+    });
+  }, 2500);
+});
+
+function hideSplash(callback) {
+  const splash = document.getElementById('loading-screen');
+  splash.style.opacity = '0';
+  splash.style.transition = 'opacity 0.45s ease';
+  setTimeout(() => {
+    splash.classList.add('hidden');
+    splash.style.opacity = '';
+    splash.style.transition = '';
+    if (callback) callback();
+  }, 450);
+}
+
+async function proceedToAuth() {
+  authToken = localStorage.getItem('mt_token');
+  const savedUser = localStorage.getItem('mt_user');
+  if (authToken && savedUser) {
+    try {
+      currentUser = JSON.parse(savedUser);
+      await verifyAndLoad();
+    } catch (e) {
+      showAuth();
+    }
+  } else {
+    showAuth();
+  }
+}
+
+async function verifyAndLoad() {
+  try {
+    const resp = await api('GET', '/api/mt/me');
+    if (resp.user) {
+      currentUser = resp.user;
+      localStorage.setItem('mt_user', JSON.stringify(currentUser));
+      showApp();
+    } else {
+      showAuth();
+    }
+  } catch (e) {
+    showAuth();
+  }
+}
+
+function showAuth() {
+  document.getElementById('loading-screen').classList.add('hidden');
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('loading-screen').classList.add('hidden');
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  initApp();
+}
+
+async function initApp() {
+  // Set user display
+  const username = currentUser?.username || 'Explorer';
+  document.getElementById('home-username').textContent = username;
+  document.getElementById('profile-name').textContent = username;
+  document.getElementById('profile-email').textContent = currentUser?.email || (currentUser?.is_guest ? 'Guest Mode' : '');
+
+  // Populate settings fields
+  if (document.getElementById('settings-username'))
+    document.getElementById('settings-username').value = username;
+  if (document.getElementById('settings-birthday') && currentUser?.birthday)
+    document.getElementById('settings-birthday').value = currentUser.birthday?.substring(0, 10) || '';
+  if (document.getElementById('settings-bio') && currentUser?.bio)
+    document.getElementById('settings-bio').value = currentUser.bio || '';
+
+  // Load saved avatar
+  const savedAvatar = localStorage.getItem('mt_avatar_' + (currentUser?.id || 'guest'));
+  if (savedAvatar) {
+    document.getElementById('profile-avatar').textContent = savedAvatar;
+  }
+
+  // Hide guest upgrade card if logged in
+  if (!currentUser?.is_guest) {
+    const gc = document.getElementById('guest-upgrade-card');
+    if (gc) gc.style.display = 'none';
+  }
+  // Pro upgrade card stays hidden (display:none default) until the
+  // user hits the daily capture limit. The showUpgradeModal() flow
+  // handles that gate — showing pricing unconditionally to all free
+  // users was the paywall-visibility bug (Task #1379582 / bug #2).
+
+  // Load data async
+  loadStats();
+  loadDailyContent();
+  loadThoughts();
+  loadGameStats();
+
+}
+
+// ============================================
+// API HELPER
+// ============================================
+async function api(method, url, body = null) {
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const resp = await fetch(url, opts);
+  // Parse JSON safely — non-JSON responses (proxy errors, timeouts) must not mask the HTTP status
+  let data;
+  try { data = await resp.json(); } catch (e) { data = {}; }
+  if (!resp.ok) {
+    const err = new Error(data.error || `Request failed (${resp.status})`);
+    err.status = resp.status;
+    err.code = data.code || null;
+    throw err;
+  }
+  return data;
+}
+
+// ============================================
+// AUTH
+// ============================================
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+  });
+  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+
+  if (!email || !password) { showAuthError(errEl, 'Email and password required'); return; }
+  errEl.classList.add('hidden');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const data = await api('POST', '/api/mt/login', { email, password });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('mt_token', authToken);
+    localStorage.setItem('mt_user', JSON.stringify(currentUser));
+    showApp();
+  } catch (e) {
+    showAuthError(errEl, e.message);
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function doRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const errEl = document.getElementById('reg-error');
+  const btn = document.getElementById('reg-btn');
+
+  if (!email || !password) { showAuthError(errEl, 'Email and password required'); return; }
+  errEl.classList.add('hidden');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const data = await api('POST', '/api/mt/register', { email, password, username: username || 'Explorer' });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('mt_token', authToken);
+    localStorage.setItem('mt_user', JSON.stringify(currentUser));
+    showApp();
+    showToast('Welcome to MemTool! 🧠');
+  } catch (e) {
+    showAuthError(errEl, e.message);
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function doGuest() {
+  try {
+    const data = await api('POST', '/api/mt/guest');
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('mt_token', authToken);
+    localStorage.setItem('mt_user', JSON.stringify(currentUser));
+    showApp();
+    showToast('Welcome! Create an account to save your data. 👻');
+  } catch (e) {
+    showToast('Could not create guest session. Try again.');
+  }
+}
+
+function doLogout(keepAuth = false) {
+  authToken = null; currentUser = null; allThoughts = [];
+  localStorage.removeItem('mt_token');
+  localStorage.removeItem('mt_user');
+  if (!keepAuth) showAuth();
+  else showAuth();
+}
+
+function showAuthError(el, msg) {
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// ============================================
+// TAB NAVIGATION
+// ============================================
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab)?.classList.add('active');
+  document.querySelector(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
+
+  if (tab === 'archive') loadThoughts();
+  if (tab === 'progress') { loadStats(); loadBrainScore(); loadAIRecommendations(); loadEnhancedProgress(); }
+  if (tab === 'settings') {
+    document.getElementById('settings-username').value = currentUser?.username || '';
+    document.getElementById('settings-birthday').value = currentUser?.birthday?.substring(0, 10) || '';
+    document.getElementById('settings-bio').value = currentUser?.bio || '';
+    loadBrainScoreForSettings();
+  }
+}
+
+// ============================================
+// DATA LOADING
+// ============================================
+async function loadStats() {
+  try {
+    const data = await api('GET', '/api/mt/stats');
+    document.getElementById('streak-val').textContent = data.streak;
+    document.getElementById('today-val').textContent = data.today_count;
+    // Legacy prog cards (may not exist if replaced)
+    const ps = document.getElementById('prog-streak');
+    const pt = document.getElementById('prog-total');
+    const py = document.getElementById('prog-today');
+    if (ps) ps.textContent = data.streak;
+    if (pt) pt.textContent = data.total_thoughts;
+    if (py) py.textContent = data.today_count;
+    // New 2×2 stat cards
+    const scMem = document.getElementById('sc-total-memories');
+    const scStr = document.getElementById('sc-current-streak');
+    if (scMem) scMem.textContent = data.total_thoughts;
+    if (scStr) scStr.textContent = data.streak;
+    // Daily capture progress badge on Quick Capture card
+    const badge = document.getElementById('daily-capture-badge');
+    if (badge && !currentUser?.is_pro) {
+      const limit = currentUser?.is_pro ? '∞' : '10';
+      badge.textContent = `${data.today_count} of ${limit} today`;
+      badge.style.display = 'block';
+    }
+    // First-capture nudge — show if user has never captured anything
+    maybeShowFirstCaptureNudge(data.total_thoughts);
+    // FTUE walkthrough — show once for new users with 0 captures
+    maybeShowFTUE(data.total_thoughts);
+  } catch (e) {
+    document.getElementById('streak-val').textContent = '0';
+    document.getElementById('today-val').textContent = '0';
+  }
+}
+
+function maybeShowFirstCaptureNudge(totalThoughts) {
+  const card = document.querySelector('.quick-capture-card');
+  if (!card) return;
+  // Remove any existing nudge first
+  const existing = card.querySelector('.first-capture-nudge');
+  if (existing) existing.remove();
+  const existingLabel = card.querySelector('.first-capture-nudge-label');
+  if (existingLabel) existingLabel.remove();
+  if (totalThoughts === 0 || totalThoughts === '0') {
+    // Inject pulsing border + label
+    const nudge = document.createElement('div');
+    nudge.className = 'first-capture-nudge';
+    const label = document.createElement('div');
+    label.className = 'first-capture-nudge-label';
+    label.textContent = '👆 Tap here to capture your first thought!';
+    card.appendChild(nudge);
+    card.appendChild(label);
+  }
+}
+
+async function loadDailyContent() {
+  // Daily Boost
+  try {
+    const data = await api('GET', '/api/mt/daily-boost');
+    boostText = data.quote;
+    document.getElementById('daily-boost-text').textContent = data.quote;
+  } catch (e) {
+    document.getElementById('daily-boost-text').textContent = 'Your mind is your most powerful asset.';
+  }
+
+  // Brain Fact
+  try {
+    const data = await api('GET', '/api/mt/brain-fact');
+    document.getElementById('brain-fact-text').textContent = data.fact;
+  } catch (e) {
+    document.getElementById('brain-fact-text').textContent = 'Your brain generates about 70,000 thoughts per day.';
+  }
+
+  // AI Insight (async, can be slow)
+  loadAIInsight();
+}
+
+async function loadAIInsight() {
+  try {
+    const data = await api('GET', '/api/mt/ai-insight');
+    document.getElementById('ai-insight-text').textContent = data.insight;
+  } catch (e) {
+    document.getElementById('ai-insight-text').textContent = 'Keep capturing thoughts daily — consistency compounds.';
+  }
+}
+
+async function loadThoughts() {
+  try {
+    const search = document.getElementById('archive-search')?.value?.trim() || '';
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (currentFilter === 'starred') params.set('starred', 'true');
+    else if (currentFilter !== 'all') params.set('category', currentFilter);
+
+    const data = await api('GET', '/api/mt/thoughts?' + params.toString());
+    allThoughts = data.thoughts || [];
+    renderThoughts(allThoughts);
+  } catch (e) {
+    document.getElementById('thoughts-list').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>Could not load thoughts</h3><p>Check connection and try again</p></div>`;
+  }
+}
+
+async function loadGameStats() {
+  try {
+    const data = await api('GET', '/api/mt/game-stats');
+    gameStats = {};
+    (data.game_stats || []).forEach(g => { gameStats[g.game] = g; });
+    updateGameStatDisplay();
+  } catch (e) {}
+}
+
+function updateGameStatDisplay() {
+  const gameMap = {
+    'mind-sync': { stat: 'gs-mind-sync', card: 'gc-mind-sync' },
+    'neural-recall': { stat: 'gs-neural-recall', card: 'gc-neural-recall' },
+    'cortex-grid': { stat: 'gs-cortex-grid', card: 'gc-cortex-grid' },
+    'twenty-four': { stat: 'gs-twenty-four', card: 'gc-twenty-four' },
+    'memory-match': { stat: 'gs-memory-match', card: 'gc-memory-match' },
+  };
+  Object.entries(gameMap).forEach(([key, ids]) => {
+    const g = gameStats[key];
+    const statEl = document.getElementById(ids.stat);
+    const cardEl = document.getElementById(ids.card);
+    if (g) {
+      if (statEl) statEl.textContent = g.best_score;
+      const lastPlayed = g.last_played ? timeAgo(g.last_played) : null;
+      if (cardEl) cardEl.textContent = `Best: ${g.best_score} · ${lastPlayed ? 'Last: ' + lastPlayed : 'Played ' + g.times_played + 'x'}`;
+    }
+  });
+}
+
+// ============================================
+// ENHANCED PROGRESS — FULL STATS + RANKINGS
+// ============================================
+
+// State for leaderboard
+let lbGame = 'all';
+let lbPeriod = 'daily';
+let statsPeriod = 'daily';
+let fullGameStatsCache = null;
+let lbChatPolling = null;
+
+const GAME_META = {
+  'twenty-four':     { name: '24 Game',         icon: '🔢', sub: 'Mental math' },
+  'memory-match':    { name: 'Memory Match',     icon: '🃏', sub: 'Short-term recall' },
+  'picture-scramble':{ name: 'Neural Recall',    icon: '👁️', sub: 'Visual memory' },
+  'simon-says':      { name: 'Mind Sync',        icon: '🧩', sub: 'Sequence memory' },
+  'sudoku':          { name: 'Cortex Grid',      icon: '🔢', sub: 'Logic & numbers' },
+  'mind-sync':       { name: 'Mind Sync',        icon: '🧩', sub: 'Pattern memory' },
+  'neural-recall':   { name: 'Neural Recall',    icon: '👁️', sub: 'Visual memory' },
+  'cortex-grid':     { name: 'Cortex Grid',      icon: '⚡', sub: 'Problem-solving' },
+};
+
+const RANK_TIERS = [
+  { name:'Bronze',   min:0,     max:499,   emoji:'🥉', color:'#CD7F32', barGrad:'linear-gradient(90deg,#8B5E3C,#CD7F32)' },
+  { name:'Silver',   min:500,   max:1499,  emoji:'🥈', color:'#C0C0C0', barGrad:'linear-gradient(90deg,#9E9E9E,#E0E0E0)' },
+  { name:'Gold',     min:1500,  max:3499,  emoji:'🥇', color:'#FFD700', barGrad:'linear-gradient(90deg,#FFB300,#FFD700)' },
+  { name:'Platinum', min:3500,  max:7499,  emoji:'💎', color:'#E5E4E2', barGrad:'linear-gradient(90deg,#B0BEC5,#ECEFF1)' },
+  { name:'Diamond',  min:7500,  max:14999, emoji:'💠', color:'#00E5FF', barGrad:'linear-gradient(90deg,#00B8D4,#00E5FF)' },
+  { name:'Master',   min:15000, max:Infinity, emoji:'👑', color:'#7B61FF', barGrad:'linear-gradient(90deg,#7B61FF,#00E5FF)' },
+];
+
+function getRankTier(totalScore) {
+  return RANK_TIERS.find(t => totalScore >= t.min && totalScore <= t.max) || RANK_TIERS[0];
+}
+
+async function loadEnhancedProgress() {
+  try {
+    const data = await api('GET', '/api/mt/full-game-stats');
+    fullGameStatsCache = data;
+    renderGameRankCard(data.rank);
+    renderWeeklyChart(data);
+    renderEnhancedGameStats(data, statsPeriod);
+    // Update top cards
+    const scLongest = document.getElementById('sc-longest-streak');
+    const scGames = document.getElementById('sc-games-played');
+    const maxStreak = Math.max(...(data.game_stats||[]).map(s=>parseInt(s.best_streak)||0), 0);
+    if (scLongest) scLongest.textContent = maxStreak;
+    if (scGames) scGames.textContent = data.combined?.total_sessions || 0;
+  } catch (e) {
+    const el = document.getElementById('enhanced-game-stats');
+    if (el) el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">Play some games to see stats here!</div>`;
+  }
+  // Load achievements separately
+  try {
+    const ach = await api('GET', '/api/mt/achievements');
+    renderAchievements(ach);
+  } catch(e) {}
+}
+
+function renderGameRankCard(rank) {
+  if (!rank) return;
+  const tier = getRankTier(rank.total_score || 0);
+  const nameEl = document.getElementById('gr-tier-name');
+  const emojiEl = document.getElementById('gr-emoji');
+  const scoreEl = document.getElementById('gr-score-sub');
+  const barEl = document.getElementById('gr-bar');
+  const nextEl = document.getElementById('gr-next-text');
+  if (nameEl) nameEl.textContent = rank.name || tier.name;
+  if (emojiEl) emojiEl.textContent = rank.emoji || tier.emoji;
+  if (scoreEl) scoreEl.textContent = `${(rank.total_score||0).toLocaleString()} pts`;
+  if (barEl) {
+    barEl.style.width = Math.min(100, rank.progress || 0) + '%';
+    barEl.style.background = tier.barGrad;
+  }
+  if (nextEl) {
+    if (rank.next_tier) {
+      nextEl.textContent = `${(rank.points_to_next||0).toLocaleString()} pts to ${rank.next_tier}`;
+    } else {
+      nextEl.textContent = '🏆 Maximum rank achieved!';
+    }
+  }
+}
+
+function renderWeeklyChart(data) {
+  const barsEl = document.getElementById('weekly-bars');
+  const labelsEl = document.getElementById('weekly-bar-labels');
+  if (!barsEl) return;
+
+  // Build last 7 days
+  const days = [];
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push({ date: d.toISOString().split('T')[0], label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()] });
+  }
+
+  // Get session counts per day from period_stats.weekly sessions
+  const weeklySessions = (data.period_stats?.weekly || []);
+  const sessionsByDay = {};
+  // We need day-level data — approximate from total weekly count divided evenly as sparkline
+  const totalWeekly = weeklySessions.reduce((s,r)=>s+parseInt(r.games_played||0),0);
+  // Without per-day breakdown, use a placeholder visual
+  // Show a rising bar based on total_sessions
+  const maxBar = Math.max(totalWeekly, 1);
+  let bars = days.map((_,i) => {
+    const frac = i === 6 ? 1 : (0.2 + Math.random() * 0.5);
+    return 0; // default empty
+  });
+  // If we have session data, show the week total in the last bar
+  if (totalWeekly > 0) bars[6] = totalWeekly;
+
+  // Render
+  barsEl.innerHTML = days.map((d,i) => {
+    const h = bars[i] > 0 ? Math.max(12, Math.round((bars[i]/maxBar)*70)) : 4;
+    const hasData = bars[i] > 0;
+    return `<div class="weekly-bar-col">
+      <div class="weekly-bar ${hasData?'has-data':''}" style="height:${h}px"></div>
+    </div>`;
+  }).join('');
+
+  if (labelsEl) {
+    labelsEl.style.display = 'flex';
+    labelsEl.style.gap = '6px';
+    labelsEl.innerHTML = days.map(d =>
+      `<div style="flex:1;text-align:center;font-size:9px;color:var(--text-muted)">${d.label}</div>`
+    ).join('');
+  }
+}
+
+function renderEnhancedGameStats(data, period) {
+  const el = document.getElementById('enhanced-game-stats');
+  if (!el) return;
+
+  const periodData = data.period_stats?.[period] || [];
+  const periodMap = {};
+  periodData.forEach(r => { periodMap[r.game] = r; });
+  const allStats = data.game_stats || [];
+
+  const DISPLAY_GAMES = ['twenty-four','memory-match','picture-scramble','simon-says','sudoku','mind-sync','neural-recall','cortex-grid'];
+
+  let rows = '';
+  for (const game of DISPLAY_GAMES) {
+    const meta = GAME_META[game] || { name: game, icon: '🎮', sub: '' };
+    const pStats = periodMap[game];
+    const allS = allStats.find(s=>s.game===game);
+    if (!pStats && !allS) continue; // skip games never played
+
+    const best = parseInt(pStats?.best_score||allS?.best_score||0);
+    const played = parseInt(pStats?.games_played||0);
+    const wins = parseInt(pStats?.wins||0);
+    const allWins = parseInt(allS?.wins||0);
+    const allLosses = parseInt(allS?.losses||0);
+    const allStreak = parseInt(allS?.best_streak||0);
+
+    rows += `<div class="game-stat-row">
+      <div class="gsr-icon">${meta.icon}</div>
+      <div class="gsr-info">
+        <div class="gsr-name">${meta.name}</div>
+        <div class="gsr-sub">${meta.sub} · ${allWins}W ${allLosses}L${allStreak>0?' · '+allStreak+' best streak':''}</div>
+      </div>
+      <div class="gsr-stats">
+        <div class="gsr-stat">
+          <div class="gsr-stat-val">${best}</div>
+          <div class="gsr-stat-label">Best</div>
+        </div>
+        ${played>0?`<div class="gsr-stat">
+          <div class="gsr-stat-val" style="color:var(--teal)">${played}</div>
+          <div class="gsr-stat-label">${period==='alltime'?'Total':'Played'}</div>
+        </div>`:''}
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = rows || `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">No games played ${period==='daily'?'today':period==='weekly'?'this week':'this period'}. Start playing!</div>`;
+}
+
+function selectStatsPeriod(btn, period) {
+  document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  statsPeriod = period;
+  if (fullGameStatsCache) renderEnhancedGameStats(fullGameStatsCache, period);
+}
+
+function renderAchievements(data) {
+  const grid = document.getElementById('achievements-grid');
+  if (!grid || !data.achievements) return;
+  grid.innerHTML = data.achievements.map(a => `
+    <div class="achievement-badge ${a.unlocked?'unlocked':'locked'}">
+      <div class="ach-emoji">${a.emoji}</div>
+      <div class="ach-name">${a.name}</div>
+      <div class="ach-desc">${a.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// LEADERBOARD
+// ============================================
+
+function openLeaderboard() {
+  document.getElementById('lb-overlay').classList.remove('hidden');
+  loadLeaderboard();
+  loadLbChat();
+  if (lbChatPolling) clearInterval(lbChatPolling);
+  lbChatPolling = setInterval(loadLbChat, 15000);
+}
+
+function closeLeaderboard() {
+  document.getElementById('lb-overlay').classList.add('hidden');
+  if (lbChatPolling) { clearInterval(lbChatPolling); lbChatPolling = null; }
+}
+
+function selectLbGame(btn, game) {
+  document.querySelectorAll('.lb-game-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  lbGame = game;
+  loadLeaderboard();
+  loadLbChat();
+}
+
+function selectLbPeriod(btn, period) {
+  document.querySelectorAll('.lb-period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  lbPeriod = period;
+  loadLeaderboard();
+}
+
+async function loadLeaderboard() {
+  const wrap = document.getElementById('lb-list-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="lb-loading">Loading...</div>';
+
+  try {
+    const game = lbGame === 'all' ? '' : lbGame;
+    const url = `/api/mt/leaderboard?period=${lbPeriod}${game?'&game='+game:''}`;
+    const data = await api('GET', url);
+    const lb = data.leaderboard || [];
+
+    // My rank
+    let myRankUrl = `/api/mt/my-rank?period=${lbPeriod}${game?'&game='+game:''}`;
+    let myRank = null;
+    try { myRank = await api('GET', myRankUrl); } catch(e) {}
+
+    const myId = currentUser?.id;
+    const myRankDisplay = document.getElementById('lb-my-rank-display');
+    if (myRankDisplay && myRank) {
+      myRankDisplay.textContent = `You: #${myRank.rank} · ${myRank.tier?.name||''}`;
+    }
+
+    if (!lb.length) {
+      // Show empty + your position if any
+      let html = `<div class="lb-empty">No scores yet for this period.<br>Be the first! 🚀</div>`;
+      if (myRank && myRank.best_score > 0) {
+        html += `<div class="lb-your-pos">
+          <div class="lb-rank-num">#${myRank.rank}</div>
+          <div class="lb-name">${escHtml(currentUser?.username||'You')} <span class="lb-me-badge">YOU</span></div>
+          <div class="lb-score-block"><div class="lb-score-val">${myRank.best_score}</div><div class="lb-score-sub">best score</div></div>
+        </div>`;
+      }
+      wrap.innerHTML = html;
+      return;
+    }
+
+    let html = '<div class="lb-list">';
+    const myInTop = lb.some(e => e.user_id === myId);
+
+    lb.forEach(entry => {
+      const isMe = entry.user_id === myId;
+      const rankClass = entry.rank === 1 ? 'top1' : entry.rank === 2 ? 'top2' : entry.rank === 3 ? 'top3' : '';
+      const rankDisplay = entry.rank <= 3 ? ['🥇','🥈','🥉'][entry.rank-1] : `#${entry.rank}`;
+      html += `<div class="lb-entry ${isMe?'is-me':''}">
+        <div class="lb-rank-num ${rankClass}">${rankDisplay}</div>
+        <div class="lb-name">${escHtml(entry.username||'Player')}${isMe?'<span class="lb-me-badge">YOU</span>':''}</div>
+        <div class="lb-score-block">
+          <div class="lb-score-val">${entry.best_score}</div>
+          <div class="lb-score-sub">${entry.games_played} played</div>
+        </div>
+      </div>`;
+    });
+
+    // Show my position if not in top 100
+    if (!myInTop && myRank && myRank.best_score > 0) {
+      html += `<div style="text-align:center;padding:8px;color:var(--text-muted);font-size:12px">· · ·</div>`;
+      html += `<div class="lb-entry is-me">
+        <div class="lb-rank-num">#${myRank.rank}</div>
+        <div class="lb-name">${escHtml(currentUser?.username||'You')} <span class="lb-me-badge">YOU</span></div>
+        <div class="lb-score-block"><div class="lb-score-val">${myRank.best_score}</div><div class="lb-score-sub">best score</div></div>
+      </div>`;
+    }
+
+    html += '</div>';
+    wrap.innerHTML = html;
+  } catch (e) {
+    wrap.innerHTML = '<div class="lb-empty">Could not load leaderboard.<br>Check connection.</div>';
+  }
+}
+
+// ============================================
+// LEADERBOARD CHAT
+// ============================================
+
+async function loadLbChat() {
+  try {
+    const channel = lbGame === 'all' ? 'global' : `game-${lbGame}`;
+    const data = await api('GET', `/api/mt/leaderboard-chat?channel=${channel}`);
+    const msgs = data.messages || [];
+    const el = document.getElementById('lb-chat-messages');
+    if (!el) return;
+    if (!msgs.length) {
+      el.innerHTML = `<div style="text-align:center;padding:8px;color:var(--text-muted);font-size:12px">No messages yet. Say hi! 👋</div>`;
+      return;
+    }
+    el.innerHTML = msgs.map(m => `
+      <div class="lb-chat-msg">
+        <span class="lb-chat-msg-user">${escHtml(m.username)}</span>
+        <span class="lb-chat-msg-text">${escHtml(m.message)}</span>
+      </div>
+    `).join('');
+    el.scrollTop = el.scrollHeight;
+  } catch(e) {}
+}
+
+async function sendLbChat() {
+  const input = document.getElementById('lb-chat-input');
+  if (!input) return;
+  const message = input.value.trim();
+  if (!message) return;
+  if (!currentUser || currentUser.is_guest) {
+    showToast('Create an account to chat!');
+    return;
+  }
+  input.value = '';
+  try {
+    const channel = lbGame === 'all' ? 'global' : `game-${lbGame}`;
+    await api('POST', '/api/mt/leaderboard-chat', { message, channel });
+    await loadLbChat();
+  } catch(e) {
+    showToast('Could not send message.');
+    input.value = message;
+  }
+}
+
+// ============================================
+// GAME SESSION RECORDING (called by games)
+// ============================================
+async function recordGameSession(game, score, result, time_ms, moves, difficulty) {
+  try {
+    const token = localStorage.getItem('mt_token');
+    if (!token) return;
+    await fetch('/api/mt/game-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ game, score, result, time_ms, moves, difficulty })
+    });
+  } catch(e) {}
+}
+
+// ============================================
+// BRAIN SCORE
+// ============================================
+async function loadBrainScore() {
+  try {
+    const data = await api('GET', '/api/mt/brain-score');
+    currentBrainScore = data;
+    document.getElementById('brain-score-num').textContent = data.brain_score;
+    document.getElementById('brain-tier').textContent = data.tier;
+    document.getElementById('brain-score-bar').style.width = data.brain_score + '%';
+    if (data.breakdown) {
+      document.getElementById('bs-streak').textContent = data.breakdown.streak;
+      document.getElementById('bs-captures').textContent = data.breakdown.captures;
+      document.getElementById('bs-wellness').textContent = data.breakdown.wellness;
+      document.getElementById('bs-games').textContent = data.breakdown.games;
+    }
+  } catch (e) {}
+}
+
+async function loadBrainScoreForSettings() {
+  try {
+    const data = currentBrainScore || await api('GET', '/api/mt/brain-score');
+    currentBrainScore = data;
+    const tierEl = document.getElementById('rank-tier-label');
+    const scoreEl = document.getElementById('rank-score-label');
+    const badgeEl = document.getElementById('rank-tier-badge');
+    const displayEl = document.getElementById('rank-score-display');
+    const barEl = document.getElementById('rank-progress-bar');
+    const emojiEl = document.getElementById('rank-emoji');
+    if (tierEl) tierEl.textContent = data.tier;
+    if (scoreEl) scoreEl.textContent = data.brain_score;
+    if (badgeEl) badgeEl.textContent = data.tier;
+    if (displayEl) displayEl.textContent = `Score: ${data.brain_score}/100`;
+    if (barEl) barEl.style.width = data.brain_score + '%';
+    if (emojiEl) emojiEl.textContent = TIER_EMOJIS[data.tier] || '🌱';
+    if (data.breakdown) {
+      const s = document.getElementById('rs-streak');
+      const c = document.getElementById('rs-captures');
+      const w = document.getElementById('rs-wellness');
+      const g = document.getElementById('rs-games');
+      if (s) s.textContent = data.breakdown.streak;
+      if (c) c.textContent = data.breakdown.captures;
+      if (w) w.textContent = data.breakdown.wellness;
+      if (g) g.textContent = data.breakdown.games;
+    }
+  } catch (e) {}
+}
+
+// ============================================
+// AI RECOMMENDATIONS
+// ============================================
+async function loadAIRecommendations() {
+  const card = document.getElementById('ai-recs-card');
+  if (!card) return;
+  try {
+    const data = await api('GET', '/api/mt/ai-recommendations');
+    card.innerHTML = `
+      <div class="ai-rec-item">
+        <div class="ai-rec-icon game">🎮</div>
+        <div class="ai-rec-content">
+          <div class="ai-rec-label game">Game Pick</div>
+          <div class="ai-rec-text">${escHtml(data.game_rec || '')}</div>
+        </div>
+      </div>
+      <div class="ai-rec-item">
+        <div class="ai-rec-icon insight">🧠</div>
+        <div class="ai-rec-content">
+          <div class="ai-rec-label insight">Cognitive Insight</div>
+          <div class="ai-rec-text">${escHtml(data.cognitive_insight || '')}</div>
+        </div>
+      </div>
+      <div class="ai-rec-item">
+        <div class="ai-rec-icon tip">💡</div>
+        <div class="ai-rec-content">
+          <div class="ai-rec-label tip">This Week</div>
+          <div class="ai-rec-text">${escHtml(data.action_tip || '')}</div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    card.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Play some brain games and capture thoughts to unlock AI recommendations.</div>`;
+  }
+}
+
+function renderThoughts(thoughts) {
+  const container = document.getElementById('thoughts-list');
+  if (!thoughts.length) {
+    // Distinguish truly empty (no captures ever) from filtered-empty
+    const hasActiveFilter = currentFilter !== 'all' || (document.getElementById('archive-search')?.value?.trim().length > 0);
+    if (!hasActiveFilter) {
+      // First-time empty state — actionable CTA
+      container.innerHTML = `
+        <div class="empty-state" style="padding:56px 24px 40px">
+          <div class="empty-icon" style="font-size:64px;margin-bottom:20px;opacity:1;animation:floatY 3s ease-in-out infinite">🧠</div>
+          <h3 style="font-size:20px;font-weight:800;color:var(--text-primary);margin-bottom:10px">Your first thought is waiting</h3>
+          <p style="font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:28px">You have up to 10 free captures per day.<br>What's on your mind right now?</p>
+          <button onclick="switchTab('home');setTimeout(openCapture,200)" style="padding:14px 32px;background:linear-gradient(135deg,var(--purple),var(--cyan-dim));border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(123,97,255,0.4);font-family:inherit">+ Capture a Thought</button>
+          <div style="margin-top:16px;font-size:12px;color:var(--text-muted)">Free plan · 10 thoughts/day</div>
+        </div>`;
+    } else {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>No matches</h3><p>Try a different search or filter</p></div>`;
+    }
+    return;
+  }
+  container.innerHTML = thoughts.map(t => `
+    <div class="thought-card" id="thought-${t.id}">
+      <div class="thought-card-top">
+        <span class="thought-cat ${t.category}">${catEmoji(t.category)} ${t.category}</span>
+        <span class="thought-time">${timeAgo(t.created_at)}</span>
+      </div>
+      <div class="thought-content">${escHtml(t.content)}</div>
+      <div class="thought-actions">
+        <button class="thought-action-btn ${t.is_starred ? 'star-active' : ''}" onclick="toggleStar(${t.id}, ${t.is_starred})">${t.is_starred ? '⭐' : '☆'} Star</button>
+        <button class="thought-action-btn" onclick="openEditThought(${t.id})">✏️ Edit</button>
+        <button class="thought-action-btn del" onclick="deleteThought(${t.id})">🗑️ Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// QUICK CAPTURE
+// ============================================
+function openCapture() {
+  document.getElementById('capture-content').value = '';
+  captureCategory = 'note';
+  document.querySelectorAll('#modal-capture .cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === 'note');
+  });
+  document.getElementById('modal-capture').classList.remove('hidden');
+  setTimeout(() => document.getElementById('capture-content').focus(), 300);
+}
+
+function selectCat(btn) {
+  captureCategory = btn.dataset.cat;
+  btn.closest('.category-grid').querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function saveThought() {
+  const content = document.getElementById('capture-content').value.trim();
+  if (!content) { showToast('Write something first!'); return; }
+  const btn = document.getElementById('capture-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  // Detect first capture before save
+  const todayValEl = document.getElementById('today-val');
+  const streakValEl = document.getElementById('streak-val');
+  const isFirstEver = document.querySelector('.quick-capture-card .first-capture-nudge') !== null;
+  try {
+    await api('POST', '/api/mt/thoughts', { content, category: captureCategory });
+    document.getElementById('modal-capture').classList.add('hidden');
+    if (isFirstEver) {
+      // Remove nudge immediately
+      const card = document.querySelector('.quick-capture-card');
+      if (card) {
+        const n = card.querySelector('.first-capture-nudge');
+        const l = card.querySelector('.first-capture-nudge-label');
+        if (n) n.remove();
+        if (l) l.remove();
+      }
+      showToast('🧠 First thought captured! Free plan: up to 10/day.');
+      // Fire first_capture_post_ftue if user completed the FTUE walkthrough before capturing.
+      // one-time flag so we only fire once even if user makes multiple captures.
+      if (!localStorage.getItem('mt_capture_post_ftue_fired')) {
+        const ftueDone = localStorage.getItem('mt_ftue_done');
+        if (ftueDone) {
+          trackEvent('first_capture_post_ftue', { source: 'ftue_completed' });
+          localStorage.setItem('mt_capture_post_ftue_fired', '1');
+        }
+      }
+    } else {
+      showToast('Thought captured! ✓');
+    }
+    loadStats();
+    if (currentTab === 'archive') loadThoughts();
+  } catch (e) {
+    if (e.code === 'FREE_TIER_CAPTURE_LIMIT') {
+      document.getElementById('modal-capture').classList.add('hidden');
+      showUpgradeModal();
+    } else {
+      showToast('Save failed. Try again.');
+    }
+  }
+  btn.disabled = false; btn.textContent = 'Save Thought ✓';
+}
+
+// ============================================
+// LOG A CALL
+// ============================================
+function openCallLog() {
+  document.getElementById('call-contact').value = '';
+  document.getElementById('call-points').value = '';
+  document.getElementById('modal-call').classList.remove('hidden');
+  setTimeout(() => document.getElementById('call-contact').focus(), 300);
+}
+
+async function saveCall() {
+  const contact_name = document.getElementById('call-contact').value.trim();
+  const key_points = document.getElementById('call-points').value.trim();
+  if (!key_points) { showToast('Add key points from the call!'); return; }
+  const btn = document.getElementById('call-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    await api('POST', '/api/mt/calls', { contact_name, key_points });
+    document.getElementById('modal-call').classList.add('hidden');
+    showToast('Call logged! 📞');
+    loadStats();
+  } catch (e) {
+    showToast('Save failed. Try again.');
+  }
+  btn.disabled = false; btn.textContent = 'Save Call Log ✓';
+}
+
+// ============================================
+// WELLNESS
+// ============================================
+function openWellness() {
+  wellnessState = { mood: 3, energy: 3, stress: 3 };
+  ['mood', 'energy', 'stress'].forEach(type => {
+    document.getElementById(type + '-val').textContent = 3;
+    document.querySelectorAll(`#${type}-btns .well-btn`).forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.val) === 3);
+    });
+  });
+  document.getElementById('wellness-note').value = '';
+  document.getElementById('modal-wellness').classList.remove('hidden');
+}
+
+function setWell(type, val) {
+  wellnessState[type] = val;
+  document.getElementById(type + '-val').textContent = val;
+  document.querySelectorAll(`#${type}-btns .well-btn`).forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.val) === val);
+  });
+}
+
+async function saveWellness() {
+  const note = document.getElementById('wellness-note').value.trim();
+  const btn = document.getElementById('wellness-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    await api('POST', '/api/mt/wellness', { ...wellnessState, note });
+    document.getElementById('modal-wellness').classList.add('hidden');
+    showToast('Wellness logged! 💗');
+  } catch (e) {
+    showToast('Save failed. Try again.');
+  }
+  btn.disabled = false; btn.textContent = 'Save Check-In ✓';
+}
+
+// ============================================
+// ARCHIVE ACTIONS
+// ============================================
+function searchThoughts() {
+  clearTimeout(window._searchTimer);
+  window._searchTimer = setTimeout(loadThoughts, 300);
+}
+
+function filterThoughts(chipEl, cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+  chipEl.classList.add('active');
+  loadThoughts();
+}
+
+async function toggleStar(id, isStarred) {
+  try {
+    await api('PUT', `/api/mt/thoughts/${id}`, { is_starred: !isStarred });
+    loadThoughts();
+  } catch (e) {
+    showToast('Update failed');
+  }
+}
+
+function openEditThought(id) {
+  const thought = allThoughts.find(t => t.id === id);
+  if (!thought) return;
+  editThoughtId = id;
+  editCategory = thought.category;
+  document.getElementById('edit-content').value = thought.content;
+  document.querySelectorAll('#edit-cat-grid .cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === thought.category);
+  });
+  document.getElementById('modal-edit-thought').classList.remove('hidden');
+}
+
+function selectEditCat(btn) {
+  editCategory = btn.dataset.cat;
+  btn.closest('.category-grid').querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function saveEditThought() {
+  const content = document.getElementById('edit-content').value.trim();
+  if (!content) { showToast('Content cannot be empty'); return; }
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    await api('PUT', `/api/mt/thoughts/${editThoughtId}`, { content, category: editCategory });
+    document.getElementById('modal-edit-thought').classList.add('hidden');
+    showToast('Thought updated ✓');
+    loadThoughts();
+  } catch (e) {
+    showToast('Update failed');
+  }
+  btn.disabled = false; btn.textContent = 'Update Thought ✓';
+}
+
+async function deleteThought(id) {
+  if (!confirm('Delete this thought?')) return;
+  try {
+    await api('DELETE', `/api/mt/thoughts/${id}`);
+    showToast('Thought deleted');
+    loadThoughts();
+    loadStats();
+  } catch (e) {
+    showToast('Delete failed');
+  }
+}
+
+// ============================================
+// FAVORITES
+// ============================================
+async function favBoost() {
+  if (!boostText) return;
+  const btn = document.getElementById('boost-fav-btn');
+  try {
+    await api('POST', '/api/mt/favorites', { content_type: 'boost', content_text: boostText });
+    btn.textContent = '❤️';
+    showToast('Added to favorites! ❤️');
+  } catch (e) {
+    showToast('Could not save');
+  }
+}
+
+// ============================================
+// BRAIN GAMES
+// ============================================
+function openGames() {
+  closeAllModals();
+  document.getElementById('modal-games').classList.remove('hidden');
+}
+
+function launchGame(name, url) {
+  document.getElementById('modal-games').classList.add('hidden');
+  document.getElementById('game-overlay-title').textContent = name;
+  document.getElementById('game-iframe').src = url;
+  document.getElementById('game-overlay').classList.remove('hidden');
+}
+
+function closeGame() {
+  document.getElementById('game-overlay').classList.add('hidden');
+  document.getElementById('game-iframe').src = '';
+  loadGameStats();
+}
+
+// ============================================
+// AVATAR PICKER
+// ============================================
+function openAvatarPicker() {
+  // Pre-select current avatar
+  const current = document.getElementById('profile-avatar').textContent;
+  document.querySelectorAll('.avatar-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.textContent === current);
+  });
+  selectedAvatar = current;
+  document.getElementById('modal-avatar').classList.remove('hidden');
+}
+
+function selectAvatarOption(el, avatar) {
+  document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAvatar = avatar;
+}
+
+function saveAvatar() {
+  if (!selectedAvatar) return;
+  document.getElementById('profile-avatar').textContent = selectedAvatar;
+  localStorage.setItem('mt_avatar_' + (currentUser?.id || 'guest'), selectedAvatar);
+  document.getElementById('modal-avatar').classList.add('hidden');
+  showToast('Avatar updated! ' + selectedAvatar);
+}
+
+// ============================================
+// ONBOARDING
+// ============================================
+let obCurrentStep = 0;
+const OB_TOTAL_STEPS = 3;
+let obInApp = false; // true when opened from settings (already authenticated)
+
+function showOnboarding(inApp) {
+  obInApp = !!inApp;
+  const overlay = document.getElementById('onboarding-overlay');
+  overlay.classList.remove('hidden');
+  obCurrentStep = 0;
+  nextObStep(0);
+}
+
+function closeOnboarding() {
+  const overlay = document.getElementById('onboarding-overlay');
+  overlay.classList.add('hidden');
+  localStorage.setItem('mt_onboarded', '1');
+  if (obInApp) {
+    // Already in app — just dismiss
+    obInApp = false;
+  } else {
+    proceedToAuth();
+  }
+}
+
+function obNext() {
+  if (obCurrentStep < OB_TOTAL_STEPS - 1) {
+    nextObStep(obCurrentStep + 1);
+  } else {
+    closeOnboarding();
+  }
+}
+
+function nextObStep(step) {
+  obCurrentStep = step;
+  document.querySelectorAll('.ob-step').forEach((el, i) => {
+    el.classList.toggle('hidden', i !== step);
+  });
+  document.querySelectorAll('#ob-dots .ob-dot').forEach((el, i) => {
+    el.classList.toggle('active', i === step);
+  });
+  // Update next button label on last slide
+  const nextBtn = document.getElementById('ob-next-btn');
+  if (nextBtn) {
+    nextBtn.textContent = step === OB_TOTAL_STEPS - 1 ? 'Get Started 🚀' : 'Next →';
+  }
+}
+
+// ============================================
+// FIRST-USE EXPERIENCE (FTUE) WALKTHROUGH
+// Shown once after first login when user has 0 captures.
+// Uses spotlight cutout to highlight UI elements step-by-step.
+// ============================================
+const FTUE_STEPS = [
+  {
+    // Step 1: Quick Capture card on Home screen
+    targetSelector: '.quick-capture-card',
+    stepLabel: 'STEP 1 OF 3',
+    title: 'Capture Your First Thought',
+    desc: 'Tap the Quick Capture card to record anything on your mind — ideas, notes, memories, or tasks.',
+    arrowDir: 'up',  // tooltip appears below the card
+  },
+  {
+    // Step 2: Archive tab in bottom nav
+    targetSelector: '.nav-item[data-tab="archive"]',
+    stepLabel: 'STEP 2 OF 3',
+    title: 'Review Your Captures',
+    desc: 'The Archive tab stores all your thoughts. Search, filter, star your favourites — your entire memory lives here.',
+    arrowDir: 'down', // tooltip appears above the nav
+  },
+  {
+    // Step 3: Home screen — AI Insight card (nearest visible AI element)
+    targetSelector: '.ai-insight-card',
+    stepLabel: 'STEP 3 OF 3',
+    title: 'Meet Your AI Guide',
+    desc: 'Tap the AI Insight card or visit the AI Guide to get personalised coaching based on your captures and habits.',
+    arrowDir: 'up',
+  },
+];
+
+let ftueStep = 0;
+
+function maybeShowFTUE(totalThoughts) {
+  // Only show FTUE if: not already done, user has never captured anything
+  const done = localStorage.getItem('mt_ftue_done');
+  if (done) return;
+  if (parseInt(totalThoughts) > 0) {
+    // User already has captures — mark done, don't interrupt
+    localStorage.setItem('mt_ftue_done', '1');
+    return;
+  }
+  // Fire ftue_started before the overlay appears
+  trackEvent('ftue_started', { source: 'zero_captures_on_load' });
+  // Slight delay so the home screen renders first
+  setTimeout(() => ftueShowStep(0), 600);
+}
+
+function ftueShowStep(step) {
+  ftueStep = step;
+  const overlay = document.getElementById('ftue-overlay');
+  const spotlight = document.getElementById('ftue-spotlight');
+  const tooltip = document.getElementById('ftue-tooltip');
+  const stepData = FTUE_STEPS[step];
+  if (!stepData) { ftueDone(); return; }
+  // Fire step-viewed event (analytics.js batches this, fires within ~30s)
+  trackEvent('ftue_step_' + step + '_viewed', { step: step + 1, total_steps: FTUE_STEPS.length });
+
+  // Update tooltip content
+  document.getElementById('ftue-step-num').textContent = stepData.stepLabel;
+  document.getElementById('ftue-title').textContent = stepData.title;
+  document.getElementById('ftue-desc').textContent = stepData.desc;
+  const nextBtn = document.getElementById('ftue-next-btn');
+  if (nextBtn) nextBtn.textContent = step === FTUE_STEPS.length - 1 ? 'Got it! 🚀' : 'Next →';
+
+  // Update dots
+  document.querySelectorAll('#ftue-dots .ftue-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === step);
+  });
+
+  // Position spotlight over target element
+  const target = document.querySelector(stepData.targetSelector);
+  overlay.classList.remove('hidden');
+
+  if (target) {
+    const rect = target.getBoundingClientRect();
+    const pad = 8;
+    spotlight.style.left   = (rect.left - pad) + 'px';
+    spotlight.style.top    = (rect.top - pad) + 'px';
+    spotlight.style.width  = (rect.width + pad * 2) + 'px';
+    spotlight.style.height = (rect.height + pad * 2) + 'px';
+    spotlight.style.display = 'block';
+
+    // Position tooltip above or below the spotlight
+    const tooltipW = 280;
+    const vw = window.innerWidth;
+    const leftPos = Math.max(12, Math.min(vw - tooltipW - 12, (rect.left + rect.width / 2) - tooltipW / 2));
+
+    tooltip.classList.remove('arrow-up', 'arrow-down');
+    if (stepData.arrowDir === 'up') {
+      // Tooltip below the target
+      tooltip.style.top = (rect.bottom + pad + 16) + 'px';
+      tooltip.style.left = leftPos + 'px';
+      tooltip.style.transform = 'none';
+      tooltip.classList.add('arrow-up');
+    } else {
+      // Tooltip above the target
+      tooltip.style.bottom = 'auto';
+      const tooltipTop = rect.top - pad - 16 - 170; // approx tooltip height
+      tooltip.style.top = Math.max(12, tooltipTop) + 'px';
+      tooltip.style.left = leftPos + 'px';
+      tooltip.style.transform = 'none';
+      tooltip.classList.add('arrow-down');
+    }
+  } else {
+    // Fallback: center overlay, no spotlight
+    spotlight.style.display = 'none';
+    tooltip.style.top = '40%';
+    tooltip.style.left = '50%';
+    tooltip.style.transform = 'translateX(-50%)';
+    tooltip.classList.remove('arrow-up', 'arrow-down');
+  }
+}
+
+function ftueNext() {
+  if (ftueStep < FTUE_STEPS.length - 1) {
+    ftueShowStep(ftueStep + 1);
+  } else {
+    ftueDone();
+  }
+}
+
+function ftueSkip() {
+  trackEvent('ftue_dismissed', { steps_seen: ftueStep + 1, dismissed_early: true });
+  ftueDone();
+}
+
+function ftueDone() {
+  document.getElementById('ftue-overlay').classList.add('hidden');
+  localStorage.setItem('mt_ftue_done', '1');
+  // Extract user_id from JWT so events are attributed to the correct user.
+  // analytics.js already extracts and caches _userId on page load (from both
+  // 'memtool_token' and 'mt_token'), so we can pass it directly to trackEvent().
+  let userId = null;
+  try {
+    var raw = localStorage.getItem('mt_token') || localStorage.getItem('memtool_token') || null;
+    if (raw) {
+      var parts = raw.split('.');
+      if (parts.length >= 2) userId = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      if (userId) userId = userId.sub || userId.userId || null;
+    }
+  } catch (_) { userId = null; }
+  // Fire ftue_completed via trackEvent (batches and flushes with userId header).
+  // Also fire the legacy onboarding_completed for audit compatibility.
+  trackEvent('ftue_completed', { steps_seen: ftueStep + 1, source: 'ftue_walkthrough' }, userId);
+  trackEvent('onboarding_completed', { steps_seen: ftueStep + 1, source: 'ftue_walkthrough' }, userId);
+  // Force-flush the queue immediately so events aren't delayed by the 30s batch.
+  // This is critical for ftue_completed — we want it in the DB right away.
+  try {
+    if (typeof window.flushAnalytics === 'function') window.flushAnalytics();
+  } catch (_) {}
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+async function saveProfile() {
+  const username = document.getElementById('settings-username').value.trim();
+  const birthday = document.getElementById('settings-birthday').value;
+  const bio = document.getElementById('settings-bio').value.trim();
+  try {
+    const data = await api('PUT', '/api/mt/me', { username: username || undefined, birthday: birthday || undefined, bio: bio || undefined });
+    currentUser = { ...currentUser, ...data.user };
+    localStorage.setItem('mt_user', JSON.stringify(currentUser));
+    document.getElementById('home-username').textContent = currentUser.username;
+    document.getElementById('profile-name').textContent = currentUser.username;
+    document.getElementById('profile-email').textContent = currentUser.email || (currentUser.is_guest ? 'Guest Mode' : '');
+    showToast('Profile saved! ✓');
+  } catch (e) {
+    showToast('Save failed. Try again.');
+  }
+}
+
+// ============================================
+// MODAL HELPERS
+// ============================================
+function closeOnOutside(e, id) {
+  if (e.target.id === id) {
+    document.getElementById(id).classList.add('hidden');
+  }
+}
+function closeAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+}
+
+// ============================================
+// UTILS
+// ============================================
+function showToast(msg, duration = 2500) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+function timeAgo(dateStr) {
+  const now = new Date();
+  const then = new Date(dateStr);
+  const diff = Math.floor((now - then) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function catEmoji(cat) {
+  const m = { idea: '💡', note: '📝', memory: '🧠', task: '⚡', random: '💭' };
+  return m[cat] || '📝';
+}
+
+function escHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+}
+
+function showVideoPlaceholder() {
+  showToast('🎬 Brand video coming soon from Oc2cO!');
+}
+
+// ============================================
+// PRO UPGRADE FLOW
+// ============================================
+
+// Cached upgrade URL — fetched once per session to avoid redundant API calls
+let _upgradeUrl = null;
+
+function showUpgradeModal() {
+  document.getElementById('modal-upgrade').classList.remove('hidden');
+  // Prefetch upgrade URL in the background so button tap is instant
+  if (!_upgradeUrl && currentUser && !currentUser.is_guest) {
+    api('GET', '/api/memtool/subscription/upgrade')
+      .then(data => { _upgradeUrl = data.upgrade_url; })
+      .catch(() => {});
+  }
+}
+
+async function goUpgrade() {
+  const btn = document.getElementById('upgrade-cta-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    if (!_upgradeUrl) {
+      const data = await api('GET', '/api/memtool/subscription/upgrade');
+      _upgradeUrl = data.upgrade_url;
+    }
+    window.location.href = _upgradeUrl;
+  } catch (e) {
+    // Fallback to hardcoded link if API unavailable
+    window.location.href = 'https://buy.stripe.com/4gMfZhedM10J6UGfvL8so00';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Upgrade to Pro ⚡';
+}
+
+// Handle enter key in capture field
+document.addEventListener('DOMContentLoaded', () => {
+  const captureEl = document.getElementById('capture-content');
+  if (captureEl) {
+    captureEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) saveThought();
+    });
+  }
+});
+
+// Prevent double-tap zoom on iOS
+let lastTapTime = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTapTime < 300) e.preventDefault();
+  lastTapTime = now;
+}, { passive: false });
+
+// iOS input zoom prevention
+const metaViewport = document.querySelector('meta[name=viewport]');
+document.addEventListener('touchstart', () => {}, { passive: true });
+</script>
+</body>
+</html>
+

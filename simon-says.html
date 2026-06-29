@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mind Sync — OC2CO Arcade</title>
+  <meta name="description" content="Sync your mind to the neural pattern. Watch. Listen. Repeat. How far can you go? OC2CO Arcade.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #060A14;
+      --bg-navy: #0A0F1E;
+      --bg-card: #0E1428;
+      --cyan: #00E5FF;
+      --purple: #A78BFA;
+      --gold: #FFD700;
+      --coral: #FF6B6B;
+      --amber: #FFB300;
+      --success: #34D399;
+      --text-primary: #E8ECF4;
+      --text-secondary: #8892A8;
+      --text-muted: #5A6478;
+      --border: rgba(0,229,255,0.08);
+      --border-hover: rgba(0,229,255,0.2);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg-deep); color:var(--text-primary); overflow-x:hidden; -webkit-font-smoothing:antialiased; min-height:100vh; }
+    h1,h2,h3 { font-family:'Orbitron',sans-serif; }
+    .ambient-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .ambient-bg .orb { position:absolute; border-radius:50%; filter:blur(120px); opacity:0.35; }
+    .orb-1 { width:500px; height:500px; background:radial-gradient(circle,rgba(0,229,255,0.12),transparent 70%); top:-10%; right:-5%; animation:float-orb 20s ease-in-out infinite; }
+    .orb-2 { width:450px; height:450px; background:radial-gradient(circle,rgba(167,139,250,0.1),transparent 70%); bottom:10%; left:-10%; animation:float-orb 25s ease-in-out infinite reverse; }
+    @keyframes float-orb { 0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-25px) scale(1.04)}66%{transform:translate(-15px,15px) scale(0.96)} }
+    .grid-overlay { position:fixed; inset:0; pointer-events:none; z-index:0; background-image:linear-gradient(rgba(0,229,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.015) 1px,transparent 1px); background-size:60px 60px; }
+    nav { position:fixed; top:0; width:100%; z-index:100; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; background:rgba(6,10,20,0.88); backdrop-filter:blur(24px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-family:'Orbitron',sans-serif; font-weight:800; font-size:1.35rem; letter-spacing:0.08em; text-decoration:none; background:linear-gradient(135deg,#FFD54F,#FFB300); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .nav-links { display:flex; align-items:center; gap:1rem; }
+    .nav-link { font-family:'Orbitron',sans-serif; font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-secondary); padding:0.3rem 0.75rem; border:1px solid rgba(0,229,255,0.08); border-radius:100px; transition:all 0.3s; text-decoration:none; }
+    .nav-link:hover { color:var(--cyan); border-color:var(--cyan); }
+    .nav-link.active { color:var(--cyan); border-color:rgba(0,229,255,0.3); background:rgba(0,229,255,0.15); }
+    .container { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; }
+    .screen { display:none; }
+    .screen.active { display:flex; }
+
+    /* START SCREEN */
+    #screen-start { min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:5rem 1.5rem 3rem; gap:2rem; text-align:center; }
+    #screen-start h1 { font-size:clamp(2rem,6vw,3.5rem); font-weight:900; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    #screen-start p { font-size:1rem; color:var(--text-secondary); max-width:480px; line-height:1.7; }
+    .simon-preview { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:200px; height:200px; border-radius:50%; overflow:hidden; box-shadow:0 0 60px rgba(0,229,255,0.1); }
+    .preview-quad { border-radius:0; opacity:0.4; transition:opacity 0.3s; }
+    .preview-quad.cyan-q { background:var(--cyan); animation: pulse-glow-cyan 3s ease-in-out infinite; }
+    .preview-quad.purple-q { background:var(--purple); animation: pulse-glow-purple 3s ease-in-out infinite 0.75s; }
+    .preview-quad.gold-q { background:var(--gold); animation: pulse-glow-gold 3s ease-in-out infinite 1.5s; }
+    .preview-quad.coral-q { background:var(--coral); animation: pulse-glow-coral 3s ease-in-out infinite 2.25s; }
+    .best-score-display { font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--text-muted); }
+    .best-score-display span { color:var(--gold); font-weight:700; }
+
+    /* GAME SCREEN */
+    #screen-game { min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:5rem 1rem 3rem; gap:1.5rem; }
+    .game-info { display:flex; gap:3rem; align-items:center; }
+    .info-block { text-align:center; }
+    .info-label { font-family:'Orbitron',sans-serif; font-size:0.5rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem; }
+    .info-value { font-family:'Orbitron',sans-serif; font-size:1.6rem; font-weight:900; color:var(--cyan); }
+    .status-text { font-family:'Orbitron',sans-serif; font-size:0.75rem; font-weight:600; letter-spacing:0.1em; color:var(--text-secondary); min-height:1.5em; text-align:center; transition:color 0.3s, text-shadow 0.3s; }
+    .status-text.watching { color:var(--purple); text-shadow:0 0 20px rgba(167,139,250,0.4); }
+    .status-text.your-turn { color:var(--cyan); text-shadow:0 0 20px rgba(0,229,255,0.4); }
+    .status-text.wrong { color:var(--coral); text-shadow:0 0 20px rgba(255,107,107,0.4); }
+
+    /* SIMON BOARD */
+    .simon-board {
+      position:relative;
+      width:min(440px,90vw);
+      height:min(440px,90vw);
+    }
+    .simon-board-inner {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      overflow:hidden;
+    }
+    .simon-btn {
+      position:relative;
+      cursor:pointer;
+      transition:all 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease;
+      overflow:hidden;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .simon-btn::after {
+      content:'';
+      position:absolute;
+      inset:0;
+      background:white;
+      opacity:0;
+      transition:opacity 0.1s;
+    }
+    .simon-btn:active::after { opacity:0.15; }
+    .simon-btn[data-id="0"] { background:rgba(0,229,255,0.2); border-radius:100% 0 0 0; animation: pulse-glow-cyan 3s ease-in-out infinite; }
+    .simon-btn[data-id="1"] { background:rgba(167,139,250,0.2); border-radius:0 100% 0 0; animation: pulse-glow-purple 3s ease-in-out infinite 0.75s; }
+    .simon-btn[data-id="2"] { background:rgba(255,215,0,0.2); border-radius:0 0 0 100%; animation: pulse-glow-gold 3s ease-in-out infinite 1.5s; }
+    .simon-btn[data-id="3"] { background:rgba(255,107,107,0.2); border-radius:0 0 100% 0; animation: pulse-glow-coral 3s ease-in-out infinite 2.25s; }
+
+    @keyframes pulse-glow-cyan { 0%,100%{background:rgba(0,229,255,0.15);box-shadow:inset 0 0 30px rgba(0,229,255,0.05)} 50%{background:rgba(0,229,255,0.25);box-shadow:inset 0 0 50px rgba(0,229,255,0.12)} }
+    @keyframes pulse-glow-purple { 0%,100%{background:rgba(167,139,250,0.15);box-shadow:inset 0 0 30px rgba(167,139,250,0.05)} 50%{background:rgba(167,139,250,0.25);box-shadow:inset 0 0 50px rgba(167,139,250,0.12)} }
+    @keyframes pulse-glow-gold { 0%,100%{background:rgba(255,215,0,0.15);box-shadow:inset 0 0 30px rgba(255,215,0,0.05)} 50%{background:rgba(255,215,0,0.25);box-shadow:inset 0 0 50px rgba(255,215,0,0.12)} }
+    @keyframes pulse-glow-coral { 0%,100%{background:rgba(255,107,107,0.15);box-shadow:inset 0 0 30px rgba(255,107,107,0.05)} 50%{background:rgba(255,107,107,0.25);box-shadow:inset 0 0 50px rgba(255,107,107,0.12)} }
+
+    .simon-btn.lit[data-id="0"] { background:var(--cyan) !important; box-shadow:0 0 80px rgba(0,229,255,0.9), inset 0 0 40px rgba(255,255,255,0.2); transform:scale(1.06); animation:none; }
+    .simon-btn.lit[data-id="1"] { background:var(--purple) !important; box-shadow:0 0 80px rgba(167,139,250,0.9), inset 0 0 40px rgba(255,255,255,0.2); transform:scale(1.06); animation:none; }
+    .simon-btn.lit[data-id="2"] { background:var(--gold) !important; box-shadow:0 0 80px rgba(255,215,0,0.9), inset 0 0 40px rgba(255,255,255,0.2); transform:scale(1.06); animation:none; }
+    .simon-btn.lit[data-id="3"] { background:var(--coral) !important; box-shadow:0 0 80px rgba(255,107,107,0.9), inset 0 0 40px rgba(255,255,255,0.2); transform:scale(1.06); animation:none; }
+
+    .simon-btn.pressed { animation:none !important; }
+    .simon-btn.pressed[data-id="0"] { background:var(--cyan) !important; filter:brightness(1.4); box-shadow:0 0 100px rgba(0,229,255,1); }
+    .simon-btn.pressed[data-id="1"] { background:var(--purple) !important; filter:brightness(1.4); box-shadow:0 0 100px rgba(167,139,250,1); }
+    .simon-btn.pressed[data-id="2"] { background:var(--gold) !important; filter:brightness(1.4); box-shadow:0 0 100px rgba(255,215,0,1); }
+    .simon-btn.pressed[data-id="3"] { background:var(--coral) !important; filter:brightness(1.4); box-shadow:0 0 100px rgba(255,107,107,1); }
+
+    .center-circle {
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:30%;
+      height:30%;
+      border-radius:50%;
+      background:var(--bg-deep);
+      border:3px solid rgba(0,229,255,0.2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+      pointer-events:none;
+    }
+    .center-circle-text {
+      font-family:'Orbitron',sans-serif;
+      font-size:0.55rem;
+      font-weight:700;
+      letter-spacing:0.08em;
+      color:var(--text-muted);
+      text-align:center;
+      line-height:1.4;
+    }
+
+    /* GAME OVER */
+    #screen-gameover { min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding:5rem 1.5rem 3rem; gap:1.5rem; text-align:center; }
+    .gameover-icon { font-size:4rem; animation:shake 0.5s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-15px)}40%{transform:translateX(15px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)} }
+    .gameover-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:900; color:var(--coral); }
+    .gameover-subtitle { color:var(--text-secondary); font-size:1rem; }
+    .score-display { background:var(--bg-card); border:1px solid var(--border); border-radius:20px; padding:2rem 3rem; }
+    .score-big { font-family:'Orbitron',sans-serif; font-size:3.5rem; font-weight:900; color:var(--cyan); line-height:1; }
+    .score-label { font-family:'Orbitron',sans-serif; font-size:0.6rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-top:0.5rem; }
+    .stats-row { display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+    .stat-chip { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:0.75rem 1.5rem; text-align:center; }
+    .stat-chip-label { font-family:'Orbitron',sans-serif; font-size:0.5rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+    .stat-chip-value { font-family:'Orbitron',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); }
+    .new-best { background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,179,0,0.05)); border-color:rgba(255,215,0,0.3); color:var(--gold); font-family:'Orbitron',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; padding:0.5rem 1.25rem; border-radius:100px; border:1px solid; display:none; }
+    .new-best.visible { display:inline-block; animation:pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes pop-in { 0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1} }
+    .nickname-row { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:center; }
+    .nickname-input { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; color:var(--text-primary); font-family:'Inter',sans-serif; font-size:0.95rem; outline:none; transition:border-color 0.3s; width:200px; }
+    .nickname-input:focus { border-color:var(--cyan); }
+    .nickname-input::placeholder { color:var(--text-muted); }
+    .btn-primary { font-family:'Orbitron',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.85rem 2.5rem; border-radius:10px; border:none; background:var(--cyan); color:var(--bg-deep); cursor:pointer; transition:all 0.3s; }
+    .btn-primary:hover { box-shadow:0 0 25px rgba(0,229,255,0.4); transform:translateY(-2px); }
+    .btn-secondary { font-family:'Orbitron',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.85rem 2.5rem; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); cursor:pointer; transition:all 0.3s; }
+    .btn-secondary:hover { border-color:var(--border-hover); color:var(--text-primary); }
+    .submit-feedback { font-size:0.85rem; color:var(--success); opacity:0; transition:opacity 0.3s; }
+    .submit-feedback.visible { opacity:1; }
+    footer { padding:2rem 1.5rem; text-align:center; border-top:1px solid var(--border); }
+    footer p { font-size:0.75rem; color:var(--text-muted); }
+    footer a { color:var(--amber); text-decoration:none; }
+    @media(max-width:600px) { nav { padding:0.85rem 1.25rem; } }
+  </style>
+</head>
+<body>
+<canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:200;"></canvas>
+<div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="grid-overlay"></div>
+<div class="container">
+  <nav>
+    <a href="https://www.oc2co.com" class="nav-logo">OC2CO</a>
+    <div class="nav-links">
+      <a href="https://www.oc2co.com" class="nav-link">Home</a>
+      <a href="/store" class="nav-link">Store</a>
+      <a href="/games.html" class="nav-link active">Arcade</a>
+      <a href="/chat" class="nav-link">Community</a>
+    </div>
+  </nav>
+
+  <div id="screen-start" class="screen active">
+    <div class="simon-preview">
+      <div class="preview-quad cyan-q"></div>
+      <div class="preview-quad purple-q"></div>
+      <div class="preview-quad gold-q"></div>
+      <div class="preview-quad coral-q"></div>
+    </div>
+    <h1>Mind Sync</h1>
+    <p>Sync your mind to the neural pattern. Watch the sequence. Hear the tones. Repeat exactly. Each round adds one more step. One mistake breaks the link.</p>
+    <div class="best-score-display">Best: <span id="best-display">0</span></div>
+    <input class="nickname-input" id="start-nickname" placeholder="Your name (leaderboard)" maxlength="30">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+      <button class="btn-primary" onclick="startGame()">Start Game</button>
+      <a href="/games.html" class="btn-secondary" style="text-decoration:none;display:flex;align-items:center;">Arcade</a>
+    </div>
+  </div>
+
+  <div id="screen-game" class="screen">
+    <div class="game-info">
+      <div class="info-block"><div class="info-label">Round</div><div class="info-value" id="round-display">1</div></div>
+      <div class="info-block"><div class="info-label">Score</div><div class="info-value" id="score-display">0</div></div>
+      <div class="info-block"><div class="info-label">Best</div><div class="info-value" id="game-best-display">0</div></div>
+    </div>
+    <div class="status-text" id="status-text">Get ready...</div>
+    <div class="simon-board">
+      <div class="simon-board-inner">
+        <div class="simon-btn" data-id="0" onclick="onBtnPress(0)"></div>
+        <div class="simon-btn" data-id="1" onclick="onBtnPress(1)"></div>
+        <div class="simon-btn" data-id="2" onclick="onBtnPress(2)"></div>
+        <div class="simon-btn" data-id="3" onclick="onBtnPress(3)"></div>
+      </div>
+      <div class="center-circle">
+        <div class="center-circle-text">SYNC</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-gameover" class="screen">
+    <div class="gameover-icon">💀</div>
+    <div class="gameover-title">Game Over</div>
+    <div class="gameover-subtitle" id="go-subtitle">Wrong button!</div>
+    <div class="score-display">
+      <div class="score-big" id="go-score">0</div>
+      <div class="score-label">Final Score</div>
+    </div>
+    <div class="new-best" id="new-best-badge">🏆 New Personal Best!</div>
+    <div class="stats-row">
+      <div class="stat-chip"><div class="stat-chip-label">Rounds</div><div class="stat-chip-value" id="go-rounds">0</div></div>
+      <div class="stat-chip"><div class="stat-chip-label">Best</div><div class="stat-chip-value" id="go-best">0</div></div>
+    </div>
+    <div class="nickname-row">
+      <input class="nickname-input" id="go-nickname" placeholder="Your name" maxlength="30">
+      <button class="btn-primary" onclick="submitScore()">Submit</button>
+    </div>
+    <div class="submit-feedback" id="go-feedback">Score saved! 🎉</div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+      <button class="btn-primary" onclick="startGame()">Play Again</button>
+      <button class="btn-secondary" onclick="window.location.href='/games.html'">Arcade</button>
+    </div>
+  </div>
+
+  <footer><p>&copy; 2026 <a href="/">Oc2cO</a>. All rights reserved. &middot; <a href="https://www.oc2co.com">Website</a></p></footer>
+</div>
+
+<script>
+// Audio
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+const BUTTON_TONES = [261.63, 329.63, 392.00, 493.88]; // C4 E4 G4 B4
+const BUTTON_COLORS = ['cyan','purple','gold','coral'];
+
+function playButtonTone(id, duration=0.4) {
+  try {
+    const ac = getAudio();
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = 'sine';
+    o.frequency.value = BUTTON_TONES[id];
+    g.gain.setValueAtTime(0, ac.currentTime);
+    g.gain.linearRampToValueAtTime(0.5, ac.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
+    o.start(ac.currentTime);
+    o.stop(ac.currentTime + duration + 0.05);
+  } catch(e){}
+}
+
+function playWrongTone() {
+  try {
+    const ac = getAudio();
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = 'sawtooth';
+    o.frequency.value = 120;
+    g.gain.setValueAtTime(0.5, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.6);
+    o.start(ac.currentTime);
+    o.stop(ac.currentTime + 0.65);
+  } catch(e){}
+}
+
+function playVictoryTone() {
+  [523, 659, 784, 1047].forEach((f,i) => {
+    try {
+      const ac = getAudio();
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type = 'sine'; o.frequency.value = f;
+      const t = ac.currentTime + i * 0.12;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.4, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      o.start(t); o.stop(t + 0.35);
+    } catch(e){}
+  });
+}
+
+function haptic(pattern) {
+  try { navigator.vibrate(pattern); } catch(e){}
+}
+
+// State
+let sequence = [];
+let playerIdx = 0;
+let round = 0;
+let score = 0;
+let accepting = false;
+let gameRunning = false;
+
+function getSpeed() {
+  if (round <= 5) return 1000;
+  if (round <= 10) return 700;
+  if (round <= 15) return 500;
+  return 300;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function setStatus(text, cls='') {
+  const el = document.getElementById('status-text');
+  el.textContent = text;
+  el.className = 'status-text' + (cls ? ' ' + cls : '');
+}
+
+function updateHUD() {
+  document.getElementById('round-display').textContent = round;
+  document.getElementById('score-display').textContent = score;
+  const best = parseInt(localStorage.getItem('simon_best') || '0');
+  document.getElementById('game-best-display').textContent = best;
+}
+
+function lightBtn(id, duration) {
+  return new Promise(resolve => {
+    const btn = document.querySelector(`.simon-btn[data-id="${id}"]`);
+    btn.classList.add('lit');
+    playButtonTone(id, duration / 1000 * 0.9);
+    setTimeout(() => {
+      btn.classList.remove('lit');
+      resolve();
+    }, duration);
+  });
+}
+
+async function playSequence() {
+  accepting = false;
+  setStatus('Watch carefully...', 'watching');
+
+  const speed = getSpeed();
+  const litTime = Math.round(speed * 0.7);
+  const gapTime = Math.round(speed * 0.3);
+
+  // Disable buttons visually
+  document.querySelectorAll('.simon-btn').forEach(b => b.style.pointerEvents = 'none');
+
+  for (let i = 0; i < sequence.length; i++) {
+    await lightBtn(sequence[i], litTime);
+    await new Promise(r => setTimeout(r, gapTime));
+  }
+
+  document.querySelectorAll('.simon-btn').forEach(b => b.style.pointerEvents = '');
+  accepting = true;
+  playerIdx = 0;
+  setStatus('Your turn! ' + sequence.length + ' moves', 'your-turn');
+}
+
+function startGame() {
+  try { getAudio().resume(); } catch(e) {}
+
+  const nick = document.getElementById('start-nickname')?.value?.trim() || '';
+  if (nick) localStorage.setItem('oc2co_nickname', nick);
+
+  sequence = [];
+  playerIdx = 0;
+  round = 0;
+  score = 0;
+  accepting = false;
+  gameRunning = true;
+
+  showScreen('screen-game');
+  updateHUD();
+
+  const best = parseInt(localStorage.getItem('simon_best') || '0');
+  document.getElementById('game-best-display').textContent = best;
+
+  setTimeout(() => nextRound(), 800);
+}
+
+function nextRound() {
+  round++;
+  score = (round - 1) * 100;
+  sequence.push(Math.floor(Math.random() * 4));
+  updateHUD();
+  setTimeout(() => playSequence(), 600);
+}
+
+function onBtnPress(id) {
+  if (!accepting || !gameRunning) return;
+
+  const btn = document.querySelector(`.simon-btn[data-id="${id}"]`);
+  btn.classList.add('pressed');
+  playButtonTone(id, 0.3);
+  haptic(40);
+  setTimeout(() => btn.classList.remove('pressed'), 200);
+
+  if (sequence[playerIdx] === id) {
+    playerIdx++;
+    if (playerIdx === sequence.length) {
+      // Completed round!
+      accepting = false;
+      score = round * 100;
+      updateHUD();
+      setStatus('Correct! ✓', 'your-turn');
+      playVictoryTone();
+      if (round > 0 && round % 5 === 0) launchConfetti();
+      haptic([50, 30, 50]);
+      setTimeout(() => nextRound(), 900);
+    }
+  } else {
+    // Wrong!
+    accepting = false;
+    gameRunning = false;
+    playWrongTone();
+    haptic([200, 100, 200]);
+    setStatus('Wrong! Game over.', 'wrong');
+
+    // Flash all buttons red
+    document.querySelectorAll('.simon-btn').forEach(b => {
+      b.style.background = 'rgba(248,113,113,0.6)';
+      b.style.transition = 'background 0.3s';
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('.simon-btn').forEach(b => b.style.background = '');
+      showGameOver();
+    }, 1200);
+  }
+}
+
+function showGameOver() {
+  const finalScore = score;
+  const best = parseInt(localStorage.getItem('simon_best') || '0');
+  const isNewBest = finalScore > best;
+
+  if (isNewBest) {
+    localStorage.setItem('simon_best', finalScore);
+  }
+
+  document.getElementById('go-score').textContent = finalScore.toLocaleString();
+  document.getElementById('go-rounds').textContent = round - 1;
+  document.getElementById('go-best').textContent = Math.max(finalScore, best).toLocaleString();
+  document.getElementById('go-subtitle').textContent = `You got to round ${round - 1}`;
+
+  const badge = document.getElementById('new-best-badge');
+  if (isNewBest && finalScore > 0) badge.classList.add('visible');
+  else badge.classList.remove('visible');
+
+  // Pre-fill nickname
+  const saved = localStorage.getItem('oc2co_nickname') || '';
+  document.getElementById('go-nickname').value = saved;
+
+  window._goScore = finalScore;
+  window._goRound = round - 1;
+
+  showScreen('screen-gameover');
+
+  // Update best on start screen
+  document.getElementById('best-display').textContent = Math.max(finalScore, best);
+}
+
+async function submitScore() {
+  const nick = document.getElementById('go-nickname').value.trim();
+  if (!nick) { document.getElementById('go-nickname').focus(); return; }
+  localStorage.setItem('oc2co_nickname', nick);
+
+  try {
+    await fetch('/api/scores', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        nickname: nick,
+        game: 'simon-says',
+        score: window._goScore,
+        metadata: { rounds: window._goRound }
+      })
+    });
+    const fb = document.getElementById('go-feedback');
+    fb.classList.add('visible');
+    setTimeout(() => fb.classList.remove('visible'), 3000);
+    // Record authenticated session
+    const _tok=localStorage.getItem('mt_token');
+    if(_tok) fetch('/api/mt/game-session',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({game:'simon-says',score:window._goScore||0,result:'completed',moves:window._goRound||0})}).catch(()=>{});
+  } catch(e){}
+}
+
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = Array.from({length:100}, () => ({
+    x: Math.random() * canvas.width,
+    y: -20,
+    vx: (Math.random()-0.5)*5,
+    vy: Math.random()*4+2,
+    color: ['#00E5FF','#A78BFA','#FFB300','#34D399','#FF6B6B'][Math.floor(Math.random()*5)],
+    w: Math.random()*10+4,
+    h: Math.random()*6+3,
+    rot: Math.random()*360,
+    drot: (Math.random()-0.5)*8
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += p.drot;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// Init
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('oc2co_nickname') || '';
+  document.getElementById('start-nickname').value = saved;
+  const best = parseInt(localStorage.getItem('simon_best') || '0');
+  document.getElementById('best-display').textContent = best;
+});
+
+document.addEventListener('click', function initAudio() {
+  try { getAudio().resume(); } catch(e) {}
+  document.removeEventListener('click', initAudio);
+}, { once: true });
+</script>
+
+<script>
+(function() {
+  var slug = 'oc2coos-2';
+  var vid = localStorage.getItem('oc2co_vid');
+  if (!vid) { vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); }); localStorage.setItem('oc2co_vid', vid); }
+  new Image().src = 'https://app.oc2co.com/api/beacon/pixel?s=' + encodeURIComponent(slug) + '&v=' + encodeURIComponent(vid);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "MemTool by Oc2cO",
+  "short_name": "MemTool",
+  "description": "Capture thoughts, track wellness, train your brain.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060A14",
+  "theme_color": "#0A0F1E",
+  "icons": [
+    {
+      "src": "https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_75561/images/c4f72662-1fa0-4281-b174-8b5213d623f9.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_75561/images/c4f72662-1fa0-4281-b174-8b5213d623f9.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "health", "education"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/"
+}

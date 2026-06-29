@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+  <title>MemTool — Your Mind, Organized</title>
+  <meta name="description" content="Capture thoughts, track wellness, train your brain.">
+  <meta name="theme-color" content="#0A0F1E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MemTool">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_75561/images/c4f72662-1fa0-4281-b174-8b5213d623f9.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-deep: #060A14;
+      --bg-navy: #0A0F1E;
+      --bg-card: rgba(13,20,40,0.85);
+      --bg-card-solid: #0D1428;
+      --bg-modal: #0C1322;
+      --cyan: #00E5FF;
+      --cyan-dim: #00B8D4;
+      --teal: #00D4AA;
+      --purple: #7B61FF;
+      --purple-dim: #5B4BD4;
+      --coral: #FF6B8A;
+      --amber: #FFB300;
+      --green: #00E676;
+      --border: rgba(100,120,200,0.12);
+      --border-cyan: rgba(0,229,255,0.2);
+      --glow-cyan: rgba(0,229,255,0.12);
+      --text-primary: #EEF2FF;
+      --text-secondary: #8892AA;
+      --text-muted: #4A5470;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    html, body {
+      height: 100%;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+    body { display: flex; flex-direction: column; }
+
+    /* ── screens ─────────────────────────── */
+    .screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* ── landing ─────────────────────────── */
+    #screen-landing {
+      justify-content: center;
+      align-items: center;
+      padding: 40px 32px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 30%, #0d1a2e 0%, var(--bg-deep) 70%);
+      gap: 0;
+    }
+    .brain-icon {
+      font-size: 72px;
+      margin-bottom: 24px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .landing-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .landing-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 280px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dim) 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      max-width: 280px;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:active { opacity: 0.85; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--cyan);
+      border: 1.5px solid var(--border-cyan);
+      padding: 14px 48px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 12px;
+      width: 100%;
+      max-width: 280px;
+      transition: background 0.2s;
+    }
+    .btn-secondary:active { background: var(--glow-cyan); }
+
+    /* ── auth screens ────────────────────── */
+    #screen-login, #screen-register {
+      padding: calc(var(--safe-top) + 32px) 28px calc(var(--safe-bottom) + 32px);
+      gap: 0;
+    }
+    .auth-header {
+      margin-bottom: 40px;
+    }
+    .auth-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 32px;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .auth-back:active { color: var(--cyan); }
+    .auth-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+    .auth-sub { font-size: 14px; color: var(--text-secondary); }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--purple); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-hint {
+      font-size: 12px;
+      color: var(--coral);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+    .btn-auth {
+      width: 100%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dim) 100%);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn-auth:active { opacity: 0.85; }
+    .btn-auth:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── dashboard ───────────────────────── */
+    #screen-dashboard {
+      padding-top: calc(var(--safe-top) + 16px);
+    }
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px 16px;
+    }
+    .dash-greeting {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .dash-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      color: var(--cyan);
+    }
+    .dash-streak-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 14px;
+      gap: 2px;
+    }
+    .streak-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: var(--amber);
+      line-height: 1;
+    }
+    .streak-label { font-size: 10px; color: var(--text-muted); }
+    .dash-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 24px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dash-scroll::-webkit-scrollbar { display: none; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 24px 0 12px;
+    }
+    /* Capture card */
+    .capture-card {
+      background: var(--bg-card-solid);
+      border: 1.5px solid var(--border-cyan);
+      border-radius: 20px;
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .capture-card:active,
+    .capture-card:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px var(--glow-cyan);
+    }
+    .capture-card::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .capture-label {
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .capture-hint { font-size: 13px; color: var(--text-muted); }
+    .capture-cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .capture-cta span { color: var(--cyan); }
+    /* Mood today */
+    .mood-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .mood-btn {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mood-btn:active { transform: scale(0.9); }
+    .mood-btn.selected {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px var(--glow-cyan);
+    }
+    .mood-save-btn {
+      background: linear-gradient(135deg, var(--teal), #00A888);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: auto;
+    }
+    /* Memory list */
+    .memory-card {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+    .memory-card:active { border-color: var(--purple); }
+    .memory-meta {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .memory-cat {
+      font-size: 10px;
+      background: rgba(123,97,255,0.15);
+      color: var(--purple);
+      padding: 3px 8px;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+    .memory-time { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+    .memory-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+    .empty-state p { font-size: 14px; line-height: 1.5; }
+
+    /* ── capture screen ───────────────────── */
+    #screen-capture {
+      padding: calc(var(--safe-top) + 16px) 20px calc(var(--safe-bottom) + 24px);
+    }
+    .capture-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .capture-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      color: var(--cyan);
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .mood-selector {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .mood-opt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .mood-opt-emoji { font-size: 28px; }
+    .mood-opt-label { font-size: 10px; color: var(--text-muted); }
+    .mood-opt.selected .mood-opt-emoji { filter: drop-shadow(0 0 8px var(--cyan)); }
+    .mood-opt.selected .mood-opt-label { color: var(--cyan); }
+    .cat-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .cat-chip {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-chip.selected {
+      background: rgba(123,97,255,0.2);
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+    .capture-textarea {
+      width: 100%;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 15px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      resize: none;
+      height: 140px;
+      outline: none;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .capture-textarea:focus { border-color: var(--purple); }
+    .capture-textarea::placeholder { color: var(--text-muted); }
+    .btn-save-memory {
+      width: 100%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dim) 100%);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-save-memory:active { opacity: 0.85; }
+    .btn-save-memory:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── chat screen ───────────────────────── */
+    #screen-chat {
+      padding-top: calc(var(--safe-top));
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg-navy);
+      border-bottom: 1px solid var(--border);
+    }
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .chat-info h3 { font-size: 15px; color: var(--text-primary); }
+    .chat-info span { font-size: 11px; color: var(--teal); }
+    .chat-back {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      margin-right: auto;
+      padding: 4px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chat-messages::-webkit-scrollbar { display: none; }
+    .msg { max-width: 80%; padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+    .msg-mem {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      color: var(--text-primary);
+    }
+    .msg-mem .mem-label {
+      font-size: 10px;
+      color: var(--teal);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .msg-user {
+      background: rgba(123,97,255,0.2);
+      border: 1px solid rgba(123,97,255,0.3);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      color: var(--text-primary);
+    }
+    .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; }
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 16px;
+      background: var(--bg-card-solid);
+      border-radius: 12px;
+      align-self: flex-start;
+      display: none;
+    }
+    .typing-indicator.visible { display: flex; }
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+      padding: 12px 20px calc(var(--safe-bottom) + 12px);
+      background: var(--bg-navy);
+      border-top: 1px solid var(--border);
+      align-items: flex-end;
+    }
+    .chat-input {
+      flex: 1;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 12px 18px;
+      font-size: 15px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--purple); }
+    .chat-send {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dim) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── toast ────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 80px);
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      transition: transform 0.3s ease, opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    #toast.success { border-color: var(--teal); }
+    #toast.error { border-color: var(--coral); }
+
+    /* ── offline banner ───────────────────── */
+    #offline-banner {
+      position: fixed;
+      top: calc(var(--safe-top));
+      left: 0;
+      right: 0;
+      background: rgba(255,107,138,0.15);
+      border-bottom: 1px solid var(--coral);
+      color: var(--coral);
+      text-align: center;
+      font-size: 12px;
+      padding: 8px;
+      z-index: 9998;
+      display: none;
+    }
+    #offline-banner.visible { display: block; }
+
+    /* ── bottom nav ───────────────────────── */
+    .bottom-nav {
+      display: flex;
+      background: var(--bg-navy);
+      border-top: 1px solid var(--border);
+      padding: calc(var(--safe-bottom) + 4px) 0 4px;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 0;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      transition: color 0.2s;
+    }
+    .nav-item.active { color: var(--cyan); }
+    .nav-icon { font-size: 22px; line-height: 1; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- Offline banner -->
+<div id="offline-banner">You're offline — some features unavailable</div>
+
+<!-- ── Landing ───────────────────────────── -->
+<div id="screen-landing" class="screen active">
+  <span class="brain-icon">🧠</span>
+  <div class="landing-title">MEMTOOL</div>
+  <p class="landing-sub">Capture thoughts, train your brain, and build a memory that lasts.</p>
+  <button class="btn-primary" onclick="showScreen('login')">Get Started</button>
+  <button class="btn-secondary" onclick="showScreen('register')">Create Account</button>
+</div>
+
+<!-- ── Login ───────────────────────────────── -->
+<div id="screen-login" class="screen">
+  <div class="auth-header">
+    <button class="auth-back" onclick="showScreen('landing')">← Back</button>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Sign in to your MemTool account</div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input class="form-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    <div class="form-hint" id="login-error"></div>
+  </div>
+  <button class="btn-auth" id="login-btn" onclick="doLogin()">Sign In</button>
+</div>
+
+<!-- ── Register ───────────────────────────── -->
+<div id="screen-register" class="screen">
+  <div class="auth-header">
+    <button class="auth-back" onclick="showScreen('landing')">← Back</button>
+    <div class="auth-title">Create account</div>
+    <div class="auth-sub">Start capturing your thoughts today</div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Display name</label>
+    <input class="form-input" type="text" id="reg-name" placeholder="Your name" autocomplete="name">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input class="form-input" type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password (6+ chars)</label>
+    <input class="form-input" type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password">
+    <div class="form-hint" id="reg-error"></div>
+  </div>
+  <button class="btn-auth" id="reg-btn" onclick="doRegister()">Create Account</button>
+</div>
+
+<!-- ── Dashboard ───────────────────────────── -->
+<div id="screen-dashboard" class="screen">
+  <div class="dash-header">
+    <div>
+      <div class="dash-greeting">Good to see you,</div>
+      <div class="dash-name" id="dash-name">—</div>
+    </div>
+    <div class="dash-streak-badge">
+      <div class="streak-num" id="dash-streak">0</div>
+      <div class="streak-label">🔥 streak</div>
+    </div>
+  </div>
+
+  <div class="dash-scroll">
+    <div class="section-label">Today's Mood</div>
+    <div class="mood-bar" id="mood-bar">
+      <button class="mood-btn" onclick="setMood('😊')" data-mood="😊">😊</button>
+      <button class="mood-btn" onclick="setMood('😐')" data-mood="😐">😐</button>
+      <button class="mood-btn" onclick="setMood('😔')" data-mood="😔">😔</button>
+      <button class="mood-btn" onclick="setMood('😤')" data-mood="😤">😤</button>
+      <button class="mood-btn" onclick="setMood('🤩')" data-mood="🤩">🤩</button>
+      <button class="mood-save-btn" onclick="saveMood()">Save</button>
+    </div>
+
+    <div class="section-label">Quick Capture</div>
+    <div class="capture-card" onclick="showScreen('capture')">
+      <div class="capture-label">Capture a thought</div>
+      <div class="capture-hint">What's on your mind right now?</div>
+      <div class="capture-cta">Tap to capture <span>→</span></div>
+    </div>
+
+    <div class="section-label">Recent Memories</div>
+    <div id="memory-list">
+      <div class="empty-state">
+        <span class="empty-state-icon">💭</span>
+        <p>No memories yet.<br>Tap above to capture your first thought.</p>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('dashboard')">
+      <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-item" onclick="showScreen('capture')">
+      <span class="nav-icon">✏️</span>Capture
+    </button>
+    <button class="nav-item" onclick="showScreen('chat')">
+      <span class="nav-icon">💬</span>Mem
+    </button>
+    <button class="nav-item" onclick="logout()">
+      <span class="nav-icon">🚪</span>Logout
+    </button>
+  </nav>
+</div>
+
+<!-- ── Capture ─────────────────────────────── -->
+<div id="screen-capture" class="screen">
+  <div class="capture-header">
+    <button class="back-btn" onclick="showScreen('dashboard')">←</button>
+    <h2>Capture Memory</h2>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="section-label" style="margin-top:0">How are you feeling?</div>
+  <div class="mood-selector">
+    <div class="mood-opt" onclick="selectCaptureMood('😊')" data-cap-mood="😊">
+      <span class="mood-opt-emoji">😊</span><span class="mood-opt-label">Happy</span>
+    </div>
+    <div class="mood-opt" onclick="selectCaptureMood('😐')" data-cap-mood="😐">
+      <span class="mood-opt-emoji">😐</span><span class="mood-opt-label">Neutral</span>
+    </div>
+    <div class="mood-opt" onclick="selectCaptureMood('😔')" data-cap-mood="😔">
+      <span class="mood-opt-emoji">😔</span><span class="mood-opt-label">Sad</span>
+    </div>
+    <div class="mood-opt" onclick="selectCaptureMood('🤔')" data-cap-mood="🤔">
+      <span class="mood-opt-emoji">🤔</span><span class="mood-opt-label">Thoughtful</span>
+    </div>
+    <div class="mood-opt" onclick="selectCaptureMood('💡')" data-cap-mood="💡">
+      <span class="mood-opt-emoji">💡</span><span class="mood-opt-label">Idea</span>
+    </div>
+  </div>
+
+  <div class="section-label">Category</div>
+  <div class="cat-row" id="cat-row">
+    <div class="cat-chip" onclick="selectCat(this, 'memory')">💭 Memory</div>
+    <div class="cat-chip" onclick="selectCat(this, 'idea')">💡 Idea</div>
+    <div class="cat-chip" onclick="selectCat(this, 'note')">📝 Note</div>
+    <div class="cat-chip" onclick="selectCat(this, 'task')">✅ Task</div>
+    <div class="cat-chip" onclick="selectCat(this, 'random')">🔀 Random</div>
+  </div>
+
+  <textarea class="capture-textarea" id="capture-text" placeholder="What's on your mind? Capture a thought, memory, idea…"></textarea>
+
+  <button class="btn-save-memory" id="save-btn" onclick="saveMemory()">Save Memory</button>
+</div>
+
+<!-- ── Chat ─────────────────────────────────── -->
+<div id="screen-chat" class="screen">
+  <div class="chat-header">
+    <button class="chat-back" onclick="showScreen('dashboard')">←</button>
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-info">
+      <h3>Mem — AI Guide</h3>
+      <span>● online</span>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg msg-mem">
+      <div class="mem-label">MEM</div>
+      Hi! I'm Mem, your AI guide. Ask me anything about your memories, brain training, or how to get the most out of MemTool. 💡
+      <span class="msg-time">just now</span>
+    </div>
+  </div>
+  <div class="typing-indicator" id="typing-indicator">
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" placeholder="Ask Mem anything…" onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const API = 'https://app.oc2co.com';
+const TOKEN_KEY = 'memtool_token';
+
+// ── Auth helpers ─────────────────────────────
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+}
+function setToken(t) {
+  localStorage.setItem(TOKEN_KEY, t);
+}
+function clearAuth() {
+  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+}
+
+// ── Screen routing ────────────────────────────
+const ALL_SCREENS = ['landing', 'login', 'register', 'dashboard', 'capture', 'chat'];
+function showScreen(name) {
+  ALL_SCREENS.forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.classList.remove('active');
+  });
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'chat') initChat();
+}
+
+// ── Online/offline ────────────────────────────
+function updateOnlineStatus() {
+  const banner = document.getElementById('offline-banner');
+  if (!navigator.onLine) {
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ── Auth check on load ───────────────────────
+(function autoAuth() {
+  const token = getToken();
+  if (token) {
+    verifyToken(token).then(valid => {
+      if (valid) showScreen('dashboard');
+      else clearAuth();
+    });
+  }
+})();
+
+async function verifyToken(token) {
+  try {
+    const r = await fetch(API + '/api/memtool/auth/me', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+// ── Login ────────────────────────────────────
+async function doLogin() {
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Email and password required'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Signing in…';
+  try {
+    const r = await fetch(API + '/api/memtool/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Login failed'; return; }
+    setToken(data.token);
+    showToast('Welcome back!', 'success');
+    showScreen('dashboard');
+  } catch (e) {
+    errEl.textContent = 'Connection error. Try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+// ── Register ────────────────────────────────
+async function doRegister() {
+  const btn = document.getElementById('reg-btn');
+  const errEl = document.getElementById('reg-error');
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  errEl.textContent = '';
+  if (!email || !password || password.length < 6) { errEl.textContent = 'Password must be 6+ characters'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Creating account…';
+  try {
+    const r = await fetch(API + '/api/memtool/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, display_name: name })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Registration failed'; return; }
+    setToken(data.token);
+    showToast('Account created!', 'success');
+    showScreen('dashboard');
+  } catch (e) {
+    errEl.textContent = 'Connection error. Try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+  }
+}
+
+// ── Logout ───────────────────────────────────
+function logout() {
+  clearAuth();
+  showScreen('landing');
+  showToast('Logged out', '');
+}
+
+// ── Dashboard ────────────────────────────────
+let dashboardMood = null;
+
+async function loadDashboard() {
+  const token = getToken();
+  if (!token) { showScreen('landing'); return; }
+
+  // Load profile
+  try {
+    const r = await fetch(API + '/api/memtool/profile', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (r.ok) {
+      const profile = await r.json();
+      document.getElementById('dash-name').textContent = profile.display_name || profile.email || 'Friend';
+    }
+  } catch {}
+
+  // Load streak
+  try {
+    const r = await fetch(API + '/api/memtool/calls/streak', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (r.ok) {
+      const data = await r.json();
+      document.getElementById('dash-streak').textContent = data.streak || 0;
+    }
+  } catch {}
+
+  // Load memories
+  loadMemories();
+}
+
+async function loadMemories() {
+  const token = getToken();
+  try {
+    const r = await fetch(API + '/api/memtool/memories?limit=10', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (r.ok) {
+      const data = await r.json();
+      const memories = Array.isArray(data) ? data : (data.memories || []);
+      renderMemories(memories);
+    }
+  } catch {}
+}
+
+function renderMemories(memories) {
+  const list = document.getElementById('memory-list');
+  if (!memories || memories.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">💭</span><p>No memories yet.<br>Tap above to capture your first thought.</p></div>';
+    return;
+  }
+  list.innerHTML = memories.map(m => {
+    const catLabel = { memory: '💭', idea: '💡', note: '📝', task: '✅', random: '🔀' }[m.category] || '💭';
+    const time = formatTime(m.created_at);
+    return `<div class="memory-card" onclick="showScreen('capture')">
+      <div class="memory-meta">
+        <span class="memory-cat">${catLabel} ${m.category || 'memory'}</span>
+        <span class="memory-time">${time}</span>
+      </div>
+      <div class="memory-text">${escHtml(m.content || m.text || '')}</div>
+    </div>`;
+  }).join('');
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - d;
+  if (diffMs < 60000) return 'just now';
+  if (diffMs < 3600000) return Math.floor(diffMs / 60000) + 'm ago';
+  if (diffMs < 86400000) return Math.floor(diffMs / 3600000) + 'h ago';
+  return d.toLocaleDateString();
+}
+
+// ── Mood ─────────────────────────────────────
+function setMood(emoji) {
+  dashboardMood = emoji;
+  document.querySelectorAll('#mood-bar .mood-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.mood === emoji);
+  });
+}
+
+async function saveMood() {
+  if (!dashboardMood) { showToast('Pick a mood first', 'error'); return; }
+  const token = getToken();
+  const btn = document.querySelector('#mood-bar .mood-save-btn');
+  const orig = btn.textContent;
+  btn.textContent = '✓';
+  try {
+    await fetch(API + '/api/memtool/wellness/check-in', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ mood: dashboardMood })
+    });
+    showToast('Mood saved!', 'success');
+  } catch {
+    showToast('Could not save mood', 'error');
+    btn.textContent = orig;
+  }
+}
+
+// ── Capture ──────────────────────────────────
+let captureMood = null;
+let captureCat = 'memory';
+
+function selectCaptureMood(mood) {
+  captureMood = mood;
+  document.querySelectorAll('.mood-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.capMood === mood);
+  });
+}
+
+function selectCat(el, cat) {
+  captureCat = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function saveMemory() {
+  const text = document.getElementById('capture-text').value.trim();
+  if (!text) { showToast('Write something first', 'error'); return; }
+  const token = getToken();
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Saving…';
+  try {
+    const r = await fetch(API + '/api/memtool/memories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ content: text, category: captureCat, mood: captureMood })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      if (data.code === 'FREE_TIER_CAPTURE_LIMIT') {
+        showToast('Daily limit reached (10/day free)', 'error');
+      } else {
+        showToast(data.error || 'Save failed', 'error');
+      }
+      return;
+    }
+    showToast('Memory saved! 🧠', 'success');
+    document.getElementById('capture-text').value = '';
+    showScreen('dashboard');
+  } catch {
+    showToast('Connection error', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Memory';
+  }
+}
+
+// ── Chat ─────────────────────────────────────
+let chatHistory = [];
+const WELCOME_MSG = {
+  role: 'assistant',
+  content: "Hi! I'm Mem, your AI guide. Ask me anything about your memories, brain training, or how to get the most out of MemTool. 💡"
+};
+
+function initChat() {
+  const msgs = document.getElementById('chat-messages');
+  if (msgs.children.length <= 1) {
+    chatHistory = [WELCOME_MSG];
+    renderMessages();
+  }
+}
+
+function renderMessages() {
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = chatHistory.map(m => {
+    const isUser = m.role === 'user';
+    const content = m.content || '';
+    const label = isUser ? 'YOU' : 'MEM';
+    const time = formatTime(m.created_at || m.timestamp);
+    return `<div class="msg ${isUser ? 'msg-user' : 'msg-mem'}">
+      ${!isUser ? '<div class="mem-label">' + label + '</div>' : ''}
+      ${escHtml(content)}
+      <span class="msg-time">${time}</span>
+    </div>`;
+  }).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const token = getToken();
+
+  // Add user message
+  const userMsg = { role: 'user', content: text, timestamp: new Date().toISOString() };
+  chatHistory.push(userMsg);
+  renderMessages();
+  input.value = '';
+
+  // Show typing
+  document.getElementById('typing-indicator').classList.add('visible');
+
+  try {
+    const r = await fetch(API + '/api/memtool/ai-guide/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ message: text, history: chatHistory.slice(0, -1) })
+    });
+    document.getElementById('typing-indicator').classList.remove('visible');
+    if (r.ok) {
+      const data = await r.json();
+      const reply = data.reply || data.response || data.error || "I'm here, but something went wrong.";
+      const memMsg = { role: 'assistant', content: reply, timestamp: new Date().toISOString() };
+      chatHistory.push(memMsg);
+      renderMessages();
+    } else {
+      const data = await r.json();
+      addSystemMsg("Mem couldn't respond: " + (data.error || 'unknown error'));
+    }
+  } catch {
+    document.getElementById('typing-indicator').classList.remove('visible');
+    addSystemMsg('You appear to be offline — connect to chat with Mem.');
+  }
+}
+
+function addSystemMsg(text) {
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML += `<div class="msg msg-mem" style="border-color:rgba(255,183,0,0.3)">
+    <div class="mem-label">MEM</div>${escHtml(text)}<span class="msg-time">just now</span></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── Toast ─────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = type || '';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Utilities ────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\n/g, '<br>');
+}
+
+// ── Service Worker registration ──────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    console.log('SW registered', reg.scope);
+  }).catch(err => {
+    console.warn('SW registration failed', err);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — MemTool</title>
+  <meta name="description" content="MemTool Privacy Policy — how we collect, use, and protect your data.">
+  <meta name="theme-color" content="#0A0F1E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/common.css">
+  <style>
+    :root {
+      --bg-deep: #060A14;
+      --bg-navy: #0A0F1E;
+      --bg-card: #0D1428;
+      --cyan: #00E5FF;
+      --teal: #00D4AA;
+      --purple: #7B61FF;
+      --border: rgba(100,120,200,0.15);
+      --text-primary: #EEF2FF;
+      --text-secondary: #8892AA;
+      --text-muted: #4A5470;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    header {
+      background: var(--bg-navy);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    header a:hover { opacity: 1; }
+    header .logo {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    header .logo span { color: var(--cyan); }
+    header .sep { color: var(--text-muted); margin: 0 4px; }
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .effective-date {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+    .intro {
+      background: var(--bg-card);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    .intro strong { color: var(--text-primary); }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cyan);
+      margin: 40px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h2:first-of-type { margin-top: 0; }
+    p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+    ul {
+      list-style: none;
+      margin: 0 0 16px;
+      padding: 0;
+    }
+    ul li {
+      color: var(--text-secondary);
+      font-size: 15px;
+      padding: 6px 0 6px 20px;
+      position: relative;
+    }
+    ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    ul li strong { color: var(--text-primary); }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 8px;
+    }
+    .section-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .section-card p {
+      margin: 0;
+      font-size: 14px;
+    }
+    .tag {
+      display: inline-block;
+      background: rgba(0,229,255,0.1);
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .contact-box {
+      background: linear-gradient(135deg, rgba(123,97,255,0.1), rgba(0,229,255,0.05));
+      border: 1px solid rgba(123,97,255,0.25);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 48px;
+      text-align: center;
+    }
+    .contact-box p { margin: 0 0 8px; }
+    .contact-box a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-box a:hover { text-decoration: underline; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+<div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="grid-overlay"></div>
+
+<nav>
+    <a href="https://www.oc2co.com" class="nav-logo">Oc2cO</a>
+    <div class="nav-links">
+        <a href="https://www.oc2co.com" class="nav-link">Home</a>
+        <a href="/store" class="nav-link">Store</a>
+        <a href="/games.html" class="nav-link">Arcade</a>
+        <a href="/chat" class="nav-link">Community</a>
+    </div>
+    <a href="/store" class="nav-cta">Shop Oc2cO →</a>
+</nav>
+
+<div class="container">
+
+<header>
+  <span class="logo">Mem<span>Tool</span></span>
+  <span class="sep">|</span>
+  <a href="https://www.oc2co.com">Home</a>
+  <a href="/terms">Terms of Service</a>
+</header>
+
+<div class="container">
+  <h1>Privacy Policy</h1>
+  <p class="effective-date">Effective Date: April 30, 2026 &nbsp;·&nbsp; Last Updated: May 3, 2026</p>
+
+  <div class="intro">
+    <strong>The short version:</strong> MemTool collects only what it needs to work. Your email is for login only — not for marketing, tracking, or advertising. We don't sell your data. You can delete your account and everything associated with it at any time.
+  </div>
+
+  <h2>1. Who We Are</h2>
+  <p>MemTool is operated by OC2CO ("we," "us," or "our"). We build tools that help you organize your thoughts, train your memory, and track your wellness. This Privacy Policy explains what data we collect when you use MemTool and why.</p>
+  <p>If you have questions, contact us at <a href="mailto:support@oc2co.com" style="color: var(--cyan);">support@oc2co.com</a>.</p>
+
+  <h2>2. Data We Collect</h2>
+  <p>We collect only what's necessary to provide the app's functionality:</p>
+
+  <div class="section-card">
+    <span class="tag">Authentication</span>
+    <h3>Email address &amp; password</h3>
+    <p>Used exclusively to create and secure your account. Your email is never used for marketing, advertising, or third-party sharing.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Your Content</span>
+    <h3>Memories &amp; thoughts</h3>
+    <p>Text you capture in the app. Stored so you can access, search, and review your own content. Only you can read it.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Your Content</span>
+    <h3>Mood logs</h3>
+    <p>Daily mood and wellness entries you choose to log. Stored for your personal tracking and trend review.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Performance</span>
+    <h3>Game scores &amp; stats</h3>
+    <p>Your brain-training game performance data, stored so you can track your own progress over time.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">AI Features</span>
+    <h3>Daily recap data</h3>
+    <p>AI-generated summaries created from your own memories and mood entries. Cached to reduce API calls and improve performance.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Voice &amp; Audio</span>
+    <h3>Voice captures (where supported)</h3>
+    <p>If you use voice input to create memories, audio is processed to generate a text transcript. Raw audio is not permanently stored. Transcription may be handled by a third-party service (see Section 4).</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Biometrics (optional)</span>
+    <h3>Health &amp; biometric sync</h3>
+    <p>If you grant permission to sync health data (e.g., from Apple Health), that data is stored and used exclusively to personalize your wellness insights. We do not share biometric data with third parties. You can revoke this permission at any time in your device settings.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Billing</span>
+    <h3>Subscription status</h3>
+    <p>Whether your account is free or Pro tier. Payment processing is handled entirely by Stripe, Apple, or RevenueCat — we never store your card details.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">Analytics</span>
+    <h3>Anonymous usage events</h3>
+    <p>Basic aggregate events (app_open, feature used) to understand how the app is used at a population level. These are anonymous and not tied to your identity or content.</p>
+  </div>
+
+  <h2>3. How We Use Your Data</h2>
+  <ul>
+    <li><strong>Provide the service</strong> — authenticate you, store your memories, generate recaps, track game progress.</li>
+    <li><strong>Process payments</strong> — manage your subscription tier via Stripe and Apple IAP.</li>
+    <li><strong>Improve the app</strong> — aggregate, anonymous analytics to understand which features are used.</li>
+  </ul>
+  <p>We do <strong>not</strong> use your data for advertising, marketing, behavioral profiling, or sale to third parties.</p>
+
+  <h2>AI Features &amp; Your Data</h2>
+  <p>MemTool includes AI-powered features that process your personal content to generate responses and insights. This section explains what data each AI feature uses and what it does not do.</p>
+
+  <div class="section-card">
+    <span class="tag">AI Feature</span>
+    <h3>Daily Recap</h3>
+    <p>Your <strong>memory captures</strong> and <strong>mood entries</strong> from the day are sent to OpenAI to generate a personalized daily summary. This summary is cached and shown in the app. Raw content is sent to OpenAI as described in Section 4.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">AI Feature</span>
+    <h3>AI Insight</h3>
+    <p>Your <strong>mood logs</strong>, <strong>game performance data</strong>, and <strong>memory patterns</strong> are used to generate a short personalized wellness insight. This data is processed by OpenAI to identify patterns and trends in your activity.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">AI Feature</span>
+    <h3>AI Guide (Mem)</h3>
+    <p>When you chat with Mem, your <strong>AI Guide conversation history</strong>, <strong>recent memories</strong>, <strong>7-day mood trends</strong>, and <strong>game statistics</strong> are sent to OpenAI to generate a personalized response. This context is used solely to make Mem's replies relevant to your situation — it is not stored by OpenAI beyond their standard API data handling policy.</p>
+  </div>
+
+  <div class="section-card">
+    <span class="tag">AI Feature</span>
+    <h3>Daily Coaching Prompt</h3>
+    <p>One AI-generated coaching prompt is cached per user per day based on your activity patterns. It is regenerated daily and uses the same context as the AI Guide.</p>
+  </div>
+
+  <div class="section-card" style="border-color: rgba(255,100,100,0.2); background: rgba(255,60,60,0.04);">
+    <span class="tag" style="background: rgba(255,100,100,0.12); color: #FF6B6B;">Important Limits</span>
+    <h3>AI Guide (Mem) is NOT a healthcare provider</h3>
+    <p><strong>Mem is a pattern-reflection tool — not a therapist, not a counselor, and not a crisis service.</strong> Mem does not provide medical advice, mental health diagnosis, or treatment recommendations. Nothing Mem says should be interpreted as professional mental health or medical guidance. If you are experiencing a mental health crisis, contact the <strong>988 Suicide &amp; Crisis Lifeline</strong> by calling or texting <strong>988</strong>, or go to your nearest emergency room.</p>
+  </div>
+
+  <h2>4. Third-Party Services</h2>
+  <p>MemTool integrates with the following third-party services. Each has its own privacy policy:</p>
+  <ul>
+    <li><strong>OpenAI</strong> — powers AI daily recaps. Your memory content is sent to OpenAI to generate summaries. OpenAI's data handling is governed by their <a href="https://openai.com/privacy" style="color: var(--cyan);">privacy policy</a>.</li>
+    <li><strong>Stripe</strong> — handles payment processing for Pro subscriptions. We never see or store your payment card details. <a href="https://stripe.com/privacy" style="color: var(--cyan);">Stripe's privacy policy</a>.</li>
+    <li><strong>Apple In-App Purchase</strong> — handles iOS subscription billing. Governed by <a href="https://www.apple.com/legal/privacy/" style="color: var(--cyan);">Apple's privacy policy</a>.</li>
+    <li><strong>RevenueCat</strong> — subscription management and synchronization across platforms. <a href="https://www.revenuecat.com/privacy" style="color: var(--cyan);">RevenueCat's privacy policy</a>.</li>
+    <li><strong>Neon (PostgreSQL)</strong> — database hosting. Your data is stored in encrypted PostgreSQL databases on Neon's infrastructure.</li>
+    <li><strong>Cloudflare R2</strong> — object storage for user-generated files (e.g., attachments or exported data). Files are stored in encrypted buckets. <a href="https://www.cloudflare.com/privacypolicy/" style="color: var(--cyan);">Cloudflare's privacy policy</a>.</li>
+    <li><strong>Render</strong> — cloud hosting provider that runs the MemTool backend server. Your data transits through Render's infrastructure. <a href="https://render.com/privacy" style="color: var(--cyan);">Render's privacy policy</a>.</li>
+  </ul>
+
+  <h2>5. Data Storage &amp; Security</h2>
+  <p>Your data is stored in encrypted PostgreSQL databases hosted on Neon. Data is transmitted over HTTPS. We use industry-standard security practices to protect your information.</p>
+  <p>No method of electronic storage is 100% secure. If you become aware of a security concern, contact us immediately at <a href="mailto:support@oc2co.com" style="color: var(--cyan);">support@oc2co.com</a>.</p>
+
+  <h2>6. Data Retention</h2>
+  <p>We retain your data for as long as your account is active. If you delete your account, all associated data (memories, mood logs, game stats, recaps) is permanently deleted within 30 days.</p>
+  <p>Anonymized aggregate analytics data (not tied to any individual) may be retained indefinitely for product improvement purposes.</p>
+
+  <h2>7. Your Rights</h2>
+  <ul>
+    <li><strong>Access</strong> — you can view all your data within the app at any time.</li>
+    <li><strong>Export</strong> — contact us to request an export of your data.</li>
+    <li><strong>Correction</strong> — update your memories, mood logs, and account info directly in the app.</li>
+    <li><strong>Deletion</strong> — delete your account and all associated data via the app settings, or by emailing us.</li>
+    <li><strong>Portability</strong> — request a copy of your data in a standard format.</li>
+  </ul>
+  <p>To exercise any of these rights, contact us at <a href="mailto:support@oc2co.com" style="color: var(--cyan);">support@oc2co.com</a>.</p>
+
+  <h2>8. California Residents (CCPA)</h2>
+  <p>If you are a California resident, you have additional rights under the California Consumer Privacy Act (CCPA):</p>
+  <ul>
+    <li><strong>Right to Know</strong> — the categories of personal information we collect and how we use it (see Sections 2 and 3 above).</li>
+    <li><strong>Right to Delete</strong> — request deletion of your personal information (see Section 7).</li>
+    <li><strong>Right to Opt-Out of Sale</strong> — we do not sell personal information. There is nothing to opt out of.</li>
+    <li><strong>Right to Non-Discrimination</strong> — we will not discriminate against you for exercising your privacy rights.</li>
+  </ul>
+
+  <h2>9. Wellness Data — Not Medical Advice</h2>
+  <p>MemTool's mood logs, wellness tracking, brain-game performance data, and AI-generated insights are for personal reflection and self-improvement only. <strong>Nothing in MemTool — including AI-generated summaries, wellness patterns, or psychological insights — constitutes medical advice, mental health treatment, diagnosis, or professional counseling.</strong></p>
+  <p>Do not use MemTool as a substitute for professional medical or psychological care. If you have concerns about your mental or physical health, consult a qualified healthcare provider.</p>
+
+  <h2>10. European Residents (GDPR)</h2>
+  <p>If you are located in the European Economic Area (EEA), United Kingdom, or Switzerland, you have rights under the General Data Protection Regulation (GDPR) or equivalent laws:</p>
+  <ul>
+    <li><strong>Right of Access</strong> — request a copy of the personal data we hold about you.</li>
+    <li><strong>Right to Rectification</strong> — request correction of inaccurate personal data.</li>
+    <li><strong>Right to Erasure</strong> — request deletion of your personal data ("right to be forgotten").</li>
+    <li><strong>Right to Restrict Processing</strong> — request that we limit how we use your data in certain circumstances.</li>
+    <li><strong>Right to Data Portability</strong> — request your data in a structured, machine-readable format.</li>
+    <li><strong>Right to Object</strong> — object to processing of your personal data for certain purposes.</li>
+  </ul>
+  <p>Our legal basis for processing your data is contract performance (to provide the service you requested) and legitimate interests (service improvement). To exercise any GDPR rights, contact us at <a href="mailto:support@oc2co.com" style="color: var(--cyan);">support@oc2co.com</a>. We will respond within 30 days.</p>
+
+  <h2>11. Children's Privacy (COPPA)</h2>
+  <p>MemTool is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe we have inadvertently collected such information, contact us immediately and we will delete it promptly.</p>
+  <p>Users between 13 and 17 should have parental consent before using MemTool.</p>
+
+  <h2>12. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last Updated" date at the top of this page. Material changes will be communicated in-app. Continued use of MemTool after changes constitutes acceptance of the updated policy.</p>
+
+  <div class="contact-box">
+    <p style="color: var(--text-primary); font-weight: 600; font-size: 16px; margin-bottom: 4px;">Questions about your privacy?</p>
+    <p>We're real people who care about this. Reach out:</p>
+    <a href="mailto:support@oc2co.com">support@oc2co.com</a>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 OC2CO · <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="https://www.oc2co.com">Website</a> · <a href="/">MemTool</a></p>
+</footer>
+
+</body>
+</html>
