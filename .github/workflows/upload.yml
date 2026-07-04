@@ -54,7 +54,7 @@ jobs:
           if [ -z "$IPA" ]; then
             # If no IPA, try using the exported bundle via xcodebuild
             echo "No IPA found in dist/. Build using xcodebuild..."
-            npx expo run:ios --configuration Release
+            CI=1 npx expo run:ios --configuration Release --no-install
           fi
           IPA=$(find . -name "*.ipa" 2>/dev/null | head -1)
           if [ -n "$IPA" ]; then
