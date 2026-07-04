@@ -53,7 +53,8 @@ jobs:
           IPA=$(find dist -name "*.ipa" 2>/dev/null | head -1)
           if [ -z "$IPA" ]; then
             # If no IPA, try using the exported bundle via xcodebuild
-            echo "No IPA found in dist/. Build using xcodebuild..."
+            echo "No IPA found. Running pod install then xcodebuild..."
+            cd ios && pod install --repo-update && cd ..
             CI=1 npx expo run:ios --configuration Release --no-install
           fi
           IPA=$(find . -name "*.ipa" 2>/dev/null | head -1)
