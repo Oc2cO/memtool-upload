@@ -49,6 +49,8 @@ jobs:
         env:
           API_KEY_ID: ${{ secrets.API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.API_ISSUER_ID }}
+          SENTRY_DISABLE_AUTO_UPLOAD: "true"
+          SENTRY_ALLOW_FAILURE: "true"
         run: |
           # Step 1: Prebuild (generates ios/ directory with Podfile)
           CI=1 npx expo prebuild --platform ios --clean --no-install
