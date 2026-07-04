@@ -1,0 +1,67 @@
+/* cinematic-layer.css - BBWAAS / oc2co reuse base */
+/* Extracted concepts from components/alive/AuthCinematicStage.tsx, HomeAtriumVisualLayer.tsx (particles/layers), landing-page.html */
+/* For index/memtool/arcade: include <link> and add .cinematic-layer on root sections for grain, fade, parallax base */
+
+.cinematic-layer {
+  position: relative;
+  overflow: hidden;
+  contain: paint;
+}
+
+.cinematic-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(180deg, rgba(10,15,30,0.3) 0%, transparent 40%, transparent 60%, rgba(10,15,30,0.4) 100%),
+    radial-gradient(circle at 30% 20%, rgba(155,122,232,0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+  animation: cinematic-drift 25s ease-in-out infinite;
+}
+
+.cinematic-layer::after {
+  /* Film grain / holo noise - premium cinematic */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 2;
+  animation: grain 1.2s steps(1) infinite;
+  opacity: 0.65;
+}
+
+@keyframes cinematic-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes grain {
+  0% { background-position: 0 0; }
+  100% { background-position: 3px 3px; }
+}
+
+/* Scroll synced variants - integrate with VISUAL_SKILLs */
+.cinematic-layer.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 1s cubic-bezier(0.23,1,0.32,1);
+}
+
+.cinematic-layer.scroll-reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Mobile reduce */
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-layer::before,
+  .cinematic-layer::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,67 @@
+name: Upload to App Store
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'App version'
+        required: false
+        default: '1.0.0'
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export iOS bundle
+        run: npx expo export --platform ios
+        env:
+          EXPO_PUBLIC_REPLIT_API_BASE_URL: https://www.oc2co.com
+          EXPO_PUBLIC_AUTH_API_BASE_URL: https://www.oc2co.com/api/memtool
+
+      - name: Setup API Key
+        env:
+          API_KEY_CONTENT: ${{ secrets.API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+        run: |
+          mkdir -p ~/private_keys
+          echo "$API_KEY_CONTENT" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
+
+      - name: Upload to App Store Connect
+        env:
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.API_ISSUER_ID }}
+        run: |
+          IPA=$(find dist -name "*.ipa" 2>/dev/null | head -1)
+          if [ -z "$IPA" ]; then
+            # If no IPA, try using the exported bundle via xcodebuild
+            echo "No IPA found in dist/. Build using xcodebuild..."
+            npx expo run:ios --configuration Release
+          fi
+          IPA=$(find . -name "*.ipa" 2>/dev/null | head -1)
+          if [ -n "$IPA" ]; then
+            xcrun altool --upload-app -f "$IPA" -t ios \
+              --apiKey "$API_KEY_ID" \
+              --apiIssuer "$API_ISSUER_ID"
+          else
+            echo "Error: No IPA found to upload"
+            exit 1
+          fi

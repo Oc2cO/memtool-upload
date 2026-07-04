@@ -144,36 +144,36 @@ describe("SupportScreen (Task #315)", () => {
     expect(getByLabelText("Open Privacy Policy")).toBeTruthy();
     expect(getByLabelText("Open Terms of Service")).toBeTruthy();
     expect(
-      getByLabelText("Email MemTool support at support@oc2coos-2.polsia.app"),
+      getByLabelText("Email MemTool support at support@oc2co.com"),
     ).toBeTruthy();
   });
 
-  it("Privacy row opens https://oc2coos-2.polsia.app/privacy", async () => {
+  it("Privacy row opens https://www.oc2co.com/privacy", async () => {
     const { getByLabelText } = render(<SupportScreen />);
     fireEvent.press(getByLabelText("Open Privacy Policy"));
     await Promise.resolve();
     expect(mockOpenBrowserAsync).toHaveBeenCalledWith(
-      "https://oc2coos-2.polsia.app/privacy",
+      "https://www.oc2co.com/privacy",
     );
   });
 
-  it("Terms row opens https://oc2coos-2.polsia.app/terms", async () => {
+  it("Terms row opens https://www.oc2co.com/terms", async () => {
     const { getByLabelText } = render(<SupportScreen />);
     fireEvent.press(getByLabelText("Open Terms of Service"));
     await Promise.resolve();
     expect(mockOpenBrowserAsync).toHaveBeenCalledWith(
-      "https://oc2coos-2.polsia.app/terms",
+      "https://www.oc2co.com/terms",
     );
   });
 
   it("Email Support row calls Linking.openURL with the support mailto", async () => {
     const { getByLabelText } = render(<SupportScreen />);
     fireEvent.press(
-      getByLabelText("Email MemTool support at support@oc2coos-2.polsia.app"),
+      getByLabelText("Email MemTool support at support@oc2co.com"),
     );
     await Promise.resolve();
     expect(mockLinkingOpenURL).toHaveBeenCalledWith(
-      "mailto:support@oc2coos-2.polsia.app",
+      "mailto:support@oc2co.com",
     );
   });
 

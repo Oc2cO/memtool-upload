@@ -1,0 +1,58 @@
+/* Oc2cO / BBWAAS base style.css - extracted & enhanced from server/templates/landing-page.html + project brand */
+/* Reference: landing-page.html inline styles for buttons, wrapper, steps, store buttons, qr etc. */
+/* Oc2cO theme: dark cosmic from constants/colors.ts */
+
+:root {
+  --oc2co-bg: #0A0F1E;
+  --oc2co-fg: #f5f3ff;
+  --oc2co-primary: #9B7AE8;
+  --oc2co-accent: #00E5FF;
+  --oc2co-gold: #FFD56F;
+  --oc2co-card: #15102a;
+  --oc2co-border: #241a47;
+}
+
+body.oc2co {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--oc2co-bg);
+  color: var(--oc2co-fg);
+  margin: 0;
+}
+
+.wrapper { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+
+.step, .glass-card {
+  padding: 24px;
+  border: 1px solid var(--oc2co-border);
+  border-radius: 16px;
+  background: var(--oc2co-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.store-button, .glass-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--oc2co-border);
+  border-radius: 8px;
+  color: var(--oc2co-fg);
+  background: rgba(255,255,255,0.04);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.store-button:hover {
+  background: var(--oc2co-primary);
+  border-color: var(--oc2co-primary);
+  color: var(--oc2co-bg);
+}
+
+/* Extend with cinematic glass base */
+.glass-base {
+  background: rgba(21,16,42,0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(155,122,232,0.2);
+}
