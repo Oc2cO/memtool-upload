@@ -45,24 +45,34 @@ jobs:
           mkdir -p ~/private_keys
           echo "$API_KEY_CONTENT" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
 
-      - name: Upload to App Store Connect
+      - name: Build IPA and Upload to App Store Connect
         env:
           API_KEY_ID: ${{ secrets.API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.API_ISSUER_ID }}
         run: |
-          IPA=$(find dist -name "*.ipa" 2>/dev/null | head -1)
+          # Step 1: Prebuild (generates ios/ directory with Podfile)
+          npx expo prebuild --platform ios --clean
+
+          # Step 2: Install CocoaPods
+          cd ios && pod install && cd ..
+
+          # Step 3: Build with xcodebuild
+          npx expo run:ios --configuration Release --no-install
+
+          # Step 4: Find IPA and upload
+          IPA=$(find . -name "*.ipa" -type f 2>/dev/null | head -1)
           if [ -z "$IPA" ]; then
-            # If no IPA, try using the exported bundle via xcodebuild
-            echo "No IPA found. Running pod install then xcodebuild..."
-            cd ios && pod install --repo-update && cd ..
-            CI=1 npx expo run:ios --configuration Release --no-install
+            # Check build directory
+            IPA=$(find ios/build -name "*.ipa" 2>/dev/null | head -1)
           fi
-          IPA=$(find . -name "*.ipa" 2>/dev/null | head -1)
           if [ -n "$IPA" ]; then
+            echo "Uploading: $IPA"
             xcrun altool --upload-app -f "$IPA" -t ios \
               --apiKey "$API_KEY_ID" \
               --apiIssuer "$API_ISSUER_ID"
           else
             echo "Error: No IPA found to upload"
+            echo "Build products:"
+            find ios/build -name "*.app" -type d 2>/dev/null | head -3 || echo "No .app found"
             exit 1
           fi
