@@ -51,7 +51,7 @@ jobs:
           API_ISSUER_ID: ${{ secrets.API_ISSUER_ID }}
         run: |
           # Step 1: Prebuild (generates ios/ directory with Podfile)
-          npx expo prebuild --platform ios --clean
+          CI=1 npx expo prebuild --platform ios --clean --no-install
 
           # Step 2: Install CocoaPods
           cd ios && pod install && cd ..
