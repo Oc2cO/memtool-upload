@@ -65,7 +65,7 @@
       [
         "expo-router",
         {
-          "origin": "https://oc2coos-2.polsia.app"
+          "origin": "https://mem-tool.polsia.app"
         }
       ],
       "expo-font",

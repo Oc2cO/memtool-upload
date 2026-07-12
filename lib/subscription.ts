@@ -9,7 +9,7 @@ export { resolvePaymentRailFor };
  * Polsia MemTool subscription / payments backend contract
  * (verified Apr 28, 2026 with test@test.com).
  *
- * Base: https://oc2coos-2.polsia.app/api/memtool (set in lib/config.ts).
+ * Base: https://mem-tool.polsia.app/api/memtool (set in lib/config.ts).
  * Auth: Bearer token from AsyncStorage `mt_token` (handled by authFetch).
  *
  * - GET /subscription/status

@@ -184,6 +184,15 @@ export default function LogCallScreen() {
     } catch (err) {
       if (err instanceof Error && err.name === "CaptureLimitReachedError") {
         setSubmitting(false);
+        haptics.play("error");
+        Alert.alert(
+          "Daily capture limit reached",
+          "You've used all your free captures for today. Upgrade to Pro for unlimited captures.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Upgrade", onPress: () => router.push("/subscription") },
+          ],
+        );
         return;
       }
       // Same Layer 2 catch as capture.tsx: if MemoriesContext throws

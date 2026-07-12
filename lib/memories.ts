@@ -14,7 +14,7 @@ import { getLocalDayKey } from "./captureLimits";
 /**
  * Polsia MemTool backend contract (verified Apr 28, 2026).
  *
- * Base: https://oc2coos-2.polsia.app/api/memtool (set in lib/config.ts).
+ * Base: https://mem-tool.polsia.app/api/memtool (set in lib/config.ts).
  * Auth: Bearer token from AsyncStorage `mt_token` (handled by authFetch).
  *
  * - GET  /memories?page=N&limit=N[&q=...]

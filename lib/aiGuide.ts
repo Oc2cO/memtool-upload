@@ -3,7 +3,7 @@ import { authFetch, AuthError } from "./auth";
 /**
  * Polsia MemTool AI Guide chat contract (per Task #63 brief, May 1, 2026).
  *
- * Base: https://oc2coos-2.polsia.app/api/memtool (set in lib/config.ts).
+ * Base: https://mem-tool.polsia.app/api/memtool (set in lib/config.ts).
  * Auth: Bearer token from AsyncStorage `mt_token` (handled by authFetch).
  *
  * - POST /ai-guide/chat

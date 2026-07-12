@@ -5,7 +5,7 @@ import { getApiBaseUrl } from "@/lib/api";
 
 const FALLBACK_PRIVACY_URL =
   process.env["EXPO_PUBLIC_PRIVACY_POLICY_URL"] ??
-  "https://oc2coos-2.polsia.app/privacy";
+  "https://mem-tool.polsia.app/privacy";
 
 export function getPrivacyPolicyUrl(): string {
   const explicit = process.env["EXPO_PUBLIC_PRIVACY_POLICY_URL"];
@@ -25,7 +25,7 @@ export const PRIVACY_POLICY_LABEL = "Privacy Policy";
 
 const FALLBACK_TERMS_URL =
   process.env["EXPO_PUBLIC_TERMS_URL"] ??
-  "https://oc2coos-2.polsia.app/terms";
+  "https://mem-tool.polsia.app/terms";
 
 export function getTermsOfServiceUrl(): string {
   const explicit = process.env["EXPO_PUBLIC_TERMS_URL"];
@@ -45,7 +45,7 @@ export const TERMS_OF_SERVICE_LABEL = "Terms of Service";
 
 const FALLBACK_SUPPORT_URL =
   process.env["EXPO_PUBLIC_SUPPORT_URL"] ??
-  "https://oc2coos-2.polsia.app/support";
+  "https://mem-tool.polsia.app/support";
 
 export function getSupportUrl(): string {
   const explicit = process.env["EXPO_PUBLIC_SUPPORT_URL"];
@@ -63,7 +63,7 @@ export function getSupportUrl(): string {
 
 export const SUPPORT_LABEL = "Help & Support";
 
-const FALLBACK_SUPPORT_EMAIL = "support@oc2coos-2.polsia.app";
+const FALLBACK_SUPPORT_EMAIL = "support@polsia.com";
 
 export function getSupportEmail(): string {
   const explicit = process.env["EXPO_PUBLIC_SUPPORT_EMAIL"];

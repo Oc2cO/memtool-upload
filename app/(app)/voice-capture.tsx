@@ -802,6 +802,15 @@ export default function VoiceCaptureScreen() {
     } catch (err) {
       if (err instanceof Error && err.name === "CaptureLimitReachedError") {
         setPhase("drafting");
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        Alert.alert(
+          "Daily capture limit reached",
+          "You've used all your free captures for today. Upgrade to Pro for unlimited captures.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Upgrade", onPress: () => router.push("/subscription") },
+          ],
+        );
         return;
       }
       // Same catch ladder as capture.tsx: route the cap-bypass and

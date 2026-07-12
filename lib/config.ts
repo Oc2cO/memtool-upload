@@ -8,7 +8,7 @@
  * env var existed (Task #291).
  */
 export const FALLBACK_AUTH_API_BASE =
-  "https://oc2coos-2.polsia.app/api/memtool";
+  "https://mem-tool.polsia.app/api/memtool";
 
 /**
  * @deprecated Prefer `resolveAuthApiBase()` so the host can be
@@ -34,7 +34,8 @@ export const AUTH_TOKEN_KEY = "mt_token";
  * Polsia (`AUTH_API_BASE`) handles auth and the legacy memories sync
  * gateway; everything else lives on this host.
  */
-export const FALLBACK_REPLIT_API_BASE = "https://oc2coos-2.polsia.app/api/memtool";
+export const FALLBACK_REPLIT_API_BASE =
+  "https://mem-tool.polsia.app/api/memtool";
 
 /**
  * Outcome of the strict env-driven base URL resolution. `ok: true`
